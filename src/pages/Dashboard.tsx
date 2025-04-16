@@ -1,4 +1,3 @@
-import React from 'react';
 import { BarChart, PieChart, Calendar, Clock } from 'lucide-react';
 
 function Dashboard() {

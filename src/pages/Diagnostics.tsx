@@ -1,4 +1,3 @@
-import React from 'react';
 import { FileText, ArrowRight, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 
 function Diagnostics() {
@@ -52,10 +51,6 @@ function Diagnostics() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Mis Diagnósticos</h1>
-        <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-          Nuevo Diagnóstico
-          <ArrowRight className="h-4 w-4" />
-        </button>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-neutral-200">
@@ -66,8 +61,8 @@ function Diagnostics() {
                 key={diagnostic.id}
                 className="flex items-center gap-4 py-4 border-b border-neutral-200 last:border-0"
               >
-                <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <FileText className="h-5 w-5 text-blue-600" />
+                <div className="h-10 w-10 rounded-lg bg-light-purple/5 flex items-center justify-center">
+                  <FileText className="h-5 w-5 text-dark-purple" />
                 </div>
                 
                 <div className="flex-1">
@@ -88,7 +83,7 @@ function Diagnostics() {
                     </p>
                   </div>
                   
-                  <button className="text-blue-600 hover:text-blue-700">
+                  <button className="text-light-purple hover:text-dark-purple">
                     <ArrowRight className="h-5 w-5" />
                   </button>
                 </div>

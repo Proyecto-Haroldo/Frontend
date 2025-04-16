@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Calendar, Clock, VideoIcon, Users } from 'lucide-react';
 
 function Schedule() {
@@ -20,7 +20,7 @@ function Schedule() {
                 onClick={() => setAppointmentType('virtual')}
                 className={`flex items-center gap-3 p-4 rounded-lg border ${
                   appointmentType === 'virtual'
-                    ? 'border-blue-600 bg-blue-50 text-blue-600'
+                    ? 'border-dark-purple bg-light-purple/5 text-dark-purple'
                     : 'border-neutral-200 text-neutral-600'
                 }`}
               >
@@ -32,7 +32,7 @@ function Schedule() {
                 onClick={() => setAppointmentType('presential')}
                 className={`flex items-center gap-3 p-4 rounded-lg border ${
                   appointmentType === 'presential'
-                    ? 'border-blue-600 bg-blue-50 text-blue-600'
+                    ? 'border-dark-purple bg-light-purple/5 text-dark-purple'
                     : 'border-neutral-200 text-neutral-600'
                 }`}
               >
@@ -99,7 +99,7 @@ function Schedule() {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2.5 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+            className="w-full bg-light-purple text-white py-2.5 px-4 rounded-lg hover:bg-dark-purple transition-colors"
           >
             Confirmar Cita
           </button>
