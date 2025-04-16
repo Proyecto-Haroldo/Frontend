@@ -18,4 +18,11 @@
 
 ## Authors
 
-
+<p align="left">
+   <a href="https://github.com/JohannRH/">
+      <img src="https://contrib.rocks/image?repo=JohannRH/JohannRH" alt="JohannRH" />
+    </a>
+    <a href="https://github.com/Kevinrestrepoh/">
+      <img src="https://contrib.rocks/image?repo=Kevinrestrepoh/Kevinrestrepoh" alt="Kevin" />
+    </a>  
+ </p>
