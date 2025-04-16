@@ -30,9 +30,9 @@ function Navbar() {
   return (
     <>
       {/* Mobile Header */}
-      <div className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-neutral-200 flex items-center justify-between px-4 md:hidden z-50">
+      <div className="fixed top-0 left-0 right-0 h-16 bg-white rounded-b-2xl flex items-center justify-between px-4 md:hidden">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
+          <div className="h-8 w-8 bg-light-purple rounded-lg flex items-center justify-center">
             <span className="text-white font-semibold">FC</span>
           </div>
           <span className="font-semibold text-xl">FinanceConsult</span>
@@ -52,17 +52,17 @@ function Navbar() {
       {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/15  md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <nav className={`fixed md:fixed w-64 h-screen bg-white border-r border-neutral-200 p-6 z-50 transition-transform duration-300 ${
+      <nav className={`fixed md:fixed w-64 h-screen bg-white rounded-r-2xl p-6 z-50 transition-transform duration-300 ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       } md:translate-x-0`}>
         <div className="hidden md:flex items-center gap-3 mb-8">
-          <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
+          <div className="h-8 w-8 bg-light-purple rounded-lg flex items-center justify-center">
             <span className="text-white font-semibold">FC</span>
           </div>
           <span className="font-semibold text-xl">FinanceConsult</span>
@@ -76,7 +76,7 @@ function Navbar() {
               onClick={() => setIsOpen(false)}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                 isActive(item.path)
-                  ? 'bg-blue-50 text-blue-600'
+                  ? 'bg-light-purple/10 text-dark-purple'
                   : 'text-neutral-600 hover:bg-neutral-100'
               }`}
             >

@@ -1,5 +1,4 @@
-import React from 'react';
-import { Calendar, Clock, ArrowRight, AlertCircle, BarChart, TrendingUp } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, AlertCircle, BarChart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 function Home() {
@@ -9,7 +8,7 @@ function Home() {
         <h1 className="text-2xl font-semibold">Panel Principal</h1>
         <Link
           to="/schedule"
-          className="flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-700"
+          className="flex items-center justify-center gap-2 text-sm font-semibold text-light-purple hover:text-dark-purple"
         >
           Agendar consulta
           <ArrowRight className="h-4 w-4" />
@@ -21,19 +20,19 @@ function Home() {
         <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-neutral-200">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-medium">Próxima Consulta</h2>
-            <Calendar className="h-5 w-5 text-blue-600" />
+            <Calendar className="h-5 w-5 text-light-purple" />
           </div>
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                <Clock className="h-5 w-5 text-blue-600" />
+              <div className="h-10 w-10 rounded-full bg-dark-purple/5 flex items-center justify-center">
+                <Clock className="h-5 w-5 text-light-purple" />
               </div>
               <div>
                 <p className="font-medium">Consulta Virtual</p>
                 <p className="text-sm text-neutral-600">Hoy, 15:00</p>
               </div>
             </div>
-            <button className="text-sm text-blue-600 hover:text-blue-700">
+            <button className="text-sm font-semibold text-light-purple hover:text-dark-purple">
               Ver detalles
             </button>
           </div>
@@ -57,7 +56,7 @@ function Home() {
               </div>
               <span className="text-sm text-neutral-600">100%</span>
             </div>
-            <button className="text-sm text-blue-600 hover:text-blue-700">
+            <button className="text-sm font-semibold text-light-purple hover:text-dark-purple">
               Ver resultados
             </button>
           </div>
@@ -79,7 +78,7 @@ function Home() {
               </div>
               <span className="text-sm text-neutral-600">50%</span>
             </div>
-            <button className="text-sm text-blue-600 hover:text-blue-700">
+            <button className="text-sm font-semibold text-light-purple hover:text-dark-purple">
               Continuar
             </button>
           </div>
@@ -91,7 +90,7 @@ function Home() {
         <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-neutral-200">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-medium">Resumen Financiero</h2>
-            <BarChart className="h-5 w-5 text-blue-600" />
+            <BarChart className="h-5 w-5 text-light-purple" />
           </div>
           <div className="space-y-4">
             <div>
@@ -124,41 +123,6 @@ function Home() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-neutral-200">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="font-medium">Objetivos Financieros</h2>
-            <TrendingUp className="h-5 w-5 text-blue-600" />
-          </div>
-          <div className="space-y-4">
-            <div>
-              <div className="flex justify-between mb-2">
-                <span className="text-sm font-medium">Fondo de Emergencia</span>
-                <span className="text-sm text-neutral-600">75% completado</span>
-              </div>
-              <div className="h-2 bg-neutral-100 rounded-full">
-                <div className="w-3/4 h-full bg-blue-500 rounded-full" />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between mb-2">
-                <span className="text-sm font-medium">Inversión en Bolsa</span>
-                <span className="text-sm text-neutral-600">40% completado</span>
-              </div>
-              <div className="h-2 bg-neutral-100 rounded-full">
-                <div className="w-2/5 h-full bg-purple-500 rounded-full" />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between mb-2">
-                <span className="text-sm font-medium">Reducción de Deuda</span>
-                <span className="text-sm text-neutral-600">60% completado</span>
-              </div>
-              <div className="h-2 bg-neutral-100 rounded-full">
-                <div className="w-3/5 h-full bg-green-500 rounded-full" />
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

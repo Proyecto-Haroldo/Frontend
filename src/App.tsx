@@ -9,7 +9,7 @@ import Account from './pages/Account';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-neutral-50 flex flex-col md:flex-row">
+      <div className="min-h-screen bg-warm-white flex flex-col md:flex-row font-geist">
         <Navbar />
         <main className="flex-1 p-4 md:p-8 md:ml-64 pt-20 md:pt-8">
           <Routes>

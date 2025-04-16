@@ -1,4 +1,3 @@
-import React from 'react';
 import { User, Mail, Phone, Building2, Shield, Bell } from 'lucide-react';
 
 function Account() {
@@ -9,8 +8,8 @@ function Account() {
       {/* Profile Section */}
       <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
         <div className="flex items-center gap-4 mb-6">
-          <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
-            <User className="h-8 w-8 text-blue-600" />
+          <div className="h-16 w-16 rounded-full bg-light-purple/5 flex items-center justify-center">
+            <User className="h-8 w-8 text-dark-purple" />
           </div>
           <div>
             <h2 className="font-medium">Juan Pérez</h2>
@@ -21,19 +20,19 @@ function Account() {
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <Mail className="h-5 w-5 text-neutral-400" />
-            <span>juan.perez@email.com</span>
+            <span>ejemplo@correo.itm.edu.co</span>
           </div>
           <div className="flex items-center gap-3">
             <Phone className="h-5 w-5 text-neutral-400" />
-            <span>+1 234 567 890</span>
+            <span>+57 341 1548520</span>
           </div>
           <div className="flex items-center gap-3">
             <Building2 className="h-5 w-5 text-neutral-400" />
-            <span>Lima, Perú</span>
+            <span>Medellin, Colombia</span>
           </div>
         </div>
 
-        <button className="mt-6 text-sm text-blue-600 hover:text-blue-700">
+        <button className="mt-6 text-sm font-semibold text-light-purple hover:text-dark-purple">
           Editar información
         </button>
       </div>
@@ -52,7 +51,7 @@ function Account() {
                 <p className="text-sm text-neutral-600">Contraseña y autenticación</p>
               </div>
             </div>
-            <button className="text-sm text-blue-600 hover:text-blue-700">
+            <button className="text-sm font-semibold text-light-purple hover:text-dark-purple">
               Gestionar
             </button>
           </div>
@@ -66,7 +65,7 @@ function Account() {
                 <p className="text-sm text-neutral-600">Preferencias de comunicación</p>
               </div>
             </div>
-            <button className="text-sm text-blue-600 hover:text-blue-700">
+            <button className="text-sm font-semibold text-light-purple hover:text-dark-purple">
               Configurar
             </button>
           </div>
