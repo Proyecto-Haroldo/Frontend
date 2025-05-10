@@ -6,78 +6,88 @@ function Account() {
       <h1 className="text-2xl font-semibold">Mi Cuenta</h1>
 
       {/* Profile Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="h-16 w-16 rounded-full bg-light-purple/5 flex items-center justify-center">
-            <User className="h-8 w-8 text-dark-purple" />
+      <div className="card bg-base-100 shadow-sm">
+        <div className="card-body">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+              <User className="h-8 w-8 text-primary" />
+            </div>
+            <div>
+              <h2 className="font-medium">Juan Pérez</h2>
+              <p className="text-sm text-base-content/70">Cliente Personal</p>
+            </div>
           </div>
-          <div>
-            <h2 className="font-medium">Juan Pérez</h2>
-            <p className="text-sm text-neutral-600">Cliente Personal</p>
+
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <Mail className="h-5 w-5 text-base-content/50" />
+              <span>ejemplo@correo.itm.edu.co</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Phone className="h-5 w-5 text-base-content/50" />
+              <span>+57 341 1548520</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Building2 className="h-5 w-5 text-base-content/50" />
+              <span>Medellin, Colombia</span>
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <button className="btn btn-link p-0 text-sm font-semibold text-primary">
+              Editar información
+            </button>
           </div>
         </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <Mail className="h-5 w-5 text-neutral-400" />
-            <span>ejemplo@correo.itm.edu.co</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Phone className="h-5 w-5 text-neutral-400" />
-            <span>+57 341 1548520</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Building2 className="h-5 w-5 text-neutral-400" />
-            <span>Medellin, Colombia</span>
-          </div>
-        </div>
-
-        <button className="mt-6 text-sm font-semibold text-light-purple hover:text-dark-purple">
-          Editar información
-        </button>
       </div>
 
       {/* Settings */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-        <h2 className="font-medium mb-6">Configuración</h2>
-        
-        <div className="space-y-4">
-          {/* Security */}
-          <div className="flex items-center justify-between py-3 border-b border-neutral-200">
-            <div className="flex items-center gap-3">
-              <Shield className="h-5 w-5 text-neutral-400" />
-              <div>
-                <p className="font-medium">Seguridad</p>
-                <p className="text-sm text-neutral-600">Contraseña y autenticación</p>
+      <div className="card bg-base-100 shadow-sm">
+        <div className="card-body">
+          <h2 className="font-medium mb-6">Configuración</h2>
+          
+          <div className="space-y-4">
+            {/* Security */}
+            <div className="flex items-center justify-between py-3 border-b border-base-200">
+              <div className="flex items-center gap-3">
+                <Shield className="h-5 w-5 text-base-content/50" />
+                <div>
+                  <p className="font-medium">Seguridad</p>
+                  <p className="text-sm text-base-content/70">Contraseña y autenticación</p>
+                </div>
               </div>
+              <button className="btn btn-link p-0 text-sm font-semibold text-primary">
+                Gestionar
+              </button>
             </div>
-            <button className="text-sm font-semibold text-light-purple hover:text-dark-purple">
-              Gestionar
-            </button>
-          </div>
 
-          {/* Notifications */}
-          <div className="flex items-center justify-between py-3 border-b border-neutral-200">
-            <div className="flex items-center gap-3">
-              <Bell className="h-5 w-5 text-neutral-400" />
-              <div>
-                <p className="font-medium">Notificaciones</p>
-                <p className="text-sm text-neutral-600">Preferencias de comunicación</p>
+            {/* Notifications */}
+            <div className="flex items-center justify-between py-3">
+              <div className="flex items-center gap-3">
+                <Bell className="h-5 w-5 text-base-content/50" />
+                <div>
+                  <p className="font-medium">Notificaciones</p>
+                  <p className="text-sm text-base-content/70">Preferencias de comunicación</p>
+                </div>
               </div>
+              <button className="btn btn-link p-0 text-sm font-semibold text-primary">
+                Configurar
+              </button>
             </div>
-            <button className="text-sm font-semibold text-light-purple hover:text-dark-purple">
-              Configurar
-            </button>
           </div>
         </div>
       </div>
 
       {/* Danger Zone */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-        <h2 className="font-medium text-red-600 mb-4">Zona de Peligro</h2>
-        <button className="text-sm text-red-600 hover:text-red-700">
-          Eliminar cuenta
-        </button>
+      <div className="card bg-base-100 shadow-sm">
+        <div className="card-body">
+          <h2 className="font-medium text-error mb-4">Zona de Peligro</h2>
+          <div>
+            <button className="btn btn-link p-0 text-sm font-semibold text-error">
+              Eliminar cuenta
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

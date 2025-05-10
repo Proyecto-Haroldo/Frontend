@@ -8,7 +8,9 @@ import {
   User,
   LogOut,
   Menu,
-  X
+  X,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 function Navbar() {
@@ -30,21 +32,21 @@ function Navbar() {
   return (
     <>
       {/* Mobile Header */}
-      <div className="fixed top-0 left-0 right-0 h-16 bg-white rounded-b-2xl flex items-center justify-between px-4 md:hidden">
+      <div className="fixed top-0 left-0 right-0 h-16 bg-base-100 rounded-b-2xl flex items-center justify-between px-4 md:hidden">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 bg-light-purple rounded-lg flex items-center justify-center">
-            <span className="text-white font-semibold">FC</span>
+          <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
+            <span className="text-primary-content text-lg font-semibold">FC</span>
           </div>
           <span className="font-semibold text-xl">FinanceConsult</span>
         </div>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2 hover:bg-neutral-100 rounded-lg"
+          className="btn btn-ghost btn-circle hover:bg-base-200"
         >
           {isOpen ? (
-            <X className="h-6 w-6 text-neutral-600" />
+            <X className="h-6 w-6" />
           ) : (
-            <Menu className="h-6 w-6 text-neutral-600" />
+            <Menu className="h-6 w-6" />
           )}
         </button>
       </div>
@@ -52,18 +54,18 @@ function Navbar() {
       {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/15  md:hidden"
+          className="fixed inset-0 bg-base-300/30 backdrop-blur-[1px] z-40 md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <nav className={`fixed md:fixed w-64 h-screen bg-white rounded-r-2xl p-6 z-50 transition-transform duration-300 ${
+      <nav className={`fixed md:fixed w-64 h-screen bg-base-100 rounded-r-2xl p-6 z-50 transition-transform duration-300 ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       } md:translate-x-0`}>
         <div className="hidden md:flex items-center gap-3 mb-8">
-          <div className="h-8 w-8 bg-light-purple rounded-lg flex items-center justify-center">
-            <span className="text-white font-semibold">FC</span>
+          <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
+            <span className="text-primary-content text-lg font-semibold">FC</span>
           </div>
           <span className="font-semibold text-xl">FinanceConsult</span>
         </div>
@@ -76,8 +78,8 @@ function Navbar() {
               onClick={() => setIsOpen(false)}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                 isActive(item.path)
-                  ? 'bg-light-purple/10 text-dark-purple'
-                  : 'text-neutral-600 hover:bg-neutral-100'
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-base-content hover:bg-base-200'
               }`}
             >
               <item.icon className="h-5 w-5" />
@@ -86,8 +88,15 @@ function Navbar() {
           ))}
         </div>
 
-        <div className="absolute bottom-6 left-6 right-6">
-          <button className="flex items-center gap-3 w-full px-4 py-3 text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors">
+        <div className="absolute bottom-6 left-6 right-6 space-y-2">
+          {/* Theme Toggle */}
+          <label className="swap swap-rotate btn btn-ghost btn-circle hover:bg-base-200">
+            <input type="checkbox" className="theme-controller" value="light" />
+            <Sun className="swap-on h-5 w-5" />
+            <Moon className="swap-off h-5 w-5" />
+          </label>
+
+          <button className="flex items-center gap-3 w-full px-4 py-3 text-base-content hover:bg-base-200 rounded-lg transition-colors">
             <LogOut className="h-5 w-5" />
             <span>Cerrar Sesión</span>
           </button>
