@@ -28,11 +28,11 @@ function Diagnostics() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
+        return <CheckCircle className="h-5 w-5 text-success" />;
       case 'in-progress':
-        return <Clock className="h-5 w-5 text-orange-500" />;
+        return <Clock className="h-5 w-5 text-warning" />;
       default:
-        return <AlertCircle className="h-5 w-5 text-neutral-500" />;
+        return <AlertCircle className="h-5 w-5 text-base-content/50" />;
     }
   };
 
@@ -53,16 +53,18 @@ function Diagnostics() {
         <h1 className="text-2xl font-semibold">Mis Diagnósticos</h1>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200">
-        <div className="p-6">
-          <div className="space-y-4">
-            {diagnostics.map((diagnostic) => (
+      <div className="card bg-base-100 shadow-sm">
+        <div className="card-body p-0">
+          <div>
+            {diagnostics.map((diagnostic, index) => (
               <div 
                 key={diagnostic.id}
-                className="flex items-center gap-4 py-4 border-b border-neutral-200 last:border-0"
+                className={`flex items-center gap-4 p-6 hover:bg-base-200/70 transition-colors ${
+                  index !== diagnostics.length - 1 ? 'border-b border-base-200 transition-colors duration-200' : ''
+                }`}
               >
-                <div className="h-10 w-10 rounded-lg bg-light-purple/5 flex items-center justify-center">
-                  <FileText className="h-5 w-5 text-dark-purple" />
+                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <FileText className="h-5 w-5 text-primary" />
                 </div>
                 
                 <div className="flex-1">
@@ -70,7 +72,7 @@ function Diagnostics() {
                     <h3 className="font-medium">Diagnóstico {diagnostic.type}</h3>
                     {getStatusIcon(diagnostic.status)}
                   </div>
-                  <p className="text-sm text-neutral-600">{diagnostic.date}</p>
+                  <p className="text-sm text-base-content/70">{diagnostic.date}</p>
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -78,12 +80,19 @@ function Diagnostics() {
                     <p className="text-sm font-medium">
                       {getStatusText(diagnostic.status)}
                     </p>
-                    <p className="text-sm text-neutral-600">
-                      {diagnostic.progress}% completado
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <progress 
+                        className="progress progress-primary w-16" 
+                        value={diagnostic.progress} 
+                        max="100"
+                      />
+                      <span className="text-sm text-base-content/70">
+                        {diagnostic.progress}%
+                      </span>
+                    </div>
                   </div>
                   
-                  <button className="text-light-purple hover:text-dark-purple">
+                  <button className="btn btn-ghost btn-sm">
                     <ArrowRight className="h-5 w-5" />
                   </button>
                 </div>
