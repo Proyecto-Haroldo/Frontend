@@ -61,7 +61,7 @@ function Services() {
                   </p>
 
                   <Link
-                    to="/diagnostics"
+                    to="/questionnaire"
                     className="btn btn-primary gap-2"
                   >
                     Comenzar Diagnóstico

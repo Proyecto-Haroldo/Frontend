@@ -5,6 +5,7 @@ import Services from './pages/Services';
 import Schedule from './pages/Schedule';
 import Diagnostics from './pages/Diagnostics';
 import Account from './pages/Account';
+import Questionnaire from './pages/Questionnaire';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/schedule" element={<Schedule />} />
             <Route path="/diagnostics" element={<Diagnostics />} />
             <Route path="/account" element={<Account />} />
+            <Route path="/questionnaire" element={<Questionnaire />} />
           </Routes>
         </main>
       </div>
