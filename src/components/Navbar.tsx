@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Home,
@@ -16,10 +16,30 @@ import {
 function Navbar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [theme, setTheme] = useState(() => {
+    // Check if theme is saved in localStorage
+    const savedTheme = localStorage.getItem('theme');
+    return savedTheme === 'dark';
+  });
 
   const isActive = (path: string) => {
     return location.pathname === path;
   };
+
+  // Toggle theme and save to localStorage
+  const toggleTheme = () => {
+    const newTheme = theme ? 'light' : 'dark';
+    setTheme(!theme);
+    localStorage.setItem('theme', newTheme);
+  };
+  
+  // Apply theme on initial load and listen for system theme changes
+   useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+  }, []);
 
   const navItems = [
     { path: '/', icon: Home, label: 'Inicio' },
@@ -91,7 +111,13 @@ function Navbar() {
         <div className="absolute bottom-6 left-6 right-6 space-y-2">
           {/* Theme Toggle */}
           <label className="swap swap-rotate btn btn-ghost btn-circle hover:bg-base-200">
-            <input type="checkbox" className="theme-controller" value="light" />
+            <input 
+              type="checkbox" 
+              className="theme-controller"
+              value="light"
+              checked={theme}
+              onChange={toggleTheme}
+            />
             <Sun className="swap-on h-5 w-5" />
             <Moon className="swap-off h-5 w-5" />
           </label>
