@@ -1,41 +1,42 @@
-import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { sampleQuestionnaire } from '../data/questionnaireData';
-import type {  Question } from '../types/questionnaire';
+import { useState, useMemo, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { questionnaires } from '../data/questionnaireData';
+import type { Question, QuestionnaireData } from '../types/questionnaire';
 
 const Questionnaire = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [isComplete, setIsComplete] = useState(false);
+  const [questionnaire, setQuestionnaire] = useState<QuestionnaireData | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   
-  const currentQuestion = sampleQuestionnaire.questions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / sampleQuestionnaire.questions.length) * 100;
-  const isLastQuestion = currentQuestionIndex === sampleQuestionnaire.questions.length - 1;
-
-  const handleNext = () => {
-    if (!isLastQuestion) {
-      setCurrentQuestionIndex(prev => prev + 1);
+  // Parse URL parameters
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const category = params.get('category');
+    const clientType = params.get('clientType');
+    
+    if (category && clientType) {
+      // Form the questionnaire ID by combining category and client type
+      const questionnaireId = `${category}_${clientType}`;
+      
+      if (questionnaires[questionnaireId]) {
+        setQuestionnaire(questionnaires[questionnaireId]);
+      } else {
+        // If no valid questionnaire is found, redirect back to services
+        navigate('/services');
+      }
     } else {
-      // Mark as complete but don't submit yet
-      setIsComplete(true);
-      // Here you would typically send the answers to your backend
-      console.log('Questionnaire completed:', answers);
+      // If missing parameters, redirect back to services
+      navigate('/services');
     }
-  };
-
-  const handlePrevious = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(prev => prev - 1);
+    
+    // Store client type in session storage if needed
+    if (clientType) {
+      sessionStorage.setItem('clientType', clientType);
     }
-  };
-
-  const handleAnswerChange = (value: any) => {
-    setAnswers(prev => ({
-      ...prev,
-      [currentQuestion.id]: value
-    }));
-  };
+  }, [location, navigate]);
 
   // Process text to find and replace keywords with tooltips
   const processTextForKeywords = useMemo(() => {
@@ -116,6 +117,65 @@ const Questionnaire = () => {
     };
   }, []);
 
+  // Initialize these variables outside of any conditional blocks to ensure hooks are always called in the same order
+  const currentQuestion = questionnaire?.questions[currentQuestionIndex] || {
+    id: 0,
+    title: '',
+    description: '',
+    type: 'open' as const,
+    keywords: []
+  };
+  
+  const progress = questionnaire ? ((currentQuestionIndex + 1) / questionnaire.questions.length) * 100 : 0;
+  const isLastQuestion = questionnaire ? currentQuestionIndex === questionnaire.questions.length - 1 : false;
+  
+  // Always calculate these values, even if we don't use them in certain render scenarios
+  const processedDescription = useMemo(() => 
+    processTextForKeywords(currentQuestion.description, currentQuestion),
+  [currentQuestion, processTextForKeywords]);
+  
+  const processedOptions = useMemo(() => 
+    processOptions(currentQuestion),
+  [currentQuestion, processOptions]);
+
+  // If questionnaire is still loading, show loading state
+  if (!questionnaire) {
+    return (
+      <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+        <div className="card w-full max-w-2xl bg-base-100 shadow-xl p-6">
+          <div className="card-body items-center text-center">
+            <span className="loading loading-spinner loading-lg text-primary"></span>
+            <p className="mt-4">Cargando cuestionario...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const handleNext = () => {
+    if (!isLastQuestion) {
+      setCurrentQuestionIndex(prev => prev + 1);
+    } else {
+      // Mark as complete but don't submit yet
+      setIsComplete(true);
+      // Here you would typically send the answers to your backend
+      console.log('Questionnaire completed:', answers);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(prev => prev - 1);
+    }
+  };
+
+  const handleAnswerChange = (value: any) => {
+    setAnswers(prev => ({
+      ...prev,
+      [currentQuestion.id]: value
+    }));
+  };
+
   const renderQuestionInput = () => {
     switch (currentQuestion.type) {
       case 'open':
@@ -123,7 +183,7 @@ const Questionnaire = () => {
           <textarea 
             className="textarea textarea-bordered w-full h-32" 
             placeholder="Escriba la respuesta aqui..."
-            value={answers[currentQuestion.id] || ''}
+            value={answers[currentQuestion.id.toString()] || ''}
             onChange={(e) => handleAnswerChange(e.target.value)}
           />
         );
@@ -137,7 +197,7 @@ const Questionnaire = () => {
                   <input
                     type="radio"
                     id={option.id}
-                    name={currentQuestion.id}
+                    name={currentQuestion.id.toString()}
                     checked={answers[currentQuestion.id] === option.id}
                     onChange={() => handleAnswerChange(option.id)}
                     className="radio radio-primary"
@@ -187,9 +247,6 @@ const Questionnaire = () => {
         return null;
     }
   };
-  
-  const processedDescription = processTextForKeywords(currentQuestion.description, currentQuestion);
-  const processedOptions = processOptions(currentQuestion);
 
   if (isComplete) {
     return (
@@ -224,7 +281,7 @@ const Questionnaire = () => {
           
           {/* Progress Text */}
           <div className="text-sm text-gray-500 mb-2">
-            Question {currentQuestionIndex + 1} of {sampleQuestionnaire.questions.length}
+            Question {currentQuestionIndex + 1} of {questionnaire.questions.length}
           </div>
           
           {/* Question */}
