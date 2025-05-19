@@ -6,13 +6,12 @@ export interface Keyword {
 export interface QuestionOption {
   id: string;
   text: string;
-  keywords?: string[];
 }
 
 export type QuestionType = 'open' | 'single' | 'multiple';
 
 export interface Question {
-  id: string;
+  id: number;
   title: string;
   description: string;
   type: QuestionType;
@@ -22,7 +21,5 @@ export interface Question {
 
 export interface QuestionnaireData {
   id: string;
-  title: string;
-  description: string;
   questions: Question[];
 }

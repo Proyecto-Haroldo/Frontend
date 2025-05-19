@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import ITMLogo from './ITMLogo';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -101,8 +102,8 @@ function Navbar() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-primary-content text-lg font-semibold">FC</span>
+          <div className="h-12 w-12 flex items-center justify-center">
+            <ITMLogo/>
           </div>
           <span className="font-semibold text-xl">FinanceConsult</span>
         </motion.div>
@@ -160,8 +161,8 @@ function Navbar() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-primary-content text-lg font-semibold">FC</span>
+          <div className="h-12 w-12 flex items-center justify-center">
+            <ITMLogo/>
           </div>
           <span className="font-semibold text-xl">FinanceConsult</span>
         </motion.div>
@@ -256,8 +257,8 @@ function Navbar() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-primary-content text-lg font-semibold">FC</span>
+          <div className="h-12 w-12 flex items-center justify-center">
+            <ITMLogo className='h-15 w-15 text-primary'/>
           </div>
           <span className="font-semibold text-xl">FinanceConsult</span>
         </motion.div>

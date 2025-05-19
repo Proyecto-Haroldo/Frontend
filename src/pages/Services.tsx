@@ -17,6 +17,7 @@ import {
 import { Link } from 'react-router-dom';
 
 function Services() {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState<'personal' | 'business' | null>(null);
   const [currentView, setCurrentView] = useState<'categories' | 'clientType' | 'diagnosticForm'>('categories');
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
@@ -27,6 +28,7 @@ function Services() {
     
     if (nextView === 'categories') {
       setSelectedType(null);
+      setSelectedCategory(null);
     }
     setCurrentView(nextView);
   };
@@ -77,7 +79,7 @@ function Services() {
   ];
 
   const handleCategorySelect = (categoryId: string) => {
-    console.log("Categoria", categoryId);
+    setSelectedCategory(categoryId);
     transition('clientType', 'forward');
   };
 
@@ -259,7 +261,7 @@ function Services() {
               transition={{ type: "spring", stiffness: 400 }}
             >
               <Link
-                to="/questionnaire"
+                to={`/questionnaire?category=${selectedCategory}&clientType=${selectedType}`}
                 className="btn btn-primary gap-2"
               >
                 Comenzar Diagnóstico
