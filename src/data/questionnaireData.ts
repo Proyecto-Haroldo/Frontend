@@ -25,7 +25,6 @@ const estrategiaPersonalQuestions = [
   {
     id: 1,
     title: '¿Cuáles son sus objetivos financieros personales?',
-    description: 'Describa sus metas financieras para los próximos 5 años',
     type: 'open' as const,
     keywords: [
       {
@@ -37,7 +36,6 @@ const estrategiaPersonalQuestions = [
   {
     id: 2,
     title: '¿Cuál es su situación financiera actual?',
-    description: 'Seleccione la que mejor describa su situación',
     type: 'single' as const,
     options: [
       { id: 'q2o1', text: 'Tengo deudas significativas' },
@@ -59,7 +57,6 @@ const estrategiaBusinessQuestions = [
   {
     id: 1,
     title: '¿Cuáles son los objetivos estratégicos de su empresa?',
-    description: 'Describa las metas estratégicas de su empresa para los próximos 5 años',
     type: 'open' as const,
     keywords: [
       {
@@ -71,7 +68,6 @@ const estrategiaBusinessQuestions = [
   {
     id: 2,
     title: '¿Cuál es su modelo de negocio actual?',
-    description: 'Seleccione el que mejor describa su modelo',
     type: 'single' as const,
     options: [
       { id: 'q2o1', text: 'Producto/Servicio' },
@@ -93,7 +89,6 @@ const contabilidadPersonalQuestions = [
   {
     id: 1,
     title: '¿Cómo gestiona sus finanzas personales?',
-    description: 'Seleccione las opciones que apliquen',
     type: 'multiple' as const,
     options: [
       { id: 'q1o1', text: 'Registro manual de gastos' },
@@ -111,7 +106,6 @@ const contabilidadPersonalQuestions = [
   {
     id: 2,
     title: '¿Cuáles son sus principales desafíos financieros personales?',
-    description: 'Describa los problemas que enfrenta',
     type: 'open' as const,
     keywords: [
       {
@@ -127,7 +121,6 @@ const contabilidadBusinessQuestions = [
   {
     id: 1,
     title: '¿Qué tipo de contabilidad utiliza su empresa actualmente?',
-    description: 'Seleccione las opciones que apliquen',
     type: 'multiple' as const,
     options: [
       { id: 'q1o1', text: 'Contabilidad manual' },
@@ -145,7 +138,6 @@ const contabilidadBusinessQuestions = [
   {
     id: 2,
     title: '¿Cuáles son los principales desafíos contables de su empresa?',
-    description: 'Describa los problemas que enfrenta',
     type: 'open' as const,
     keywords: [
       {
@@ -161,7 +153,6 @@ const finanzasPersonalQuestions = [
   {
     id: 1,
     title: '¿Cuál es su nivel de endeudamiento personal?',
-    description: 'Seleccione la opción más cercana',
     type: 'single' as const,
     options: [
       { id: 'q1o1', text: 'Sin deudas' },
@@ -179,7 +170,6 @@ const finanzasPersonalQuestions = [
   {
     id: 2,
     title: '¿Cuáles son sus metas financieras personales?',
-    description: 'Seleccione las metas más importantes',
     type: 'multiple' as const,
     options: [
       { id: 'q2o1', text: 'Ahorro para emergencias' },
@@ -201,7 +191,6 @@ const finanzasBusinessQuestions = [
   {
     id: 1,
     title: '¿Cuál es el ratio de endeudamiento de su empresa?',
-    description: 'Seleccione la opción más cercana',
     type: 'single' as const,
     options: [
       { id: 'q1o1', text: 'Menos del 30%' },
@@ -219,7 +208,6 @@ const finanzasBusinessQuestions = [
   {
     id: 2,
     title: '¿Cuáles son las metas financieras de su empresa?',
-    description: 'Seleccione las metas más importantes',
     type: 'multiple' as const,
     options: [
       { id: 'q2o1', text: 'Aumentar ingresos' },
@@ -241,7 +229,6 @@ const costosPersonalQuestions = [
   {
     id: 1,
     title: '¿Cómo distribuye sus gastos personales?',
-    description: 'Seleccione las categorías principales',
     type: 'multiple' as const,
     options: [
       { id: 'q1o1', text: 'Vivienda' },
@@ -259,7 +246,6 @@ const costosPersonalQuestions = [
   {
     id: 2,
     title: '¿Cuál es su principal desafío en el control de gastos personales?',
-    description: 'Describa el problema más relevante',
     type: 'open' as const,
     keywords: [
       {
@@ -275,7 +261,6 @@ const costosBusinessQuestions = [
   {
     id: 1,
     title: '¿Cuál es la estructura de costos de su empresa?',
-    description: 'Seleccione las categorías principales',
     type: 'multiple' as const,
     options: [
       { id: 'q1o1', text: 'Costos fijos' },
@@ -293,7 +278,6 @@ const costosBusinessQuestions = [
   {
     id: 2,
     title: '¿Cuál es el principal desafío en control de costos de su empresa?',
-    description: 'Describa el problema más relevante',
     type: 'open' as const,
     keywords: [
       {
@@ -309,7 +293,6 @@ const presupuestoPersonalQuestions = [
   {
     id: 1,
     title: '¿Cómo planifica su presupuesto personal?',
-    description: 'Seleccione el método que utiliza',
     type: 'single' as const,
     options: [
       { id: 'q1o1', text: 'Presupuesto mensual detallado' },
@@ -327,7 +310,6 @@ const presupuestoPersonalQuestions = [
   {
     id: 2,
     title: '¿Cuáles son sus objetivos presupuestarios personales?',
-    description: 'Seleccione las metas más importantes',
     type: 'multiple' as const,
     options: [
       { id: 'q2o1', text: 'Reducir gastos' },
@@ -349,7 +331,6 @@ const presupuestoBusinessQuestions = [
   {
     id: 1,
     title: '¿Cuál es el método de presupuestación de su empresa?',
-    description: 'Seleccione el método que utiliza',
     type: 'single' as const,
     options: [
       { id: 'q1o1', text: 'Presupuesto estático' },
@@ -367,7 +348,6 @@ const presupuestoBusinessQuestions = [
   {
     id: 2,
     title: '¿Cuáles son los objetivos presupuestarios de su empresa?',
-    description: 'Seleccione las metas más importantes',
     type: 'multiple' as const,
     options: [
       { id: 'q2o1', text: 'Reducir gastos operativos' },
@@ -389,7 +369,6 @@ const tributariaPersonalQuestions = [
   {
     id: 1,
     title: '¿Qué tipo de obligaciones fiscales personales tiene?',
-    description: 'Seleccione todas las que apliquen',
     type: 'multiple' as const,
     options: [
       { id: 'q1o1', text: 'Impuesto sobre la renta' },
@@ -407,7 +386,6 @@ const tributariaPersonalQuestions = [
   {
     id: 2,
     title: '¿Cuáles son sus principales desafíos tributarios personales?',
-    description: 'Describa los problemas más relevantes',
     type: 'open' as const,
     keywords: [
       {
@@ -423,7 +401,6 @@ const tributariaBusinessQuestions = [
   {
     id: 1,
     title: '¿Qué tipo de obligaciones fiscales tiene su empresa?',
-    description: 'Seleccione todas las que apliquen',
     type: 'multiple' as const,
     options: [
       { id: 'q1o1', text: 'IVA' },
@@ -441,7 +418,6 @@ const tributariaBusinessQuestions = [
   {
     id: 2,
     title: '¿Cuáles son los principales desafíos tributarios de su empresa?',
-    description: 'Describa los problemas más relevantes',
     type: 'open' as const,
     keywords: [
       {
@@ -457,7 +433,6 @@ const finanzasCorporativasPersonalQuestions = [
   {
     id: 1,
     title: '¿Cómo gestiona su patrimonio personal?',
-    description: 'Seleccione las fuentes principales',
     type: 'multiple' as const,
     options: [
       { id: 'q1o1', text: 'Ahorro tradicional' },
@@ -475,7 +450,6 @@ const finanzasCorporativasPersonalQuestions = [
   {
     id: 2,
     title: '¿Cuáles son sus objetivos de planificación financiera personal?',
-    description: 'Seleccione los más importantes',
     type: 'multiple' as const,
     options: [
       { id: 'q2o1', text: 'Crecimiento patrimonial' },
@@ -497,7 +471,6 @@ const finanzasCorporativasBusinessQuestions = [
   {
     id: 1,
     title: '¿Cuál es la estructura de capital de su empresa?',
-    description: 'Seleccione las fuentes principales',
     type: 'multiple' as const,
     options: [
       { id: 'q1o1', text: 'Capital propio' },
@@ -515,7 +488,6 @@ const finanzasCorporativasBusinessQuestions = [
   {
     id: 2,
     title: '¿Cuáles son las metas estratégicas financieras de su empresa?',
-    description: 'Seleccione las más importantes',
     type: 'multiple' as const,
     options: [
       { id: 'q2o1', text: 'Aumentar valor accionario' },

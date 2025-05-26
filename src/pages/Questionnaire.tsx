@@ -38,40 +38,87 @@ const Questionnaire = () => {
     }
   }, [location, navigate]);
 
-  // Process text to find and replace keywords with tooltips
-  const processTextForKeywords = useMemo(() => {
-    return (text: string, question: Question) => {
-      if (!question.keywords || question.keywords.length === 0) return text;
+  // Process text to find and replace keywords with tooltips in the title
+  const processTitleWithKeywords = useMemo(() => {
+    return (title: string, question: Question) => {
+      if (!question.keywords || question.keywords.length === 0) return title;
       
-      // Process description for keywords
-      let processedText = text;
+      // Process title for keywords
+      let processedTitle = title;
+      const processedPositions: {start: number, end: number}[] = [];
       
-      // First, check for exact keyword matches
+      // First, check for exact full keyword matches
       question.keywords.forEach(keyword => {
-        // Check for partial word matches - breaking this into parts
-        const keywordParts = keyword.title.toLowerCase().split(' ');
+        const fullKeyword = keyword.title.trim();
+        if (!fullKeyword) return;
         
-        // Simple case: look for individual words from the keyword
-        keywordParts.forEach(part => {
-          // Only process if the part is at least 4 characters to avoid matching common short words
-          if (part.length >= 4 && !['what', 'this', 'that', 'with', 'your'].includes(part.toLowerCase())) {
-            const wordRegex = new RegExp(`\\b${part}\\b`, 'gi');
+        // Create a regex that matches the full keyword as a whole word
+        const fullRegex = new RegExp(`\\b${fullKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+        let match;
+        
+        // Find all matches of the full keyword
+        while ((match = fullRegex.exec(title)) !== null) {
+          const start = match.index;
+          const end = start + match[0].length;
+          
+          // Check if this position is already processed
+          const isOverlap = processedPositions.some(pos => 
+            (start >= pos.start && start < pos.end) || // New match starts within an existing match
+            (end > pos.start && end <= pos.end) ||    // New match ends within an existing match
+            (start <= pos.start && end >= pos.end)    // New match completely contains an existing match
+          );
+          
+          if (!isOverlap) {
+            processedPositions.push({ start, end });
             
-            // We need to check if this part appears in the text before trying to replace it
-            if (wordRegex.test(text)) {
-              // Reset the regex since test() advances the lastIndex
-              const replaceRegex = new RegExp(`\\b${part}\\b`, 'gi');
-              processedText = processedText.replace(replaceRegex, (match) => 
+            // Replace the match with the tooltip
+            processedTitle = processedTitle.replace(
+              new RegExp(`\\b${fullKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i'),
+              (match) => 
                 `<span class="tooltip tooltip-info" data-tip="${keyword.description}">
                   <span class="text-primary cursor-help border-b border-dotted border-primary">${match}</span>
                 </span>`
+            );
+          }
+          
+          // If we don't do this, we'll get an infinite loop for zero-length matches
+          if (match.index === fullRegex.lastIndex) {
+            fullRegex.lastIndex++;
+          }
+        }
+      });
+      
+      // Then, check for individual word matches for keywords that weren't matched as whole phrases
+      question.keywords.forEach(keyword => {
+        const fullKeyword = keyword.title.trim();
+        if (!fullKeyword) return;
+        
+        // Only process single-word keywords or keywords that weren't matched as full phrases
+        const keywordParts = fullKeyword.includes(' ') ? [] : [fullKeyword];
+        
+        keywordParts.forEach(part => {
+          // Only process if the part is at least 4 characters to avoid matching common short words
+          if (part.length >= 4 && !['what', 'this', 'that', 'with', 'your', 'para', 'sobre', 'cual', 'como', 'tiene'].includes(part.toLowerCase())) {
+            const wordRegex = new RegExp(`\\b${part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+            
+            processedTitle = processedTitle.replace(wordRegex, (match, offset) => {
+              // Check if this match is within any of the already processed positions
+              const isInProcessed = processedPositions.some(pos => 
+                offset >= pos.start && offset < pos.end
               );
-            }
+              
+              if (!isInProcessed) {
+                return `<span class="tooltip tooltip-info" data-tip="${keyword.description}">
+                  <span class="text-primary cursor-help border-b border-dotted border-primary">${match}</span>
+                </span>`;
+              }
+              return match;
+            });
           }
         });
       });
       
-      return processedText;
+      return processedTitle;
     };
   }, []);
 
@@ -129,11 +176,12 @@ const Questionnaire = () => {
   const progress = questionnaire ? ((currentQuestionIndex + 1) / questionnaire.questions.length) * 100 : 0;
   const isLastQuestion = questionnaire ? currentQuestionIndex === questionnaire.questions.length - 1 : false;
   
-  // Always calculate these values, even if we don't use them in certain render scenarios
-  const processedDescription = useMemo(() => 
-    processTextForKeywords(currentQuestion.description, currentQuestion),
-  [currentQuestion, processTextForKeywords]);
+  // Process the title with keywords highlighting
+  const processedTitle = useMemo(() => 
+    processTitleWithKeywords(currentQuestion.title, currentQuestion),
+  [currentQuestion, processTitleWithKeywords]);
   
+  // Process options for the current question
   const processedOptions = useMemo(() => 
     processOptions(currentQuestion),
   [currentQuestion, processOptions]);
@@ -253,13 +301,13 @@ const Questionnaire = () => {
       <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
         <div className="card w-full max-w-2xl bg-base-100 shadow-xl p-6">
           <div className="card-body items-center text-center">
-            <h2 className="card-title text-2xl mb-4">Thank You!</h2>
-            <p className="mb-6">Your responses have been recorded. We'll review your information and get back to you soon.</p>
+            <h2 className="card-title text-2xl mb-4">Gracias!</h2>
+            <p className="mb-6">Sus respuestas han sido enviadas. Las revisaremos y te informaremos pronto.</p>
             <button 
               onClick={() => navigate('/')} 
               className="btn btn-primary"
             >
-              Return to Home
+              Volver al Inicio
             </button>
           </div>
         </div>
@@ -269,7 +317,7 @@ const Questionnaire = () => {
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
-      <div className="card w-full max-w-2xl bg-base-100 shadow-xl">
+      <div className="card w-full max-w-4xl bg-base-100 shadow-xl">
         <div className="card-body">
           {/* Progress Bar */}
           <div className="w-full bg-base-200 rounded-full h-2.5 mb-6">
@@ -281,19 +329,14 @@ const Questionnaire = () => {
           
           {/* Progress Text */}
           <div className="text-sm text-gray-500 mb-2">
-            Question {currentQuestionIndex + 1} of {questionnaire.questions.length}
+            Pregunta {currentQuestionIndex + 1} de {questionnaire.questions.length}
           </div>
           
-          {/* Question */}
-          <h2 className="card-title text-2xl mb-2">{currentQuestion.title}</h2>
-          
-          {/* Description with keyword highlighting */}
-          {currentQuestion.description && (
-            <div 
-              className="mb-6 text-gray-600"
-              dangerouslySetInnerHTML={{ __html: processedDescription }}
-            />
-          )}
+          {/* Question with keyword highlighting */}
+          <h2 
+            className="card-title text-2xl mb-6"
+            dangerouslySetInnerHTML={{ __html: processedTitle }}
+          />
           
           {/* Question Input */}
           <div className="mb-8">
