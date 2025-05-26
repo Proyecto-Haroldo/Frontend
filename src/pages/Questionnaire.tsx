@@ -1,40 +1,38 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { questionnaires } from '../data/questionnaireData';
-import type { Question, QuestionnaireData } from '../types/questionnaire';
+import { fetchQuestionsByCategory } from '../api/questionnaireApi';
+import type { Question } from '../types/questionnaire';
 
 const Questionnaire = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [isComplete, setIsComplete] = useState(false);
-  const [questionnaire, setQuestionnaire] = useState<QuestionnaireData | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Parse URL parameters
+  // Parse URL parameters and fetch questions
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const category = params.get('category');
     const clientType = params.get('clientType');
     
     if (category && clientType) {
-      // Form the questionnaire ID by combining category and client type
-      const questionnaireId = `${category}_${clientType}`;
-      
-      if (questionnaires[questionnaireId]) {
-        setQuestionnaire(questionnaires[questionnaireId]);
-      } else {
-        // If no valid questionnaire is found, redirect back to services
-        navigate('/services');
-      }
+      setIsLoading(true);
+      fetchQuestionsByCategory(category)
+        .then(fetchedQuestions => {
+          setQuestions(fetchedQuestions);
+          setIsLoading(false);
+        })
+        .catch(err => {
+          setError('Error al cargar las preguntas');
+          setIsLoading(false);
+          console.error('Error fetching questions:', err);
+        });
     } else {
-      // If missing parameters, redirect back to services
       navigate('/services');
-    }
-    
-    // Store client type in session storage if needed
-    if (clientType) {
-      sessionStorage.setItem('clientType', clientType);
     }
   }, [location, navigate]);
 
@@ -165,16 +163,15 @@ const Questionnaire = () => {
   }, []);
 
   // Initialize these variables outside of any conditional blocks to ensure hooks are always called in the same order
-  const currentQuestion = questionnaire?.questions[currentQuestionIndex] || {
+  const currentQuestion = questions[currentQuestionIndex] || {
     id: 0,
     title: '',
-    description: '',
     type: 'open' as const,
     keywords: []
   };
   
-  const progress = questionnaire ? ((currentQuestionIndex + 1) / questionnaire.questions.length) * 100 : 0;
-  const isLastQuestion = questionnaire ? currentQuestionIndex === questionnaire.questions.length - 1 : false;
+  const progress = questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
+  const isLastQuestion = questions.length > 0 ? currentQuestionIndex === questions.length - 1 : false;
   
   // Process the title with keywords highlighting
   const processedTitle = useMemo(() => 
@@ -186,14 +183,33 @@ const Questionnaire = () => {
     processOptions(currentQuestion),
   [currentQuestion, processOptions]);
 
-  // If questionnaire is still loading, show loading state
-  if (!questionnaire) {
+  // If questions are still loading, show loading state
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
         <div className="card w-full max-w-2xl bg-base-100 shadow-xl p-6">
           <div className="card-body items-center text-center">
             <span className="loading loading-spinner loading-lg text-primary"></span>
             <p className="mt-4">Cargando cuestionario...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // If there was an error loading questions, show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+        <div className="card w-full max-w-2xl bg-base-100 shadow-xl p-6">
+          <div className="card-body items-center text-center">
+            <div className="text-error mb-4">{error}</div>
+            <button 
+              onClick={() => navigate('/services')} 
+              className="btn btn-primary"
+            >
+              Volver a Servicios
+            </button>
           </div>
         </div>
       </div>
@@ -329,7 +345,7 @@ const Questionnaire = () => {
           
           {/* Progress Text */}
           <div className="text-sm text-gray-500 mb-2">
-            Pregunta {currentQuestionIndex + 1} de {questionnaire.questions.length}
+            Pregunta {currentQuestionIndex + 1} de {questions.length}
           </div>
           
           {/* Question with keyword highlighting */}
