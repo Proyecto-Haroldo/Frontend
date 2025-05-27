@@ -18,7 +18,7 @@ import { Link } from 'react-router-dom';
 
 function Services() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedType, setSelectedType] = useState<'personal' | 'business' | null>(null);
+  const [selectedType, setSelectedType] = useState<'persona' | 'empresa' | null>(null);
   const [currentView, setCurrentView] = useState<'categories' | 'clientType' | 'diagnosticForm'>('categories');
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
 
@@ -87,7 +87,7 @@ function Services() {
     transition('categories', 'backward');
   };
 
-  const handleClientTypeSelect = (type: 'personal' | 'business') => {
+  const handleClientTypeSelect = (type: 'persona' | 'empresa') => {
     setDirection('forward');
     setSelectedType(type);
     setCurrentView('diagnosticForm');
@@ -173,7 +173,7 @@ function Services() {
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         <motion.button
-          onClick={() => handleClientTypeSelect('personal')}
+          onClick={() => handleClientTypeSelect('persona')}
           className="card bg-base-100 shadow-sm"
           variants={cardVariants}
           whileHover="hover"
@@ -194,7 +194,7 @@ function Services() {
         </motion.button>
         
         <motion.button
-          onClick={() => handleClientTypeSelect('business')}
+          onClick={() => handleClientTypeSelect('empresa')}
           className="card bg-base-100 shadow-sm"
           variants={cardVariants}
           whileHover="hover"
@@ -237,11 +237,11 @@ function Services() {
 
           <div className="space-y-4">
             <h2 className="card-title text-xl">
-              {selectedType === 'personal' ? 'Diagnóstico Personal' : 'Diagnóstico Empresarial'}
+              {selectedType === 'persona' ? 'Diagnóstico Personal' : 'Diagnóstico Empresarial'}
             </h2>
 
             <p className="text-sm md:text-base text-base-content/70">
-              {selectedType === 'personal'
+              {selectedType === 'empresa'
                 ? 'Complete el siguiente cuestionario para ayudarnos a entender mejor su situación financiera personal y objetivos.'
                 : 'Responda las siguientes preguntas para permitirnos evaluar la situación actual de su empresa y sus necesidades.'}
             </p>

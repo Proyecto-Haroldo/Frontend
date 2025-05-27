@@ -17,9 +17,14 @@ interface ApiQuestion {
   }>;
 }
 
-export const fetchQuestions = async (): Promise<Question[]> => {
+export const fetchQuestions = async (category?: string, clientType?: string): Promise<Question[]> => {
   try {
-    const response = await axios.get<ApiQuestion[]>(`${API_BASE_URL}/preguntas`);
+    const response = await axios.get<ApiQuestion[]>(`${API_BASE_URL}/preguntas/categoriaycliente`, {
+      params: {
+        category: category,
+        clienttype: clientType
+      }
+    });
     
     return response.data.map((q): Question => ({
       id: q.id,
@@ -34,25 +39,5 @@ export const fetchQuestions = async (): Promise<Question[]> => {
   } catch (error) {
     console.error('Error fetching questions:', error);
     throw new Error('Failed to fetch questions');
-  }
-};
-
-export const fetchQuestionsByCategory = async (category: string): Promise<Question[]> => {
-  try {
-    const response = await axios.get<ApiQuestion[]>(`${API_BASE_URL}/preguntas/categoria/${category}`);
-    
-    return response.data.map((q): Question => ({
-      id: q.id,
-      title: q.title,
-      type: q.type,
-      options: q.options?.map(opt => ({
-        id: String(opt.id),
-        text: opt.text
-      })),
-      keywords: q.keywords || []
-    }));
-  } catch (error) {
-    console.error('Error fetching questions by category:', error);
-    throw new Error('Failed to fetch questions by category');
   }
 };

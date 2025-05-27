@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { fetchQuestionsByCategory } from '../api/questionnaireApi';
+import { fetchQuestions } from '../api/questionnaireApi';
 import type { Question } from '../types/questionnaire';
 
 const Questionnaire = () => {
@@ -21,7 +21,7 @@ const Questionnaire = () => {
     
     if (category && clientType) {
       setIsLoading(true);
-      fetchQuestionsByCategory(category)
+      fetchQuestions(category, clientType)
         .then(fetchedQuestions => {
           setQuestions(fetchedQuestions);
           setIsLoading(false);
