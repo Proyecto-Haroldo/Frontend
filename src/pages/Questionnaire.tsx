@@ -2,6 +2,15 @@ import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { fetchQuestions } from '../api/questionnaireApi';
 import type { Question } from '../types/questionnaire';
+import { 
+  ArrowLeft, 
+  ArrowRight, 
+  CheckCircle2, 
+  AlertCircle, 
+  Home, 
+  Settings,
+  Loader2
+} from 'lucide-react';
 
 const Questionnaire = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -9,6 +18,7 @@ const Questionnaire = () => {
   const [isComplete, setIsComplete] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -203,11 +213,15 @@ const Questionnaire = () => {
       <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
         <div className="card w-full max-w-2xl bg-base-100 shadow-xl p-6">
           <div className="card-body items-center text-center">
-            <div className="text-error mb-4">{error}</div>
+            <div className="alert alert-error mb-6">
+              <AlertCircle className="h-6 w-6" />
+              <span>{error}</span>
+            </div>
             <button 
               onClick={() => navigate('/services')} 
-              className="btn btn-primary"
+              className="btn btn-primary gap-2"
             >
+              <ArrowLeft className="h-5 w-5" />
               Volver a Servicios
             </button>
           </div>
@@ -216,14 +230,50 @@ const Questionnaire = () => {
     );
   }
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!isLastQuestion) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
-      // Mark as complete but don't submit yet
-      setIsComplete(true);
-      // Here you would typically send the answers to your backend
-      console.log('Questionnaire completed:', answers);
+      try {
+        setIsSubmitting(true);
+        const params = new URLSearchParams(location.search);
+        const category = params.get('category');
+        const clientType = params.get('clientType');
+        
+        if (!category || !clientType) {
+          throw new Error('Información de categoría o tipo de cliente no encontrada');
+        }
+
+        // Prepare the data in a more structured way
+        const questionnaireData = {
+          metadata: {
+            category,
+            clientType,
+            timestamp: new Date().toISOString(),
+            totalQuestions: questions.length,
+            completedQuestions: Object.keys(answers).length
+          },
+          answers: questions.map(question => ({
+            questionId: question.id,
+            questionTitle: question.title,
+            answer: answers[question.id],
+            type: question.type
+          }))
+        };
+
+        // For now, just log the structured data
+        console.log('Questionnaire Data:', questionnaireData);
+        
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        setIsComplete(true);
+      } catch (err) {
+        setError('Error al procesar las respuestas. Por favor, intente nuevamente.');
+        console.error('Error processing answers:', err);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -317,14 +367,27 @@ const Questionnaire = () => {
       <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
         <div className="card w-full max-w-2xl bg-base-100 shadow-xl p-6">
           <div className="card-body items-center text-center">
-            <h2 className="card-title text-2xl mb-4">Gracias!</h2>
-            <p className="mb-6">Sus respuestas han sido enviadas. Las revisaremos y te informaremos pronto.</p>
-            <button 
-              onClick={() => navigate('/')} 
-              className="btn btn-primary"
-            >
-              Volver al Inicio
-            </button>
+            <div className="mb-6">
+              <CheckCircle2 className="h-16 w-16 text-success mx-auto" />
+            </div>
+            <h2 className="card-title text-2xl mb-4">¡Cuestionario Completado!</h2>
+            <p className="mb-6">Gracias por completar el cuestionario. Nuestro equipo analizará sus respuestas y se pondrá en contacto con usted pronto para proporcionarle un diagnóstico personalizado.</p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button 
+                onClick={() => navigate('/')} 
+                className="btn btn-primary gap-2"
+              >
+                <Home className="h-5 w-5" />
+                Volver al Inicio
+              </button>
+              <button 
+                onClick={() => navigate('/services')} 
+                className="btn btn-outline gap-2"
+              >
+                <Settings className="h-5 w-5" />
+                Explorar Otros Servicios
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -363,19 +426,36 @@ const Questionnaire = () => {
           <div className="flex justify-between">
             <button
               onClick={handlePrevious}
-              disabled={currentQuestionIndex === 0}
-              className="btn btn-ghost"
+              disabled={currentQuestionIndex === 0 || isSubmitting}
+              className="btn btn-ghost gap-2"
             >
-              Previous
+              <ArrowLeft className="h-5 w-5" />
+              Anterior
             </button>
             <button
               onClick={handleNext}
               disabled={!answers[currentQuestion.id] || 
                        (Array.isArray(answers[currentQuestion.id]) && 
-                        answers[currentQuestion.id].length === 0)}
-              className="btn btn-primary"
+                        answers[currentQuestion.id].length === 0) ||
+                       isSubmitting}
+              className="btn btn-primary gap-2"
             >
-              {isLastQuestion ? 'Submit' : 'Next'}
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Enviando...
+                </>
+              ) : isLastQuestion ? (
+                <>
+                  Enviar
+                  <ArrowRight className="h-5 w-5" />
+                </>
+              ) : (
+                <>
+                  Siguiente
+                  <ArrowRight className="h-5 w-5" />
+                </>
+              )}
             </button>
           </div>
         </div>
