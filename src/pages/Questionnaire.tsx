@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { fetchQuestions } from '../api/questionnaireApi';
-import type { Question } from '../types/questionnaire';
+import type { Question, QuestionnaireResult  } from '../types/questionnaire';
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -245,13 +245,11 @@ const Questionnaire = () => {
         }
 
         // Prepare the data in a more structured way
-        const questionnaireData = {
+        const questionnaireData: QuestionnaireResult = {
           metadata: {
             category,
             clientType,
             timestamp: new Date().toISOString(),
-            totalQuestions: questions.length,
-            completedQuestions: Object.keys(answers).length
           },
           answers: questions.map(question => ({
             questionId: question.id,
