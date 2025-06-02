@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
-import ITMLogo from './ITMLogo';
+import { useState } from 'react';
+import ITMLogo from '../Common/ITMLogo';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import ThemeToggle from './ThemeToggle'; // Import the new component
 import {
   Home,
   Briefcase,
@@ -11,37 +12,15 @@ import {
   LogOut,
   Menu,
   X,
-  Sun,
-  Moon
 } from 'lucide-react';
 
 function Navbar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const [theme, setTheme] = useState(() => {
-    // Check if theme is saved in localStorage
-    const savedTheme = localStorage.getItem('theme');
-    return savedTheme === 'dark';
-  });
 
   const isActive = (path: string) => {
     return location.pathname === path;
   };
-
-  // Toggle theme and save to localStorage
-  const toggleTheme = () => {
-    const newTheme = theme ? 'light' : 'dark';
-    setTheme(!theme);
-    localStorage.setItem('theme', newTheme);
-  };
-  
-  // Apply theme on initial load and listen for system theme changes
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    }
-  }, []);
 
   const navItems = [
     { path: '/', icon: Home, label: 'Inicio' },
@@ -201,36 +180,15 @@ function Navbar() {
         </div>
 
         <div className="absolute bottom-6 left-6 right-6 space-y-2">
-          {/* Theme Toggle */}
-          <motion.label 
-            className="swap swap-rotate btn btn-ghost btn-circle hover:bg-base-200"
-            whileHover="hover"
-            whileTap="tap"
-            variants={buttonVariants}
-          >
-            <input 
-              type="checkbox" 
-              className="theme-controller"
-              value="light"
-              checked={theme}
-              onChange={toggleTheme}
-            />
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={theme ? 'sun' : 'moon'}
-                initial={{ opacity: 0, rotate: -90 }}
-                animate={{ opacity: 1, rotate: 0 }}
-                exit={{ opacity: 0, rotate: 90 }}
-                transition={{ duration: 0.2 }}
-              >
-                {theme ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              </motion.div>
-            </AnimatePresence>
-          </motion.label>
+          {/* Use the ThemeToggle component */}
+          <ThemeToggle />
 
           <motion.button 
-            className="flex items-center gap-3 w-full px-4 py-3 text-base-content hover:bg-base-200 rounded-lg transition-colors"
-            whileHover={{ x: 5 }}
+            className="flex items-center gap-3 w-full px-4 py-3 text-base-content hover:bg-base-200 rounded-lg transition-colors cursor-pointer"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1 }}
+            whileHover={{ x: 5, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             <LogOut className="h-5 w-5" />
@@ -295,42 +253,15 @@ function Navbar() {
         </div>
 
         <div className="absolute bottom-6 left-6 right-6 space-y-2">
-          {/* Theme Toggle */}
-          <motion.label 
-            className="swap swap-rotate btn btn-ghost btn-circle hover:bg-base-200"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.9 }}
-            whileHover="hover"
-            whileTap="tap"
-            variants={buttonVariants}
-          >
-            <input 
-              type="checkbox" 
-              className="theme-controller"
-              value="light"
-              checked={theme}
-              onChange={toggleTheme}
-            />
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={theme ? 'sun' : 'moon'}
-                initial={{ opacity: 0, rotate: -90 }}
-                animate={{ opacity: 1, rotate: 0 }}
-                exit={{ opacity: 0, rotate: 90 }}
-                transition={{ duration: 0.2 }}
-              >
-                {theme ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              </motion.div>
-            </AnimatePresence>
-          </motion.label>
+          {/* Use the ThemeToggle component */}
+          <ThemeToggle />
 
           <motion.button 
-            className="flex items-center gap-3 w-full px-4 py-3 text-base-content hover:bg-base-200 rounded-lg transition-colors"
+            className="flex items-center gap-3 w-full px-4 py-3 text-base-content hover:bg-base-200 rounded-lg transition-colors cursor-pointer"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
-            whileHover={{ x: 5 }}
+            whileHover={{ x: 5, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             <LogOut className="h-5 w-5" />

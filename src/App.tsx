@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import Navbar from './components/Navbar';
+import Navbar from './components/Layout/Navbar';
 import Home from './pages/Home';
 import Services from './pages/Services';
 import Schedule from './pages/Schedule';

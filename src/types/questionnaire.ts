@@ -22,3 +22,21 @@ export interface QuestionnaireData {
   id: string;
   questions: Question[];
 }
+
+export interface QuestionnaireMetadata {
+  category: string;
+  clientType: string;
+  timestamp: string;
+}
+
+export interface QuestionnaireAnswer {
+  questionId: number;
+  questionTitle: string;
+  answer: string | string[] | null;
+  type: QuestionType;
+}
+
+export interface QuestionnaireResult {
+  metadata: QuestionnaireMetadata;
+  answers: QuestionnaireAnswer[];
+}
