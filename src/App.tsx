@@ -8,6 +8,7 @@ import Schedule from './pages/Schedule';
 import Diagnostics from './pages/Diagnostics';
 import Account from './pages/Account';
 import Questionnaire from './pages/Questionnaire';
+import DiagnosticReview from './pages/DiagnosticReview';
 
 // AnimatedRoutes component wraps the Routes with AnimatePresence
 function AnimatedRoutes() {
@@ -55,6 +56,7 @@ function AnimatedRoutes() {
           <Route path="/diagnostics" element={<Diagnostics />} />
           <Route path="/account" element={<Account />} />
           <Route path="/questionnaire" element={<Questionnaire />} />
+          <Route path="/diagnostic-review" element={<DiagnosticReview />} />
         </Routes>
       </motion.div>
     </AnimatePresence>
@@ -83,6 +85,7 @@ function App() {
               <Route path="/diagnostics" element={<Diagnostics />} />
               <Route path="/account" element={<Account />} />
               <Route path="/questionnaire" element={<Questionnaire />} />
+              <Route path="/diagnostic-review" element={<DiagnosticReview />} />
             </Routes>
           ) : (
             <AnimatedRoutes />

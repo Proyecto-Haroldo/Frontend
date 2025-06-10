@@ -8,8 +8,8 @@ import {
   CheckCircle2, 
   AlertCircle, 
   Home, 
-  Settings,
-  Loader2
+  Loader2,
+  FileText
 } from 'lucide-react';
 
 const Questionnaire = () => {
@@ -379,11 +379,11 @@ const Questionnaire = () => {
                 Volver al Inicio
               </button>
               <button 
-                onClick={() => navigate('/services')} 
+                onClick={() => navigate('/diagnostic-review')} 
                 className="btn btn-outline gap-2"
               >
-                <Settings className="h-5 w-5" />
-                Explorar Otros Servicios
+                <FileText className="h-5 w-5" />
+                Ver Diagnóstico
               </button>
             </div>
           </div>
