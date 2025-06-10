@@ -45,11 +45,11 @@ function ThemeToggle() {
   const getThemeLabel = (): string => {
     switch (theme) {
       case 'light':
-        return 'Light';
+        return 'Claro';
       case 'dark':
-        return 'Dark';
+        return 'Oscuro';
       default:
-        return 'Default';
+        return 'Predeterminado';
     }
   };
 
@@ -78,7 +78,7 @@ function ThemeToggle() {
             type="radio"
             name="theme-dropdown"
             className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-            aria-label="Default"
+            aria-label="Predeterminado"
             value="default"
             defaultChecked={theme === 'default'}
           />
@@ -88,7 +88,7 @@ function ThemeToggle() {
             type="radio"
             name="theme-dropdown"
             className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-            aria-label="Light"
+            aria-label="Claro"
             value="light"
             defaultChecked={theme === 'light'}
           />
@@ -98,7 +98,7 @@ function ThemeToggle() {
             type="radio"
             name="theme-dropdown"
             className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-            aria-label="Dark"
+            aria-label="Oscuro"
             value="dark"
             defaultChecked={theme === 'dark'}
           />

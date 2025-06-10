@@ -2,7 +2,7 @@ import { useState } from 'react';
 import ITMLogo from '../Common/ITMLogo';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import ThemeToggle from './ThemeToggle'; // Import the new component
+import ThemeToggle from './ThemeToggle';
 import {
   Home,
   Briefcase,
@@ -63,11 +63,11 @@ function Navbar() {
   const buttonVariants = {
     hover: {
       scale: 1.05,
-      transition: { duration: 0.2 }
+      transition: { duration: 0.1 }
     },
     tap: {
       scale: 0.95,
-      transition: { duration: 0.1 }
+      transition: { duration: 0.05 }
     }
   };
 
@@ -154,7 +154,7 @@ function Navbar() {
               variants={navItemVariants}
               initial="hidden"
               animate="visible"
-              whileHover={{ x: 5 }}
+              whileHover={{ x: 5, transition: { duration: 0.1 } }}
             >
               <Link
                 to={item.path}
@@ -188,8 +188,8 @@ function Navbar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
-            whileHover={{ x: 5, scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ x: 5, scale: 1.02, transition: { duration: 0.1 } }}
+            whileTap={{ scale: 0.98, transition: { duration: 0.05 } }}
           >
             <LogOut className="h-5 w-5" />
             <span>Cerrar Sesión</span>
@@ -228,7 +228,7 @@ function Navbar() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 + index * 0.1 }}
-              whileHover={{ x: 5 }}
+              whileHover={{ x: 5, transition: { duration: 0.1 } }}
             >
               <Link
                 to={item.path}
@@ -261,8 +261,8 @@ function Navbar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
-            whileHover={{ x: 5, scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ x: 5, scale: 1.02, transition: { duration: 0.1 } }}
+            whileTap={{ scale: 0.98, transition: { duration: 0.05 } }}
           >
             <LogOut className="h-5 w-5" />
             <span>Cerrar Sesión</span>
