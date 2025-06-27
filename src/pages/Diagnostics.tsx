@@ -1,6 +1,9 @@
 import { FileText, ArrowRight, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 function Diagnostics() {
+  const navigate = useNavigate();
+  
   const diagnostics = [
     {
       id: 1,
@@ -92,7 +95,10 @@ function Diagnostics() {
                     </div>
                   </div>
                   
-                  <button className="btn btn-ghost btn-sm">
+                  <button 
+                    className="btn btn-ghost btn-sm"
+                    onClick={() => navigate(`/diagnostic-review?id=${diagnostic.id}`)}
+                  >
                     <ArrowRight className="h-5 w-5" />
                   </button>
                 </div>
