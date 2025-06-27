@@ -19,14 +19,14 @@ import { Link } from 'react-router-dom';
 function Services() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState<'persona' | 'empresa' | null>(null);
-  const [currentView, setCurrentView] = useState<'categories' | 'clientType' | 'diagnosticForm'>('categories');
+  const [currentView, setCurrentView] = useState<'categories' | 'clientType' | 'diagnosticForm'>('clientType');
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
+  const [policyAccepted, setPolicyAccepted] = useState(false);
 
   // Handle screen transitions - simplified with Framer Motion
   const transition = (nextView: 'categories' | 'clientType' | 'diagnosticForm', moveDirection: 'forward' | 'backward' = 'forward') => {
     setDirection(moveDirection);
-    
-    if (nextView === 'categories') {
+    if (nextView === 'clientType') {
       setSelectedType(null);
       setSelectedCategory(null);
     }
@@ -80,7 +80,8 @@ function Services() {
 
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId);
-    transition('clientType', 'forward');
+    setCurrentView('diagnosticForm');
+    setDirection('forward');
   };
 
   const handleBackToCategories = () => {
@@ -90,7 +91,7 @@ function Services() {
   const handleClientTypeSelect = (type: 'persona' | 'empresa') => {
     setDirection('forward');
     setSelectedType(type);
-    setCurrentView('diagnosticForm');
+    setCurrentView('categories');
   };
 
   // Animation variants
@@ -128,9 +129,16 @@ function Services() {
 
   const renderCategories = () => (
     <div className="space-y-6">
+      <motion.button
+        onClick={() => transition('clientType', 'backward')}
+        className="btn btn-link btn-sm p-0 h-auto text-primary w-fit"
+        whileHover={{ x: -3 }}
+        transition={{ type: "spring", stiffness: 400 }}
+      >
+        <ChevronLeft className="h-4 w-4" /> Volver a tipo de persona
+      </motion.button>
       <h2 className="text-2xl font-bold text-center">Nuestros Servicios</h2>
       <p className="text-center text-base-content/70">Seleccione una categoría para comenzar</p>
-      
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {categories.map((category) => (
           <motion.button
@@ -160,17 +168,7 @@ function Services() {
 
   const renderTypeSelection = () => (
     <div className="space-y-6">
-      <motion.button
-        onClick={handleBackToCategories}
-        className="btn btn-link btn-sm p-0 h-auto text-primary w-fit"
-        whileHover={{ x: -3 }}
-        transition={{ type: "spring", stiffness: 400 }}
-      >
-        <ChevronLeft className="h-4 w-4" /> Volver a categorías
-      </motion.button>
-      
       <h2 className="text-xl font-bold">Seleccione el tipo de cliente</h2>
-      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         <motion.button
           onClick={() => handleClientTypeSelect('persona')}
@@ -192,7 +190,6 @@ function Services() {
             </p>
           </div>
         </motion.button>
-        
         <motion.button
           onClick={() => handleClientTypeSelect('empresa')}
           className="card bg-base-100 shadow-sm"
@@ -217,6 +214,40 @@ function Services() {
     </div>
   );
 
+  const renderWarningAlert = () => (
+    <motion.div 
+      className="alert alert-warning"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.3 }}
+    >
+      <AlertTriangle className="h-5 w-5" />
+      <span>Advertencia: Si abandona este formulario, perderá toda la información ingresada.</span>
+    </motion.div>
+  );
+  
+  const renderPolicyAcceptance = () => (
+    <div className="space-y-4">
+      <div className="bg-base-200/60 rounded-lg p-4">
+        <div className="text-sm text-base-content/80 mb-3">
+          <strong>Política de Privacidad:</strong> De conformidad con lo previsto en las normas sobre protección de datos personales, especialmente lo consagrado en la Ley 1581 de 2012 y sus decretos reglamentarios, autorizo al ITM de manera previa, informada, voluntaria y expresa para que realice el tratamiento de los datos personales consignados en el presente documento y con la finalidad de realizar seguimiento sobre la calidad del servicio prestado por el Consultorio Financiero y Empresarial. Para absolver sus peticiones, solicitudes o reclamos puede consultar la política de tratamiento de datos personales del ITM.
+        </div>
+        
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            className="checkbox checkbox-primary flex-shrink-0"
+            checked={policyAccepted}
+            onChange={e => setPolicyAccepted(e.target.checked)}
+          />
+          <span className="text-sm">
+            He leído y acepto la política de tratamiento de datos personales
+          </span>
+        </label>
+      </div>
+    </div>
+  );
+  
   const renderDiagnosticForm = () => (
     <motion.div 
       className="card bg-base-100 shadow-sm"
@@ -226,49 +257,50 @@ function Services() {
     >
       <div className="card-body">
         <div className="flex flex-col gap-6">
+          {/* Back Button */}
           <motion.button
-            onClick={() => transition('clientType', 'backward')}
+            onClick={handleBackToCategories}
             className="btn btn-link btn-sm p-0 h-auto text-primary w-fit"
             whileHover={{ x: -3 }}
             transition={{ type: "spring", stiffness: 400 }}
           >
             <ChevronLeft className="h-4 w-4" /> Volver
           </motion.button>
-
-          <div className="space-y-4">
+  
+          {/* Header Section */}
+          <div className="space-y-3">
             <h2 className="card-title text-xl">
               {selectedType === 'persona' ? 'Diagnóstico Personal' : 'Diagnóstico Empresarial'}
             </h2>
-
+  
             <p className="text-sm md:text-base text-base-content/70">
               {selectedType === 'empresa'
                 ? 'Complete el siguiente cuestionario para ayudarnos a entender mejor su situación financiera personal y objetivos.'
                 : 'Responda las siguientes preguntas para permitirnos evaluar la situación actual de su empresa y sus necesidades.'}
             </p>
-
-            <motion.div 
-              className="alert alert-warning"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              <AlertTriangle className="h-5 w-5" />
-              <span>Advertencia: Si abandona este formulario, perderá toda la información ingresada.</span>
-            </motion.div>
-
-            <motion.div
-              whileHover={{ x: 5 }}
-              transition={{ type: "spring", stiffness: 400 }}
-            >
-              <Link
-                to={`/questionnaire?category=${selectedCategory}&clientType=${selectedType}`}
-                className="btn btn-primary gap-2"
-              >
-                Comenzar Diagnóstico
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-            </motion.div>
           </div>
+  
+          {/* Warning Alert Section */}
+          {renderWarningAlert()}
+  
+          {/* Policy Acceptance Section */}
+          {renderPolicyAcceptance()}
+  
+          {/* Action Button */}
+          <motion.div
+            whileHover={{ x: 5 }}
+            transition={{ type: "spring", stiffness: 400 }}
+            className="pt-2"
+          >
+            <Link
+              to={`/questionnaire?category=${selectedCategory}&clientType=${selectedType}`}
+              className={`btn btn-primary gap-2 ${!policyAccepted ? 'btn-disabled' : ''}`}
+              tabIndex={policyAccepted ? 0 : -1}
+            >
+              Comenzar Diagnóstico
+              <ArrowRight className="h-5 w-5" />
+            </Link>
+          </motion.div>
         </div>
       </div>
     </motion.div>
@@ -286,8 +318,8 @@ function Services() {
             animate="animate"
             exit="exit"
           >
-            {currentView === 'categories' && renderCategories()}
             {currentView === 'clientType' && renderTypeSelection()}
+            {currentView === 'categories' && selectedType && renderCategories()}
             {currentView === 'diagnosticForm' && selectedType && renderDiagnosticForm()}
           </motion.div>
         </AnimatePresence>
