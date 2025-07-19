@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { Question } from '../types/questionnaire';
 
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_URL = import.meta.env.VITE_API_URL;
 
 interface ApiQuestion {
   id: number;
@@ -19,7 +19,7 @@ interface ApiQuestion {
 
 export const fetchQuestions = async (category?: string, clientType?: string): Promise<Question[]> => {
   try {
-    const response = await axios.get<ApiQuestion[]>(`${API_BASE_URL}/preguntas/categoriaycliente`, {
+    const response = await axios.get<ApiQuestion[]>(`${API_URL}/preguntas/categoriaycliente`, {
       params: {
         category: category,
         clienttype: clientType
