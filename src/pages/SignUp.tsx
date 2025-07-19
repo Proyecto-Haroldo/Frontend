@@ -96,7 +96,7 @@ const SignUp: React.FC = () => {
         role: { id: 2 }
       });
       setSuccess('Usuario registrado con éxito');
-      setTimeout(() => navigate('/login'), 1500);
+      navigate('/');
     } catch (err: any) {
       // Try to detect conflict (email or cedula/NIT already exists)
       if (err && err.message && (err.message.includes('409') || err.message.includes('Correo ya registrado') || err.message.includes('cedula'))) {

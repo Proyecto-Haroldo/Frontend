@@ -1,6 +1,36 @@
+import { useEffect, useState } from 'react';
 import { User, Mail, Phone, Building2, Shield, Bell } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { jwtDecode } from 'jwt-decode';
+import { getUserByEmail } from '../api/userApi';
+
+interface JwtPayload {
+  sub: string; // email
+  [key: string]: any;
+}
 
 function Account() {
+  const { token } = useAuth();
+  let email = '';
+  if (token) {
+    try {
+      const decoded = jwtDecode<JwtPayload>(token);
+      email = decoded.sub;
+    } catch (e) {
+      email = '';
+    }
+  }
+
+  const [name, setName] = useState<string>('');
+
+  useEffect(() => {
+    if (email && token) {
+      getUserByEmail(email, token)
+        .then(user => setName(user.legalName))
+        .catch(() => setName(''));
+    }
+  }, [email, token]);
+
   return (
     <div className="max-w-2xl space-y-6">
       <h1 className="text-2xl font-semibold">Mi Cuenta</h1>
@@ -13,15 +43,14 @@ function Account() {
               <User className="h-8 w-8 text-primary" />
             </div>
             <div>
-              <h2 className="font-medium">Juan Pérez</h2>
-              <p className="text-sm text-base-content/70">Cliente Personal</p>
+              <h2 className="font-medium">{name || 'Nombre de usuario'}</h2>
             </div>
           </div>
 
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <Mail className="h-5 w-5 text-base-content/50" />
-              <span>ejemplo@correo.itm.edu.co</span>
+              <span>{email || 'No disponible'}</span>
             </div>
             <div className="flex items-center gap-3">
               <Phone className="h-5 w-5 text-base-content/50" />
