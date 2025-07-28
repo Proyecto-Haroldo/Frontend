@@ -21,14 +21,21 @@ function DiagnosticReview() {
   const [searchParams] = useSearchParams();
   const diagnosticId = searchParams.get('id');
 
+  // Get AI recommendation from localStorage
+  const aiRecommendation = localStorage.getItem('aiRecommendation');
+  const questionnaireData = localStorage.getItem('questionnaireData');
+  
+  // Parse questionnaire data if available
+  const parsedQuestionnaireData = questionnaireData ? JSON.parse(questionnaireData) : null;
+  
   // This would come from your API/state management in the future
   const diagnostic = {
     id: diagnosticId || 1,
-    type: 'Personal',
-    date: '15 Mar 2024',
+    type: parsedQuestionnaireData?.metadata?.clientType || 'Personal',
+    date: parsedQuestionnaireData?.metadata?.timestamp ? new Date(parsedQuestionnaireData.metadata.timestamp).toLocaleDateString('es-ES') : '15 Mar 2024',
     status: 'completed',
     aiAnalysis: {
-      summary: "Basado en sus respuestas, hemos identificado áreas clave para mejorar su salud financiera...",
+      summary: aiRecommendation || "Basado en sus respuestas, hemos identificado áreas clave para mejorar su salud financiera...",
       recommendations: [
         {
           title: "Gestión de Presupuesto",
