@@ -1,37 +1,35 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Mail, KeyRound, Eye, EyeOff, Banknote, Wallet, PiggyBank, TrendingUp, BarChart, IdCard, Building2, Briefcase, ShieldCheck } from 'lucide-react';
+import { Mail, KeyRound, Eye, EyeOff, Banknote, Wallet, PiggyBank, TrendingUp, BarChart, IdCard, Building2 } from 'lucide-react';
 import { register } from '../api/authApi';
 
 const SignUp: React.FC = () => {
   const [form, setForm] = useState({
     email: '',
     password: '',
+    confirmPassword: '',
     cedulaOrNIT: '',
-    legalName: '',
-    clientType: '',
-    role: ''
+    legalName: ''
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [validationErrors, setValidationErrors] = useState<{
     email?: string;
     password?: string;
+    confirmPassword?: string;
     cedulaOrNIT?: string;
     legalName?: string;
-    clientType?: string;
-    role?: string;
   }>({});
   const [touched, setTouched] = useState({
     email: false,
     password: false,
+    confirmPassword: false,
     cedulaOrNIT: false,
-    legalName: false,
-    clientType: false,
-    role: false
+    legalName: false
   });
 
   const navigate = useNavigate();
@@ -51,6 +49,12 @@ const SignUp: React.FC = () => {
       errors.password = 'La contraseña debe tener al menos 6 caracteres';
     }
 
+    if (!form.confirmPassword) {
+      setTouched(prev => ({ ...prev, confirmPassword: true }));
+    } else if (form.confirmPassword !== form.password) {
+      errors.confirmPassword = 'Las contraseñas no coinciden';
+    }
+
     if (!form.cedulaOrNIT) {
       setTouched(prev => ({ ...prev, cedulaOrNIT: true }));
     } else if (form.cedulaOrNIT.length < 5) {
@@ -63,21 +67,13 @@ const SignUp: React.FC = () => {
       errors.legalName = 'El nombre debe tener al menos 2 caracteres';
     }
 
-    if (!form.clientType) {
-      setTouched(prev => ({ ...prev, clientType: true }));
-    }
-
-    if (!form.role) {
-      setTouched(prev => ({ ...prev, role: true }));
-    }
-
     setValidationErrors(errors);
     return Object.keys(errors).length === 0 && 
-           form.email && form.password && form.cedulaOrNIT && 
-           form.legalName && form.clientType && form.role;
+           form.email && form.password && form.confirmPassword &&
+           form.cedulaOrNIT && form.legalName;
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
     setValidationErrors(prev => ({ ...prev, [name]: undefined }));
@@ -91,11 +87,23 @@ const SignUp: React.FC = () => {
     setSuccess(null);
     setLoading(true);
     try {
-      const res = await register(form);
-      setSuccess(res);
-      setTimeout(() => navigate('/login'), 1500);
+      await register({
+        email: form.email,
+        password: form.password,
+        cedulaOrNIT: form.cedulaOrNIT,
+        legalName: form.legalName,
+        clientType: 'persona',
+        role: { id: 2 }
+      });
+      setSuccess('Usuario registrado con éxito');
+      navigate('/');
     } catch (err: any) {
-      setError(err.message);
+      // Try to detect conflict (email or cedula/NIT already exists)
+      if (err && err.message && (err.message.includes('409') || err.message.includes('Correo ya registrado') || err.message.includes('cedula'))) {
+        setError('El correo o la cédula/NIT ya están registrados.');
+      } else {
+        setError('Ocurrió un error. Por favor intenta nuevamente.');
+      }
     } finally {
       setLoading(false);
     }
@@ -211,7 +219,6 @@ const SignUp: React.FC = () => {
                 value={form.email}
                 onChange={handleChange}
                 className={`input input-bordered w-full pl-10 ${(touched.email && !form.email) || validationErrors.email ? 'input-error' : ''}`}
-                placeholder="ejemplo@correo.com"
                 disabled={loading}
                 required
               />
@@ -266,6 +273,46 @@ const SignUp: React.FC = () => {
 
           <div className="form-control">
             <label className="label">
+              <span className="label-text text-base-content/70">Confirmar Contraseña</span>
+            </label>
+            <div className="join w-full">
+              <div className="relative flex-1">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <KeyRound className="h-5 w-5 text-base-content/50" />
+                </div>
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={form.confirmPassword}
+                  onChange={handleChange}
+                  className={`input input-bordered w-full pl-10 join-item ${(touched.confirmPassword && !form.confirmPassword) || validationErrors.confirmPassword ? 'input-error' : ''}`}
+                  disabled={loading}
+                  required
+                  minLength={6}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="btn btn-square join-item"
+                disabled={loading}
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="h-5 w-5 text-base-content/50" />
+                ) : (
+                  <Eye className="h-5 w-5 text-base-content/50" />
+                )}
+              </button>
+            </div>
+            {validationErrors.confirmPassword && (
+              <label className="label">
+                <span className="label-text-alt text-error">{validationErrors.confirmPassword}</span>
+              </label>
+            )}
+          </div>
+
+          <div className="form-control">
+            <label className="label">
               <span className="label-text text-base-content/70">Cédula o NIT</span>
             </label>
             <div className="relative">
@@ -278,7 +325,6 @@ const SignUp: React.FC = () => {
                 value={form.cedulaOrNIT}
                 onChange={handleChange}
                 className={`input input-bordered w-full pl-10 ${(touched.cedulaOrNIT && !form.cedulaOrNIT) || validationErrors.cedulaOrNIT ? 'input-error' : ''}`}
-                placeholder="12345678-9 o 900123456-7"
                 disabled={loading}
                 required
               />
@@ -304,7 +350,6 @@ const SignUp: React.FC = () => {
                 value={form.legalName}
                 onChange={handleChange}
                 className={`input input-bordered w-full pl-10 ${(touched.legalName && !form.legalName) || validationErrors.legalName ? 'input-error' : ''}`}
-                placeholder="Nombre completo o razón social"
                 disabled={loading}
                 required
               />
@@ -312,64 +357,6 @@ const SignUp: React.FC = () => {
             {validationErrors.legalName && (
               <label className="label">
                 <span className="label-text-alt text-error">{validationErrors.legalName}</span>
-              </label>
-            )}
-          </div>
-
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text text-base-content/70">Tipo de Cliente</span>
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Briefcase className="h-5 w-5 text-base-content/50" />
-              </div>
-              <select
-                name="clientType"
-                value={form.clientType}
-                onChange={handleChange}
-                className={`select select-bordered w-full pl-10 ${(touched.clientType && !form.clientType) || validationErrors.clientType ? 'select-error' : ''}`}
-                disabled={loading}
-                required
-              >
-                <option value="">Seleccione tipo de cliente</option>
-                <option value="individual">Individual</option>
-                <option value="empresa">Empresa</option>
-                <option value="gobierno">Gobierno</option>
-              </select>
-            </div>
-            {validationErrors.clientType && (
-              <label className="label">
-                <span className="label-text-alt text-error">{validationErrors.clientType}</span>
-              </label>
-            )}
-          </div>
-
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text text-base-content/70">Rol</span>
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <ShieldCheck className="h-5 w-5 text-base-content/50" />
-              </div>
-              <select
-                name="role"
-                value={form.role}
-                onChange={handleChange}
-                className={`select select-bordered w-full pl-10 ${(touched.role && !form.role) || validationErrors.role ? 'select-error' : ''}`}
-                disabled={loading}
-                required
-              >
-                <option value="">Seleccione rol</option>
-                <option value="user">Usuario</option>
-                <option value="admin">Administrador</option>
-                <option value="moderator">Moderador</option>
-              </select>
-            </div>
-            {validationErrors.role && (
-              <label className="label">
-                <span className="label-text-alt text-error">{validationErrors.role}</span>
               </label>
             )}
           </div>

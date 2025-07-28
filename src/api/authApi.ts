@@ -12,7 +12,7 @@ export interface RegisterRequest {
   cedulaOrNIT: string;
   legalName: string;
   clientType: string;
-  role: string;
+  role: { id: number };
 }
 
 export interface LoginResponse {
