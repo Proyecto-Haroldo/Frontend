@@ -14,7 +14,7 @@ import {
 
 const Questionnaire = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [isComplete, setIsComplete] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,7 +36,7 @@ const Questionnaire = () => {
           setQuestions(fetchedQuestions);
           setIsLoading(false);
         })
-        .catch(err => {
+        .catch((err: unknown) => {
           setError('Error al cargar las preguntas');
           setIsLoading(false);
           console.error('Error fetching questions:', err);
@@ -300,9 +300,9 @@ const Questionnaire = () => {
     }
   };
 
-  const handleAnswerChange = (value: any) => {
+  const handleAnswerChange = (value: string | string[]) => {
     // Ensure all answers are stored as arrays for backend compatibility
-    let answerValue;
+    let answerValue: string[];
     if (Array.isArray(value)) {
       answerValue = value;
     } else if (value === null || value === undefined) {

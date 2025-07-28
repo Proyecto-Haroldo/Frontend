@@ -35,7 +35,7 @@ const SignUp: React.FC = () => {
   const navigate = useNavigate();
 
   const validateForm = () => {
-    const errors: any = {};
+    const errors: Record<string, string> = {};
 
     if (!form.email) {
       setTouched(prev => ({ ...prev, email: true }));
@@ -97,9 +97,9 @@ const SignUp: React.FC = () => {
       });
       setSuccess('Usuario registrado con éxito');
       navigate('/');
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Try to detect conflict (email or cedula/NIT already exists)
-      if (err && err.message && (err.message.includes('409') || err.message.includes('Correo ya registrado') || err.message.includes('cedula'))) {
+      if (err && typeof err === 'object' && 'message' in err && typeof err.message === 'string' && (err.message.includes('409') || err.message.includes('Correo ya registrado') || err.message.includes('cedula'))) {
         setError('El correo o la cédula/NIT ya están registrados.');
       } else {
         setError('Ocurrió un error. Por favor intenta nuevamente.');

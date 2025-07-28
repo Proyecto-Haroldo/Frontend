@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { submitQuestionnaireAnswers } from '../api/questionnaireApi';
-import type { QuestionnaireResult, QuestionnaireAnswer } from '../types/questionnaire';
+import type { QuestionnaireResult } from '../types/questionnaire';
 import { 
   ArrowLeft, 
   Brain, 
