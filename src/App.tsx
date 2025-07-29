@@ -9,7 +9,6 @@ import Diagnostics from './pages/Diagnostics';
 import Account from './pages/Account';
 import Questionnaire from './pages/Questionnaire';
 import DiagnosticReview from './pages/DiagnosticReview';
-import AIRecommendation from './pages/AIRecommendation';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -44,7 +43,6 @@ function AnimatedRoutes() {
           <Route path="/account" element={<Account />} />
           <Route path="/questionnaire" element={<Questionnaire />} />
           <Route path="/diagnostic-review" element={<DiagnosticReview />} />
-          <Route path="/ai-recommendation" element={<AIRecommendation />} />
         </Routes>
       </motion.div>
     </AnimatePresence>
@@ -83,7 +81,6 @@ function App() {
                       <Route path="/account" element={<Account />} />
                       <Route path="/questionnaire" element={<Questionnaire />} />
                       <Route path="/diagnostic-review" element={<DiagnosticReview />} />
-                      <Route path="/ai-recommendation" element={<AIRecommendation />} />
                     </Routes>
                   ) : (
                     <AnimatedRoutes />

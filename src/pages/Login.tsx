@@ -52,8 +52,8 @@ const Login: React.FC = () => {
       const res = await login({ email, password });
       setToken(res.token);
       navigate('/');
-    } catch (err: any) {
-      setError(err.message);
+    } catch {
+      setError('Ocurrió un error. Por favor intenta nuevamente.');
     } finally {
       setLoading(false);
     }
