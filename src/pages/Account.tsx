@@ -6,7 +6,7 @@ import { getUserByEmail } from '../api/userApi';
 
 interface JwtPayload {
   sub: string; // email
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 function Account() {
@@ -16,7 +16,7 @@ function Account() {
     try {
       const decoded = jwtDecode<JwtPayload>(token);
       email = decoded.sub;
-    } catch (e) {
+    } catch {
       email = '';
     }
   }
