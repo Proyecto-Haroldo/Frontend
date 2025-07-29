@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { fetchQuestions, submitQuestionnaireAnswers } from '../api/questionnaireApi';
 import type { Question, QuestionnaireResult  } from '../types/questionnaire';
@@ -11,6 +12,30 @@ import {
   Loader2,
   FileText
 } from 'lucide-react';
+
+const pageVariants = {
+  initial: {
+    x: 100,
+    opacity: 0
+  },
+  animate: {
+    x: 0,
+    opacity: 1,
+    transition: {
+      type: 'spring',
+      stiffness: 300,
+      damping: 30
+    }
+  },
+  exit: {
+    x: -100,
+    opacity: 0,
+    transition: {
+      duration: 0.3
+    }
+  }
+};
+
 
 const Questionnaire = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -421,72 +446,103 @@ const Questionnaire = () => {
     );
   }
 
+  if (isSubmitting) {
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="submitting"
+          className="min-h-screen bg-base-200 flex items-center justify-center p-4"
+          variants={pageVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+        >
+          <div className="card w-full max-w-2xl bg-base-100 shadow-xl">
+            <div className="card-body items-center text-center">
+              <div className="mb-6">
+                <Loader2 className="h-16 w-16 text-primary animate-spin mx-auto" />
+              </div>
+              <h2 className="card-title text-2xl mb-4">Procesando respuestas</h2>
+              <p className="mb-6">Estamos analizando sus respuestas y generando su diagnóstico personalizado.</p>
+              <div className="text-sm text-gray-500">
+                Esto puede tomar unos momentos...
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
-      <div className="card w-full max-w-4xl bg-base-100 shadow-xl">
-        <div className="card-body">
-          {/* Progress Bar */}
-          <div className="w-full bg-base-200 rounded-full h-2.5 mb-6">
-            <div 
-              className="bg-primary h-2.5 rounded-full transition-all duration-300" 
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
-          
-          {/* Progress Text */}
-          <div className="text-sm text-gray-500 mb-2">
-            Pregunta {currentQuestionIndex + 1} de {questions.length}
-          </div>
-          
-          {/* Question with keyword highlighting */}
-          <h2 
-            className="card-title text-2xl mb-6"
-            dangerouslySetInnerHTML={{ __html: processedTitle }}
-          />
-          
-          {/* Question Input */}
-          <div className="mb-8">
-            {renderQuestionInput()}
-          </div>
-          
-          {/* Navigation Buttons */}
-          <div className="flex justify-between">
-            <button
-              onClick={handlePrevious}
-              disabled={currentQuestionIndex === 0 || isSubmitting}
-              className="btn btn-ghost gap-2"
-            >
-              <ArrowLeft className="h-5 w-5" />
-              Anterior
-            </button>
-            <button
-              onClick={handleNext}
-              disabled={!Array.isArray(answers[currentQuestion.id]) || 
-                       answers[currentQuestion.id].length === 0 ||
-                       isSubmitting}
-              className="btn btn-primary gap-2"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Enviando...
-                </>
-              ) : isLastQuestion ? (
-                <>
-                  Enviar
-                  <ArrowRight className="h-5 w-5" />
-                </>
-              ) : (
-                <>
-                  Siguiente
-                  <ArrowRight className="h-5 w-5" />
-                </>
-              )}
-            </button>
+    <AnimatePresence mode="wait">
+      <motion.div
+        key="questionnaire"
+        className="min-h-screen bg-base-200 flex items-center justify-center p-4"
+        variants={pageVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+      >
+        <div className="card w-full max-w-4xl bg-base-100 shadow-xl">
+          <div className="card-body">
+            {/* Progress Bar */}
+            <div className="w-full bg-base-200 rounded-full h-2.5 mb-6">
+              <div 
+                className="bg-primary h-2.5 rounded-full transition-all duration-300" 
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            
+            {/* Progress Text */}
+            <div className="text-sm text-gray-500 mb-2">
+              Pregunta {currentQuestionIndex + 1} de {questions.length}
+            </div>
+            
+            {/* Question with keyword highlighting */}
+            <h2 
+              className="card-title text-2xl mb-6"
+              dangerouslySetInnerHTML={{ __html: processedTitle }}
+            />
+            
+            {/* Question Input */}
+            <div className="mb-8">
+              {renderQuestionInput()}
+            </div>
+            
+            {/* Navigation Buttons */}
+            <div className="flex justify-between">
+              <button
+                onClick={handlePrevious}
+                disabled={currentQuestionIndex === 0}
+                className="btn btn-ghost gap-2"
+              >
+                <ArrowLeft className="h-5 w-5" />
+                Anterior
+              </button>
+              <button
+                onClick={handleNext}
+                disabled={!Array.isArray(answers[currentQuestion.id]) || 
+                        answers[currentQuestion.id].length === 0}
+                className={`btn gap-2 ${isLastQuestion ? 'btn-success' : 'btn-primary'}`}
+              >
+                {isLastQuestion ? (
+                  <>
+                    <FileText className="h-5 w-5" />
+                    Enviar Respuestas
+                  </>
+                ) : (
+                  <>
+                    Siguiente
+                    <ArrowRight className="h-5 w-5" />
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

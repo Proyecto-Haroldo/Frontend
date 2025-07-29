@@ -1,4 +1,4 @@
-import { Calendar, Clock, ArrowRight, AlertCircle, BarChart, Brain } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, AlertCircle, BarChart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 function Home() {
@@ -117,26 +117,6 @@ function Home() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* AI Recommendation Test Section */}
-      <div className="card bg-base-100 shadow-sm border border-base-200">
-        <div className="card-body">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="card-title text-base">Prueba de IA</h2>
-            <Brain className="h-5 w-5 text-primary" />
-          </div>
-          <p className="text-sm text-base-content/70 mb-4">
-            Pruebe la funcionalidad de recomendaciones de IA con datos de ejemplo.
-          </p>
-          <Link
-            to="/ai-recommendation"
-            className="btn btn-outline btn-sm gap-2"
-          >
-            <Brain className="h-4 w-4" />
-            Probar IA
-          </Link>
         </div>
       </div>
     </div>
