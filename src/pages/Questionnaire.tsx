@@ -463,7 +463,7 @@ const Questionnaire = () => {
                 <Loader2 className="h-16 w-16 text-primary animate-spin mx-auto" />
               </div>
               <h2 className="card-title text-2xl mb-4">Procesando respuestas</h2>
-              <p className="mb-6">Estamos analizando sus respuestas y generando su diagnóstico personalizado.</p>
+              <p className="mb-6">Estamos analizando sus respuestas y generando su diagnóstico.</p>
               <div className="text-sm text-gray-500">
                 Esto puede tomar unos momentos...
               </div>

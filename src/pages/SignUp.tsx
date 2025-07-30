@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef  } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Mail, KeyRound, Eye, EyeOff, Banknote, Wallet, PiggyBank, TrendingUp, BarChart, IdCard, Building2 } from 'lucide-react';
 import { register } from '../api/authApi';
+import PasswordStrength from '../components/User/passwordStrength';
 
 const SignUp: React.FC = () => {
   const [form, setForm] = useState({
@@ -14,6 +15,7 @@ const SignUp: React.FC = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPasswordStrength, setShowPasswordStrength] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -32,10 +34,27 @@ const SignUp: React.FC = () => {
     legalName: false
   });
 
+  const passwordInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+
+  const calculatePasswordStrength = (password: string) => {
+    if (!password) return 0;
+    
+    const checks = {
+      length: password.length >= 8,
+      lowercase: /[a-z]/.test(password),
+      uppercase: /[A-Z]/.test(password),
+      numbers: /\d/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    };
+
+    const passedChecks = Object.values(checks).filter(Boolean).length;
+    return (passedChecks / 5) * 100;
+  };
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
+    const passwordStrength = calculatePasswordStrength(form.password);
 
     if (!form.email) {
       setTouched(prev => ({ ...prev, email: true }));
@@ -45,8 +64,10 @@ const SignUp: React.FC = () => {
 
     if (!form.password) {
       setTouched(prev => ({ ...prev, password: true }));
-    } else if (form.password.length < 6) {
-      errors.password = 'La contraseña debe tener al menos 6 caracteres';
+    } else if (form.password.length < 8) {
+      errors.password = 'La contraseña debe tener al menos 8 caracteres';
+    } else if (passwordStrength < 80) {
+      errors.password = 'La contraseña debe tener al menos 80% de seguridad';
     }
 
     if (!form.confirmPassword) {
@@ -79,6 +100,14 @@ const SignUp: React.FC = () => {
     setValidationErrors(prev => ({ ...prev, [name]: undefined }));
   };
 
+  const handlePasswordFocus = () => {
+    setShowPasswordStrength(true);
+  };
+
+  const handlePasswordStrengthClose = () => {
+    setShowPasswordStrength(false);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -108,6 +137,9 @@ const SignUp: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const passwordStrength = calculatePasswordStrength(form.password);
+  const isPasswordValid = passwordStrength >= 80;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200 relative overflow-hidden py-8">
@@ -231,24 +263,26 @@ const SignUp: React.FC = () => {
           </div>
 
           <div className="form-control">
-            <label className="label">
-              <span className="label-text text-base-content/70">Contraseña</span>
-            </label>
             <div className="join w-full">
               <div className="relative flex-1">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <KeyRound className="h-5 w-5 text-base-content/50" />
                 </div>
                 <input
+                  ref={passwordInputRef}
                   type={showPassword ? "text" : "password"}
                   name="password"
                   value={form.password}
                   onChange={handleChange}
-                  className={`input input-bordered w-full pl-10 join-item ${(touched.password && !form.password) || validationErrors.password ? 'input-error' : ''}`}
-                  placeholder="Mínimo 6 caracteres"
+                  onFocus={handlePasswordFocus}
+                  className={`input input-bordered w-full pl-10 join-item ${
+                    (touched.password && !form.password) || validationErrors.password ? 'input-error' : 
+                    form.password && isPasswordValid ? 'input-success' : ''
+                  }`}
+                  placeholder="Mínimo 8 caracteres"
                   disabled={loading}
                   required
-                  minLength={6}
+                  minLength={8}
                 />
               </div>
               <button
@@ -269,6 +303,14 @@ const SignUp: React.FC = () => {
                 <span className="label-text-alt text-error">{validationErrors.password}</span>
               </label>
             )}
+            
+            {/* Password Strength Component */}
+            <PasswordStrength
+              password={form.password}
+              isVisible={showPasswordStrength}
+              inputRef={passwordInputRef}
+              onClose={handlePasswordStrengthClose}
+            />
           </div>
 
           <div className="form-control">
@@ -285,10 +327,13 @@ const SignUp: React.FC = () => {
                   name="confirmPassword"
                   value={form.confirmPassword}
                   onChange={handleChange}
-                  className={`input input-bordered w-full pl-10 join-item ${(touched.confirmPassword && !form.confirmPassword) || validationErrors.confirmPassword ? 'input-error' : ''}`}
+                  className={`input input-bordered w-full pl-10 join-item ${
+                    (touched.confirmPassword && !form.confirmPassword) || validationErrors.confirmPassword ? 'input-error' : 
+                    form.confirmPassword && form.confirmPassword === form.password && isPasswordValid ? 'input-success' : ''
+                  }`}
                   disabled={loading}
                   required
-                  minLength={6}
+                  minLength={8}
                 />
               </div>
               <button
@@ -365,8 +410,8 @@ const SignUp: React.FC = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
-            className={`btn btn-primary w-full ${loading ? 'opacity-50' : ''}`}
-            disabled={loading}
+            className={`btn btn-primary w-full ${loading || !isPasswordValid ? 'opacity-50' : ''}`}
+            disabled={loading || !isPasswordValid}
           >
             {loading ? 'Registrando...' : 'Registrarse'}
           </motion.button>
