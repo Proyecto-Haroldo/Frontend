@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { 
   ChevronDown, 
   ChevronUp, 
@@ -39,17 +41,17 @@ function DiagnosticReview() {
       recommendations: [
         {
           title: "Gestión de Presupuesto",
-          description: "Su presupuesto actual muestra oportunidades de optimización...",
+          description: "Su presupuesto actual muestra **oportunidades de optimización** que pueden mejorar significativamente su salud financiera.",
           priority: "Alta" as Priority
         },
         {
           title: "Plan de Ahorro",
-          description: "Recomendamos establecer un fondo de emergencia...",
+          description: "Recomendamos establecer un **fondo de emergencia**...",
           priority: "Media" as Priority
         },
         {
           title: "Inversiones",
-          description: "Considerando su perfil de riesgo, sugerimos diversificar...",
+          description: "Considerando su perfil de riesgo, sugerimos **diversificar** sus inversiones.",
           priority: "Baja" as Priority
         }
       ],
@@ -121,9 +123,13 @@ function DiagnosticReview() {
               {/* Summary */}
               <div className="bg-base-200 rounded-lg p-6">
                 <h2 className="text-xl font-semibold mb-4">Resumen del Análisis</h2>
-                <p className="text-base-content/80 leading-relaxed">
-                  {diagnostic.aiAnalysis.summary}
-                </p>
+                <div className="prose dark:prose-invert">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                  >
+                    {diagnostic.aiAnalysis.summary}
+                  </ReactMarkdown>
+                </div>
               </div>
 
               {/* Recommendations */}
@@ -186,13 +192,17 @@ function DiagnosticReview() {
                     >
                       <div className="card-body">
                         <div className="flex items-start justify-between">
-                          <div>
+                          <div className="flex-1">
                             <h3 className="card-title text-lg">{rec.title}</h3>
-                            <p className="text-base-content/80 mt-2">
-                              {rec.description}
-                            </p>
+                            <div className="mt-2 prose dark:prose-invert prose-sm max-w-none">
+                              <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                              >
+                                {rec.description}
+                              </ReactMarkdown>
+                            </div>
                           </div>
-                          <div className={`badge ${priorityTextColor} border-current`}>
+                          <div className={`badge ${priorityTextColor} border-current ml-4 flex-shrink-0`}>
                             {rec.priority}
                           </div>
                         </div>
