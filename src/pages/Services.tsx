@@ -292,8 +292,9 @@ function Services() {
             transition={{ type: "spring", stiffness: 400 }}
             className="pt-2"
           >
+            {/* Note: clientType parameter removed for now but may be needed in the future for filtering */}
             <Link
-              to={`/questionnaire?category=${selectedCategory}&clientType=${selectedType}`}
+              to={`/questionnaire?category=${selectedCategory}`}
               className={`btn btn-primary gap-2 ${!policyAccepted ? 'btn-disabled' : ''}`}
               tabIndex={policyAccepted ? 0 : -1}
             >

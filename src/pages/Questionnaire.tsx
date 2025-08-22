@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { fetchQuestions, submitQuestionnaireAnswers } from '../api/questionnaireApi';
+import { fetchQuestionsByCategory, submitQuestionnaireAnswers } from '../api/questionnaireApi';
 import type { Question, QuestionnaireResult  } from '../types/questionnaire';
 import { 
   ArrowLeft, 
@@ -49,14 +49,16 @@ const Questionnaire = () => {
   const location = useLocation();
   
   // Parse URL parameters and fetch questions
+  // Note: Currently only category is required, clientType is commented out for future use
+  // When client type filtering is re-enabled, update this useEffect and the API call accordingly
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const category = params.get('category');
-    const clientType = params.get('clientType');
+    // const clientType = params.get('clientType'); // Commented out for future use - we may need client type filtering again
     
-    if (category && clientType) {
+    if (category) {
       setIsLoading(true);
-      fetchQuestions(category, clientType)
+      fetchQuestionsByCategory(category)
         .then(fetchedQuestions => {
           setQuestions(fetchedQuestions);
           setIsLoading(false);
@@ -265,17 +267,19 @@ const Questionnaire = () => {
         setIsSubmitting(true);
         const params = new URLSearchParams(location.search);
         const category = params.get('category');
-        const clientType = params.get('clientType');
+        // const clientType = params.get('clientType'); // Commented out for future use - we may need client type filtering again
         
-        if (!category || !clientType) {
-          throw new Error('Información de categoría o tipo de cliente no encontrada');
+        if (!category) {
+          throw new Error('Información de categoría no encontrada');
         }
 
         // Prepare the data in a more structured way
+        // Note: clientType is set to 'N/A' as a placeholder since we're not currently filtering by client type
+        // When client type filtering is re-enabled, update this to use the actual clientType from URL params
         const questionnaireData: QuestionnaireResult = {
           metadata: {
             category,
-            clientType,
+            clientType: 'N/A', // Placeholder for future use when client type filtering is re-enabled
             timestamp: new Date().toISOString(),
           },
           answers: questions.map(question => {
