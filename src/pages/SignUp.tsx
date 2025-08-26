@@ -1,17 +1,29 @@
-import React, { useState, useRef  } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { motion } from 'motion/react';
-import { Mail, KeyRound, Eye, EyeOff, Banknote, Wallet, PiggyBank, TrendingUp, BarChart, IdCard, Building2 } from 'lucide-react';
-import { register } from '../api/authApi';
-import PasswordStrength from '../components/User/passwordStrength';
+import React, { useState, useRef } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { motion } from "motion/react";
+import {
+  Mail,
+  KeyRound,
+  Eye,
+  EyeOff,
+  Banknote,
+  Wallet,
+  PiggyBank,
+  TrendingUp,
+  BarChart,
+  IdCard,
+  Building2,
+} from "lucide-react";
+import { register } from "../api/authApi";
+import  PasswordStrength  from "../components/User/PasswordStrength";
 
 const SignUp: React.FC = () => {
   const [form, setForm] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    cedulaOrNIT: '',
-    legalName: ''
+    email: "",
+    password: "",
+    confirmPassword: "",
+    cedulaOrNIT: "",
+    legalName: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -31,7 +43,7 @@ const SignUp: React.FC = () => {
     password: false,
     confirmPassword: false,
     cedulaOrNIT: false,
-    legalName: false
+    legalName: false,
   });
 
   const passwordInputRef = useRef<HTMLInputElement>(null);
@@ -39,13 +51,13 @@ const SignUp: React.FC = () => {
 
   const calculatePasswordStrength = (password: string) => {
     if (!password) return 0;
-    
+
     const checks = {
       length: password.length >= 8,
       lowercase: /[a-z]/.test(password),
       uppercase: /[A-Z]/.test(password),
       numbers: /\d/.test(password),
-      special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
     };
 
     const passedChecks = Object.values(checks).filter(Boolean).length;
@@ -57,47 +69,52 @@ const SignUp: React.FC = () => {
     const passwordStrength = calculatePasswordStrength(form.password);
 
     if (!form.email) {
-      setTouched(prev => ({ ...prev, email: true }));
+      setTouched((prev) => ({ ...prev, email: true }));
     } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-      errors.email = 'Por favor ingrese un correo electrónico válido';
+      errors.email = "Por favor ingrese un correo electrónico válido";
     }
 
     if (!form.password) {
-      setTouched(prev => ({ ...prev, password: true }));
+      setTouched((prev) => ({ ...prev, password: true }));
     } else if (form.password.length < 8) {
-      errors.password = 'La contraseña debe tener al menos 8 caracteres';
+      errors.password = "La contraseña debe tener al menos 8 caracteres";
     } else if (passwordStrength < 80) {
-      errors.password = 'La contraseña debe tener al menos 80% de seguridad';
+      errors.password = "La contraseña debe tener al menos 80% de seguridad";
     }
 
     if (!form.confirmPassword) {
-      setTouched(prev => ({ ...prev, confirmPassword: true }));
+      setTouched((prev) => ({ ...prev, confirmPassword: true }));
     } else if (form.confirmPassword !== form.password) {
-      errors.confirmPassword = 'Las contraseñas no coinciden';
+      errors.confirmPassword = "Las contraseñas no coinciden";
     }
 
     if (!form.cedulaOrNIT) {
-      setTouched(prev => ({ ...prev, cedulaOrNIT: true }));
+      setTouched((prev) => ({ ...prev, cedulaOrNIT: true }));
     } else if (form.cedulaOrNIT.length < 5) {
-      errors.cedulaOrNIT = 'Documento debe tener al menos 5 caracteres';
+      errors.cedulaOrNIT = "Documento debe tener al menos 5 caracteres";
     }
 
     if (!form.legalName) {
-      setTouched(prev => ({ ...prev, legalName: true }));
+      setTouched((prev) => ({ ...prev, legalName: true }));
     } else if (form.legalName.length < 2) {
-      errors.legalName = 'El nombre debe tener al menos 2 caracteres';
+      errors.legalName = "El nombre debe tener al menos 2 caracteres";
     }
 
     setValidationErrors(errors);
-    return Object.keys(errors).length === 0 && 
-           form.email && form.password && form.confirmPassword &&
-           form.cedulaOrNIT && form.legalName;
+    return (
+      Object.keys(errors).length === 0 &&
+      form.email &&
+      form.password &&
+      form.confirmPassword &&
+      form.cedulaOrNIT &&
+      form.legalName
+    );
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
-    setValidationErrors(prev => ({ ...prev, [name]: undefined }));
+    setValidationErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
   const handlePasswordFocus = () => {
@@ -121,17 +138,25 @@ const SignUp: React.FC = () => {
         password: form.password,
         cedulaOrNIT: form.cedulaOrNIT,
         legalName: form.legalName,
-        clientType: 'persona',
-        role: { id: 2 }
+        clientType: "persona",
+        role: { id: 2 },
       });
-      setSuccess('Usuario registrado con éxito');
-      navigate('/');
+      setSuccess("Usuario registrado con éxito");
+      navigate("/");
     } catch (err: unknown) {
       // Try to detect conflict (email or cedula/NIT already exists)
-      if (err && typeof err === 'object' && 'message' in err && typeof err.message === 'string' && (err.message.includes('409') || err.message.includes('Correo ya registrado') || err.message.includes('cedula'))) {
-        setError('El correo o la cédula/NIT ya están registrados.');
+      if (
+        err &&
+        typeof err === "object" &&
+        "message" in err &&
+        typeof err.message === "string" &&
+        (err.message.includes("409") ||
+          err.message.includes("Correo ya registrado") ||
+          err.message.includes("cedula"))
+      ) {
+        setError("El correo o la cédula/NIT ya están registrados.");
       } else {
-        setError('Ocurrió un error. Por favor intenta nuevamente.');
+        setError("Ocurrió un error. Por favor intenta nuevamente.");
       }
     } finally {
       setLoading(false);
@@ -159,19 +184,34 @@ const SignUp: React.FC = () => {
           </motion.div>
           <motion.div
             animate={{ y: [0, 20, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 1,
+            }}
           >
             <Wallet className="w-32 h-32 text-primary" />
           </motion.div>
           <motion.div
             animate={{ y: [0, 20, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2,
+            }}
           >
             <PiggyBank className="w-32 h-32 text-secondary" />
           </motion.div>
           <motion.div
             animate={{ y: [0, -20, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 3,
+            }}
           >
             <TrendingUp className="w-32 h-32 text-accent" />
           </motion.div>
@@ -209,8 +249,18 @@ const SignUp: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="alert alert-error shadow-lg"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="stroke-current shrink-0 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <span>{error}</span>
           </motion.div>
@@ -222,8 +272,18 @@ const SignUp: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="alert alert-success shadow-lg"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="stroke-current shrink-0 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <span>{success}</span>
           </motion.div>
@@ -239,7 +299,9 @@ const SignUp: React.FC = () => {
         >
           <div className="form-control">
             <label className="label">
-              <span className="label-text text-base-content/70">Correo Electrónico</span>
+              <span className="label-text text-base-content/70">
+                Correo Electrónico
+              </span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -250,14 +312,16 @@ const SignUp: React.FC = () => {
                 name="email"
                 value={form.email}
                 onChange={handleChange}
-                className={`input input-bordered w-full pl-10 ${(touched.email && !form.email) || validationErrors.email ? 'input-error' : ''}`}
+                className={`input input-bordered w-full pl-10 ${(touched.email && !form.email) || validationErrors.email ? "input-error" : ""}`}
                 disabled={loading}
                 required
               />
             </div>
             {validationErrors.email && (
               <label className="label">
-                <span className="label-text-alt text-error">{validationErrors.email}</span>
+                <span className="label-text-alt text-error">
+                  {validationErrors.email}
+                </span>
               </label>
             )}
           </div>
@@ -276,8 +340,12 @@ const SignUp: React.FC = () => {
                   onChange={handleChange}
                   onFocus={handlePasswordFocus}
                   className={`input input-bordered w-full pl-10 join-item ${
-                    (touched.password && !form.password) || validationErrors.password ? 'input-error' : 
-                    form.password && isPasswordValid ? 'input-success' : ''
+                    (touched.password && !form.password) ||
+                    validationErrors.password
+                      ? "input-error"
+                      : form.password && isPasswordValid
+                        ? "input-success"
+                        : ""
                   }`}
                   placeholder="Mínimo 8 caracteres"
                   disabled={loading}
@@ -300,10 +368,12 @@ const SignUp: React.FC = () => {
             </div>
             {validationErrors.password && (
               <label className="label">
-                <span className="label-text-alt text-error">{validationErrors.password}</span>
+                <span className="label-text-alt text-error">
+                  {validationErrors.password}
+                </span>
               </label>
             )}
-            
+
             {/* Password Strength Component */}
             <PasswordStrength
               password={form.password}
@@ -315,7 +385,9 @@ const SignUp: React.FC = () => {
 
           <div className="form-control">
             <label className="label">
-              <span className="label-text text-base-content/70">Confirmar Contraseña</span>
+              <span className="label-text text-base-content/70">
+                Confirmar Contraseña
+              </span>
             </label>
             <div className="join w-full">
               <div className="relative flex-1">
@@ -328,8 +400,14 @@ const SignUp: React.FC = () => {
                   value={form.confirmPassword}
                   onChange={handleChange}
                   className={`input input-bordered w-full pl-10 join-item ${
-                    (touched.confirmPassword && !form.confirmPassword) || validationErrors.confirmPassword ? 'input-error' : 
-                    form.confirmPassword && form.confirmPassword === form.password && isPasswordValid ? 'input-success' : ''
+                    (touched.confirmPassword && !form.confirmPassword) ||
+                    validationErrors.confirmPassword
+                      ? "input-error"
+                      : form.confirmPassword &&
+                          form.confirmPassword === form.password &&
+                          isPasswordValid
+                        ? "input-success"
+                        : ""
                   }`}
                   disabled={loading}
                   required
@@ -351,14 +429,18 @@ const SignUp: React.FC = () => {
             </div>
             {validationErrors.confirmPassword && (
               <label className="label">
-                <span className="label-text-alt text-error">{validationErrors.confirmPassword}</span>
+                <span className="label-text-alt text-error">
+                  {validationErrors.confirmPassword}
+                </span>
               </label>
             )}
           </div>
 
           <div className="form-control">
             <label className="label">
-              <span className="label-text text-base-content/70">Cédula o NIT</span>
+              <span className="label-text text-base-content/70">
+                Cédula o NIT
+              </span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -369,21 +451,25 @@ const SignUp: React.FC = () => {
                 name="cedulaOrNIT"
                 value={form.cedulaOrNIT}
                 onChange={handleChange}
-                className={`input input-bordered w-full pl-10 ${(touched.cedulaOrNIT && !form.cedulaOrNIT) || validationErrors.cedulaOrNIT ? 'input-error' : ''}`}
+                className={`input input-bordered w-full pl-10 ${(touched.cedulaOrNIT && !form.cedulaOrNIT) || validationErrors.cedulaOrNIT ? "input-error" : ""}`}
                 disabled={loading}
                 required
               />
             </div>
             {validationErrors.cedulaOrNIT && (
               <label className="label">
-                <span className="label-text-alt text-error">{validationErrors.cedulaOrNIT}</span>
+                <span className="label-text-alt text-error">
+                  {validationErrors.cedulaOrNIT}
+                </span>
               </label>
             )}
           </div>
 
           <div className="form-control">
             <label className="label">
-              <span className="label-text text-base-content/70">Nombre Legal</span>
+              <span className="label-text text-base-content/70">
+                Nombre Legal
+              </span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -394,14 +480,16 @@ const SignUp: React.FC = () => {
                 name="legalName"
                 value={form.legalName}
                 onChange={handleChange}
-                className={`input input-bordered w-full pl-10 ${(touched.legalName && !form.legalName) || validationErrors.legalName ? 'input-error' : ''}`}
+                className={`input input-bordered w-full pl-10 ${(touched.legalName && !form.legalName) || validationErrors.legalName ? "input-error" : ""}`}
                 disabled={loading}
                 required
               />
             </div>
             {validationErrors.legalName && (
               <label className="label">
-                <span className="label-text-alt text-error">{validationErrors.legalName}</span>
+                <span className="label-text-alt text-error">
+                  {validationErrors.legalName}
+                </span>
               </label>
             )}
           </div>
@@ -410,10 +498,10 @@ const SignUp: React.FC = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
-            className={`btn btn-primary w-full ${loading || !isPasswordValid ? 'opacity-50' : ''}`}
+            className={`btn btn-primary w-full ${loading || !isPasswordValid ? "opacity-50" : ""}`}
             disabled={loading || !isPasswordValid}
           >
-            {loading ? 'Registrando...' : 'Registrarse'}
+            {loading ? "Registrando..." : "Registrarse"}
           </motion.button>
         </motion.form>
 
@@ -424,7 +512,7 @@ const SignUp: React.FC = () => {
           className="text-center"
         >
           <p className="text-sm text-base-content/70">
-            ¿Ya tienes cuenta?{' '}
+            ¿Ya tienes cuenta?{" "}
             <Link to="/login" className="text-primary hover:underline">
               Inicia sesión
             </Link>
@@ -436,3 +524,4 @@ const SignUp: React.FC = () => {
 };
 
 export default SignUp;
+
