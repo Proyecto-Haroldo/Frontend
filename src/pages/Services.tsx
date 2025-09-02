@@ -12,7 +12,8 @@ import {
   ClipboardList, 
   FileText, 
   LineChart,
-  AlertTriangle
+  AlertTriangle,
+  BanknoteArrowUp
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -47,34 +48,40 @@ function Services() {
       icon: <Calculator className="h-10 w-10 text-primary" />
     },
     {
-      id: 'finanzas',
-      title: 'Finanzas',
-      description: 'Análisis financiero y optimización de recursos',
-      icon: <DollarSign className="h-10 w-10 text-primary" />
-    },
-    {
       id: 'costos',
       title: 'Costos',
       description: 'Estructuración y análisis de costos operativos',
       icon: <BarChart2 className="h-10 w-10 text-primary" />
     },
     {
-      id: 'presupuesto',
-      title: 'Presupuesto',
-      description: 'Planificación presupuestaria para objetivos futuros',
-      icon: <ClipboardList className="h-10 w-10 text-primary" />
+      id: 'finanzas-corporativas',
+      title: 'Finanzas Corporativas',
+      description: 'Estrategias financieras para crecimiento empresarial',
+      icon: <LineChart className="h-10 w-10 text-primary" />
     },
     {
-      id: 'tributaria',
-      title: 'Tributaria',
+      id: 'toma-de-decisiones-finacieras-operativas',
+      title: 'Toma de decisiones financieras operativas',
+      description: 'Estrategias financieras para crecimiento empresarial',
+      icon: <DollarSign className="h-10 w-10 text-primary" />
+    },
+    {
+      id: 'tributacion',
+      title: 'Tributación',
       description: 'Optimización fiscal y cumplimiento tributario',
       icon: <FileText className="h-10 w-10 text-primary" />
     },
     {
-      id: 'finanzas-corporativas',
-      title: 'Finanzas corporativas',
-      description: 'Estrategias financieras para crecimiento empresarial',
-      icon: <LineChart className="h-10 w-10 text-primary" />
+      id: 'presupuestos',
+      title: 'Presupuestos',
+      description: 'Planificación presupuestaria para objetivos futuros',
+      icon: <ClipboardList className="h-10 w-10 text-primary" />
+    },
+    {
+      id: 'proyectos-de-inversion',
+      title: 'Proyectos de inversión',
+      description: 'Inversiones para mantener e incrementar el valor de la empresa',
+      icon: <BanknoteArrowUp className="h-10 w-10 text-primary" />
     }
   ];
 
