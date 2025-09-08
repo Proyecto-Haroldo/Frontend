@@ -1,14 +1,14 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { fetchQuestionsByCategory, submitQuestionnaireAnswers } from '../api/questionnaireApi';
-import type { Question, QuestionnaireResult  } from '../types/questionnaire';
-import { 
-  ArrowLeft, 
-  ArrowRight, 
-  CheckCircle2, 
-  AlertCircle, 
-  Home, 
+import type { Question, QuestionnaireResult } from '../types/questionnaire';
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  AlertCircle,
+  Home,
   Loader2,
   FileText
 } from 'lucide-react';
@@ -36,10 +36,59 @@ const pageVariants = {
   }
 };
 
+const HighlightedText = ({
+  text,
+  keywords = []
+}: {
+  text: string;
+  keywords: { title: string; description: string }[];
+}) => {
+  if (!keywords || keywords.length === 0) return <span>{text}</span>;
+
+  // Create a map for quick keyword lookup (case-insensitive)
+  const keywordMap = new Map();
+  keywords.forEach(keyword => {
+    keywordMap.set(keyword.title.toLowerCase(), keyword);
+  });
+
+  // Split text into words while preserving spaces and punctuation
+  const words = text.split(/(\s+|[.,!?;:()"])/);
+  
+  return (
+    <span className="inline">
+      {words.map((word, index) => {
+        // Skip empty strings and whitespace-only strings
+        if (!word || /^\s+$/.test(word)) {
+          return <span key={index}>{word}</span>;
+        }
+
+        // Clean the word for keyword matching (remove punctuation)
+        const cleanWord = word.toLowerCase().replace(/[.,!?;:()"]/g, '');
+        const keyword = keywordMap.get(cleanWord);
+
+        if (keyword) {
+          return (
+            <span
+              key={index}
+              className="tooltip tooltip-info inline-block"
+              data-tip={keyword.description}
+            >
+              <span className="text-primary cursor-help underline decoration-dotted underline-offset-2 inline-block hover:bg-base-300 hover:text-primary transition-all duration-200 rounded-sm px-0.5 -mx-0.5">
+                {word}
+              </span>
+            </span>
+          );
+        }
+
+        return <span key={index}>{word}</span>;
+      })}
+    </span>
+  );
+};
 
 const Questionnaire = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
+  const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const [isComplete, setIsComplete] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,15 +96,12 @@ const Questionnaire = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  
-  // Parse URL parameters and fetch questions
-  // Note: Currently only category is required, clientType is commented out for future use
-  // When client type filtering is re-enabled, update this useEffect and the API call accordingly
+
+  // Fetch de preguntas según categoría
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const category = params.get('category');
-    // const clientType = params.get('clientType'); // Commented out for future use - we may need client type filtering again
-    
+
     if (category) {
       setIsLoading(true);
       fetchQuestionsByCategory(category)
@@ -63,7 +109,7 @@ const Questionnaire = () => {
           setQuestions(fetchedQuestions);
           setIsLoading(false);
         })
-        .catch((err: unknown) => {
+        .catch(err => {
           setError('Error al cargar las preguntas');
           setIsLoading(false);
           console.error('Error fetching questions:', err);
@@ -73,156 +119,18 @@ const Questionnaire = () => {
     }
   }, [location, navigate]);
 
-  // Process text to find and replace keywords with tooltips in the title
-  const processTitleWithKeywords = useMemo(() => {
-    return (title: string, question: Question) => {
-      if (!question.keywords || question.keywords.length === 0) return title;
-      
-      // Process title for keywords
-      let processedTitle = title;
-      const processedPositions: {start: number, end: number}[] = [];
-      
-      // First, check for exact full keyword matches
-      question.keywords.forEach(keyword => {
-        const fullKeyword = keyword.title.trim();
-        if (!fullKeyword) return;
-        
-        // Create a regex that matches the full keyword as a whole word
-        const fullRegex = new RegExp(`\\b${fullKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
-        let match;
-        
-        // Find all matches of the full keyword
-        while ((match = fullRegex.exec(title)) !== null) {
-          const start = match.index;
-          const end = start + match[0].length;
-          
-          // Check if this position is already processed
-          const isOverlap = processedPositions.some(pos => 
-            (start >= pos.start && start < pos.end) || // New match starts within an existing match
-            (end > pos.start && end <= pos.end) ||    // New match ends within an existing match
-            (start <= pos.start && end >= pos.end)    // New match completely contains an existing match
-          );
-          
-          if (!isOverlap) {
-            processedPositions.push({ start, end });
-            
-            // Replace the match with the tooltip
-            processedTitle = processedTitle.replace(
-              new RegExp(`\\b${fullKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i'),
-              (match) => 
-                `<span class="tooltip tooltip-info" data-tip="${keyword.description}">
-                  <span class="text-primary cursor-help border-b border-dotted border-primary">${match}</span>
-                </span>`
-            );
-          }
-          
-          // If we don't do this, we'll get an infinite loop for zero-length matches
-          if (match.index === fullRegex.lastIndex) {
-            fullRegex.lastIndex++;
-          }
-        }
-      });
-      
-      // Then, check for individual word matches for keywords that weren't matched as whole phrases
-      question.keywords.forEach(keyword => {
-        const fullKeyword = keyword.title.trim();
-        if (!fullKeyword) return;
-        
-        // Only process single-word keywords or keywords that weren't matched as full phrases
-        const keywordParts = fullKeyword.includes(' ') ? [] : [fullKeyword];
-        
-        keywordParts.forEach(part => {
-          // Only process if the part is at least 4 characters to avoid matching common short words
-          if (part.length >= 4 && !['what', 'this', 'that', 'with', 'your', 'para', 'sobre', 'cual', 'como', 'tiene'].includes(part.toLowerCase())) {
-            const wordRegex = new RegExp(`\\b${part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
-            
-            processedTitle = processedTitle.replace(wordRegex, (match, offset) => {
-              // Check if this match is within any of the already processed positions
-              const isInProcessed = processedPositions.some(pos => 
-                offset >= pos.start && offset < pos.end
-              );
-              
-              if (!isInProcessed) {
-                return `<span class="tooltip tooltip-info" data-tip="${keyword.description}">
-                  <span class="text-primary cursor-help border-b border-dotted border-primary">${match}</span>
-                </span>`;
-              }
-              return match;
-            });
-          }
-        });
-      });
-      
-      return processedTitle;
-    };
-  }, []);
-
-  // Process options for keywords
-  const processOptions = useMemo(() => {
-    return (question: Question) => {
-      if (!question.options) return [];
-      
-      return question.options.map(option => {
-        let processedText = option.text;
-        
-        if (question.keywords) {
-          question.keywords.forEach(keyword => {
-            // Check for partial word matches - breaking this into parts
-            const keywordParts = keyword.title.toLowerCase().split(' ');
-            
-            // Simple case: look for individual words from the keyword
-            keywordParts.forEach(part => {
-              // Only process if the part is at least 4 characters to avoid matching common short words
-              if (part.length >= 4 && !['what', 'this', 'that', 'with', 'your'].includes(part.toLowerCase())) {
-                const wordRegex = new RegExp(`\\b${part}\\b`, 'gi');
-                
-                // We need to check if this part appears in the text before trying to replace it
-                if (wordRegex.test(option.text)) {
-                  // Reset the regex since test() advances the lastIndex
-                  const replaceRegex = new RegExp(`\\b${part}\\b`, 'gi');
-                  processedText = processedText.replace(replaceRegex, (match) => 
-                    `<span class="tooltip tooltip-info" data-tip="${keyword.description}">
-                      <span class="text-primary cursor-help border-b border-dotted border-primary">${match}</span>
-                    </span>`
-                  );
-                }
-              }
-            });
-          });
-        }
-        
-        return {
-          ...option,
-          processedText
-        };
-      });
-    };
-  }, []);
-
-  // Initialize these variables outside of any conditional blocks to ensure hooks are always called in the same order
   const currentQuestion = questions[currentQuestionIndex] || {
     id: 0,
     title: '',
     type: 'open' as const,
     keywords: []
   };
-  
-  const progress = questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
-  const isLastQuestion = questions.length > 0 ? currentQuestionIndex === questions.length - 1 : false;
-  
-  // Process the title with keywords highlighting
-  const processedTitle = useMemo(() => 
-    processTitleWithKeywords(currentQuestion.title, currentQuestion),
-  [currentQuestion, processTitleWithKeywords]);
-  
-  // Process options for the current question
-  const processedOptions = useMemo(() => 
-    processOptions(currentQuestion),
-  [currentQuestion, processOptions]);
 
+  const progress =
+    questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
+  const isLastQuestion =
+    questions.length > 0 ? currentQuestionIndex === questions.length - 1 : false;
 
-
-  // If questions are still loading, show loading state
   if (isLoading) {
     return (
       <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
@@ -236,7 +144,6 @@ const Questionnaire = () => {
     );
   }
 
-  // If there was an error loading questions, show error state
   if (error) {
     return (
       <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
@@ -246,10 +153,7 @@ const Questionnaire = () => {
               <AlertCircle className="h-6 w-6" />
               <span>{error}</span>
             </div>
-            <button 
-              onClick={() => navigate('/services')} 
-              className="btn btn-primary gap-2"
-            >
+            <button onClick={() => navigate('/services')} className="btn btn-primary gap-2">
               <ArrowLeft className="h-5 w-5" />
               Volver a Servicios
             </button>
@@ -267,52 +171,28 @@ const Questionnaire = () => {
         setIsSubmitting(true);
         const params = new URLSearchParams(location.search);
         const category = params.get('category');
-        // const clientType = params.get('clientType'); // Commented out for future use - we may need client type filtering again
-        
-        if (!category) {
-          throw new Error('Información de categoría no encontrada');
-        }
 
-        // Prepare the data in a more structured way
-        // Note: clientType is set to 'N/A' as a placeholder since we're not currently filtering by client type
-        // When client type filtering is re-enabled, update this to use the actual clientType from URL params
+        if (!category) throw new Error('Información de categoría no encontrada');
+
         const questionnaireData: QuestionnaireResult = {
           metadata: {
             category,
-            clientType: 'N/A', // Placeholder for future use when client type filtering is re-enabled
-            timestamp: new Date().toISOString(),
+            clientType: 'N/A',
+            timestamp: new Date().toISOString()
           },
-          answers: questions.map(question => {
-            const answer = answers[question.id];
-            // Ensure answer is always an array for backend compatibility
-            let answerArray: string[];
-            if (Array.isArray(answer)) {
-              answerArray = answer.map(String);
-            } else if (answer === null || answer === undefined) {
-              answerArray = [];
-            } else {
-              answerArray = [String(answer)];
-            }
-            
-            return {
-              questionId: question.id,
-              questionTitle: question.title,
-              answer: answerArray,
-              type: question.type
-            };
-          })
+          answers: questions.map(question => ({
+            questionId: question.id,
+            questionTitle: question.title,
+            answer: answers[question.id] || [],
+            type: question.type
+          }))
         };
 
-        // Send questionnaire data to backend for AI analysis
         const aiRecommendation = await submitQuestionnaireAnswers(questionnaireData);
-        
-        // Store the AI recommendation in localStorage for the diagnostic review page
+
         localStorage.setItem('aiRecommendation', aiRecommendation);
         localStorage.setItem('questionnaireData', JSON.stringify(questionnaireData));
-        
-        console.log('AI Recommendation:', aiRecommendation);
-        console.log('Questionnaire Data:', questionnaireData);
-        
+
         setIsComplete(true);
       } catch (err) {
         setError('Error al procesar las respuestas. Por favor, intente nuevamente.');
@@ -324,22 +204,11 @@ const Questionnaire = () => {
   };
 
   const handlePrevious = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(prev => prev - 1);
-    }
+    if (currentQuestionIndex > 0) setCurrentQuestionIndex(prev => prev - 1);
   };
 
   const handleAnswerChange = (value: string | string[]) => {
-    // Ensure all answers are stored as arrays for backend compatibility
-    let answerValue: string[];
-    if (Array.isArray(value)) {
-      answerValue = value;
-    } else if (value === null || value === undefined) {
-      answerValue = [];
-    } else {
-      answerValue = [String(value)];
-    }
-    
+    const answerValue = Array.isArray(value) ? value : [String(value)];
     setAnswers(prev => ({
       ...prev,
       [currentQuestion.id]: answerValue
@@ -350,69 +219,64 @@ const Questionnaire = () => {
     switch (currentQuestion.type) {
       case 'open':
         return (
-          <textarea 
-            className="textarea textarea-bordered w-full h-32" 
+          <textarea
+            className="textarea textarea-bordered w-full h-32"
             placeholder="Escriba la respuesta aqui..."
-            value={Array.isArray(answers[currentQuestion.id]) ? answers[currentQuestion.id][0] || '' : ''}
-            onChange={(e) => handleAnswerChange(e.target.value)}
+            value={answers[currentQuestion.id]?.[0] || ''}
+            onChange={e => handleAnswerChange(e.target.value)}
           />
         );
-      
+
       case 'single':
         return (
           <div className="space-y-1">
-            {processedOptions.map((option) => (
+            {currentQuestion.options?.map(option => (
               <div key={option.id} className="form-control">
                 <label className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg">
                   <input
                     type="radio"
                     id={option.id}
                     name={currentQuestion.id.toString()}
-                    checked={Array.isArray(answers[currentQuestion.id]) && answers[currentQuestion.id][0] === option.id}
+                    checked={answers[currentQuestion.id]?.[0] === option.id}
                     onChange={() => handleAnswerChange(option.id)}
                     className="radio radio-primary"
                   />
-                  <span 
-                    className="label-text text-left"
-                    dangerouslySetInnerHTML={{ __html: option.processedText }}
-                  />
+                  <span className="label-text text-left">
+                    <HighlightedText text={option.text} keywords={currentQuestion.keywords || []} />
+                  </span>
                 </label>
               </div>
             ))}
           </div>
         );
-      
+
       case 'multiple':
         return (
           <div className="space-y-1">
-            {processedOptions.map((option) => (
+            {currentQuestion.options?.map(option => (
               <div key={option.id} className="form-control">
                 <label className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg">
                   <input
                     type="checkbox"
                     id={option.id}
-                    checked={Array.isArray(answers[currentQuestion.id]) && answers[currentQuestion.id].includes(option.id)}
-                    onChange={(e) => {
+                    checked={answers[currentQuestion.id]?.includes(option.id) || false}
+                    onChange={e => {
                       const currentAnswers = new Set(answers[currentQuestion.id] || []);
-                      if (e.target.checked) {
-                        currentAnswers.add(option.id);
-                      } else {
-                        currentAnswers.delete(option.id);
-                      }
+                      if (e.target.checked) currentAnswers.add(option.id);
+                      else currentAnswers.delete(option.id);
                       handleAnswerChange(Array.from(currentAnswers));
                     }}
                     className="checkbox checkbox-primary"
                   />
-                  <span 
-                    className="label-text text-left"
-                    dangerouslySetInnerHTML={{ __html: option.processedText }}
-                  />
+                  <span className="label-text text-left">
+                    <HighlightedText text={option.text} keywords={currentQuestion.keywords || []} />
+                  </span>
                 </label>
               </div>
             ))}
           </div>
         );
-      
+
       default:
         return null;
     }
@@ -427,17 +291,17 @@ const Questionnaire = () => {
               <CheckCircle2 className="h-16 w-16 text-success mx-auto" />
             </div>
             <h2 className="card-title text-2xl mb-4">¡Cuestionario Completado!</h2>
-            <p className="mb-6">Gracias por completar el cuestionario. Nuestro equipo analizará sus respuestas y se pondrá en contacto con usted pronto para proporcionarle un diagnóstico personalizado.</p>
+            <p className="mb-6">
+              Gracias por completar el cuestionario. Nuestro equipo analizará sus respuestas y se
+              pondrá en contacto con usted pronto para proporcionarle un diagnóstico personalizado.
+            </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <button 
-                onClick={() => navigate('/')} 
-                className="btn btn-primary gap-2"
-              >
+              <button onClick={() => navigate('/')} className="btn btn-primary gap-2">
                 <Home className="h-5 w-5" />
                 Volver al Inicio
               </button>
-              <button 
-                onClick={() => navigate('/diagnostic-review?id=1')} 
+              <button
+                onClick={() => navigate('/diagnostic-review?id=1')}
                 className="btn btn-outline gap-2"
               >
                 <FileText className="h-5 w-5" />
@@ -467,10 +331,10 @@ const Questionnaire = () => {
                 <Loader2 className="h-16 w-16 text-primary animate-spin mx-auto" />
               </div>
               <h2 className="card-title text-2xl mb-4">Procesando respuestas</h2>
-              <p className="mb-6">Estamos analizando sus respuestas y generando su diagnóstico.</p>
-              <div className="text-sm text-gray-500">
-                Esto puede tomar unos momentos...
-              </div>
+              <p className="mb-6">
+                Estamos analizando sus respuestas y generando su diagnóstico.
+              </p>
+              <div className="text-sm text-gray-500">Esto puede tomar unos momentos...</div>
             </div>
           </div>
         </motion.div>
@@ -492,29 +356,29 @@ const Questionnaire = () => {
           <div className="card-body">
             {/* Progress Bar */}
             <div className="w-full bg-base-200 rounded-full h-2.5 mb-6">
-              <div 
-                className="bg-primary h-2.5 rounded-full transition-all duration-300" 
+              <div
+                className="bg-primary h-2.5 rounded-full transition-all duration-300"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            
+
             {/* Progress Text */}
             <div className="text-sm text-gray-500 mb-2">
               Pregunta {currentQuestionIndex + 1} de {questions.length}
             </div>
-            
-            {/* Question with keyword highlighting */}
-            <h2 
-              className="card-title text-2xl mb-6"
-              dangerouslySetInnerHTML={{ __html: processedTitle }}
-            />
-            
+
+            {/* Question */}
+            <h2 className="card-title text-2xl mb-6">
+              <HighlightedText
+                text={currentQuestion.title}
+                keywords={currentQuestion.keywords || []}
+              />
+            </h2>
+
             {/* Question Input */}
-            <div className="mb-8">
-              {renderQuestionInput()}
-            </div>
-            
-            {/* Navigation Buttons */}
+            <div className="mb-8">{renderQuestionInput()}</div>
+
+            {/* Navigation */}
             <div className="flex justify-between">
               <button
                 onClick={handlePrevious}
@@ -526,8 +390,7 @@ const Questionnaire = () => {
               </button>
               <button
                 onClick={handleNext}
-                disabled={!Array.isArray(answers[currentQuestion.id]) || 
-                        answers[currentQuestion.id].length === 0}
+                disabled={!answers[currentQuestion.id] || answers[currentQuestion.id].length === 0}
                 className={`btn gap-2 ${isLastQuestion ? 'btn-success' : 'btn-primary'}`}
               >
                 {isLastQuestion ? (
