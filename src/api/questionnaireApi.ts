@@ -15,7 +15,7 @@ interface ApiQuestion {
   }>;
 }
 
-export const fetchQuestions = async (category?: string, clientType?: string): Promise<Question[]> => {
+export const fetchQuestions = async (category?: string, _clientType?: string): Promise<Question[]> => {
   try {
     const response = await apiClient.get<ApiQuestion[]>('/preguntas/categoriaycliente', {
       params: {
