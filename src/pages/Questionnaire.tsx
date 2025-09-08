@@ -237,7 +237,7 @@ const Questionnaire = () => {
                     type="radio"
                     id={option.id}
                     name={currentQuestion.id.toString()}
-                    checked={answers[currentQuestion.id]?.[0] === option.id}
+                    checked={Array.isArray(answers[currentQuestion.id]) && answers[currentQuestion.id][0] === option.id}
                     onChange={() => handleAnswerChange(option.id)}
                     className="radio radio-primary"
                   />
@@ -259,11 +259,14 @@ const Questionnaire = () => {
                   <input
                     type="checkbox"
                     id={option.id}
-                    checked={answers[currentQuestion.id]?.includes(option.id) || false}
-                    onChange={e => {
+                    checked={Array.isArray(answers[currentQuestion.id]) && answers[currentQuestion.id].includes(option.id)}
+                    onChange={(e) => {
                       const currentAnswers = new Set(answers[currentQuestion.id] || []);
-                      if (e.target.checked) currentAnswers.add(option.id);
-                      else currentAnswers.delete(option.id);
+                      if (e.target.checked) {
+                        currentAnswers.add(option.id);
+                      } else {
+                        currentAnswers.delete(option.id);
+                      }
                       handleAnswerChange(Array.from(currentAnswers));
                     }}
                     className="checkbox checkbox-primary"
