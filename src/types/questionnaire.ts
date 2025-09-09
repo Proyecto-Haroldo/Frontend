@@ -32,7 +32,7 @@ export interface QuestionnaireMetadata {
 export interface QuestionnaireAnswer {
   questionId: number;
   questionTitle: string;
-  answer: string | string[] | null;
+  answer: string[];
   type: QuestionType;
 }
 

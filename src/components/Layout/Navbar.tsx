@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import ITMLogo from '../Common/ITMLogo';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import ThemeToggle from './ThemeToggle';
 import {
@@ -13,10 +13,13 @@ import {
   Menu,
   X,
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 function Navbar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -29,6 +32,11 @@ function Navbar() {
     { path: '/diagnostics', icon: FileText, label: 'Diagnósticos' },
     { path: '/account', icon: User, label: 'Cuenta' },
   ];
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   // Animation variants
   const overlayVariants = {
@@ -190,6 +198,7 @@ function Navbar() {
             transition={{ delay: 1 }}
             whileHover={{ x: 5, scale: 1.02, transition: { duration: 0.1 } }}
             whileTap={{ scale: 0.98, transition: { duration: 0.05 } }}
+            onClick={handleLogout}
           >
             <LogOut className="h-5 w-5" />
             <span>Cerrar Sesión</span>
@@ -263,6 +272,7 @@ function Navbar() {
             transition={{ delay: 1 }}
             whileHover={{ x: 5, scale: 1.02, transition: { duration: 0.1 } }}
             whileTap={{ scale: 0.98, transition: { duration: 0.05 } }}
+            onClick={handleLogout}
           >
             <LogOut className="h-5 w-5" />
             <span>Cerrar Sesión</span>

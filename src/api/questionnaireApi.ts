@@ -1,7 +1,5 @@
-import axios from 'axios';
-import type { Question } from '../types/questionnaire';
-
-const API_BASE_URL = 'http://localhost:8080/api';
+import { apiClient } from './apiClient';
+import type { Question, QuestionnaireResult } from '../types/questionnaire';
 
 interface ApiQuestion {
   id: number;
@@ -17,12 +15,12 @@ interface ApiQuestion {
   }>;
 }
 
-export const fetchQuestions = async (category?: string, clientType?: string): Promise<Question[]> => {
+export const fetchQuestions = async (category?: string, _clientType?: string): Promise<Question[]> => {
   try {
-    const response = await axios.get<ApiQuestion[]>(`${API_BASE_URL}/preguntas/categoriaycliente`, {
+    const response = await apiClient.get<ApiQuestion[]>('/preguntas/categoriaycliente', {
       params: {
         category: category,
-        clienttype: clientType
+        // clienttype: clientType // Commented out for future use - we may need client type filtering again
       }
     });
     
@@ -39,5 +37,36 @@ export const fetchQuestions = async (category?: string, clientType?: string): Pr
   } catch (error) {
     console.error('Error fetching questions:', error);
     throw new Error('Failed to fetch questions');
+  }
+};
+
+// New function to fetch questions by category only (regardless of client type)
+export const fetchQuestionsByCategory = async (category: string): Promise<Question[]> => {
+  try {
+    const response = await apiClient.get<ApiQuestion[]>(`/preguntas/categoria/${category}`);
+    
+    return response.data.map((q): Question => ({
+      id: q.id,
+      title: q.title,
+      type: q.type,
+      options: q.options?.map(opt => ({
+        id: String(opt.id),
+        text: opt.text
+      })),
+      keywords: q.keywords || []
+    }));
+  } catch (error) {
+    console.error('Error fetching questions by category:', error);
+    throw new Error('Failed to fetch questions by category');
+  }
+};
+
+export const submitQuestionnaireAnswers = async (questionnaireData: QuestionnaireResult): Promise<string> => {
+  try {
+    const response = await apiClient.post<string>('/respuestas', questionnaireData);
+    return response.data;
+  } catch (error) {
+    console.error('Error submitting questionnaire answers:', error);
+    throw new Error('Error al enviar las respuestas del cuestionario');
   }
 };

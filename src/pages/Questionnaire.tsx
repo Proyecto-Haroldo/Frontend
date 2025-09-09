@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { fetchQuestions } from '../api/questionnaireApi';
+import { fetchQuestionsByCategory, submitQuestionnaireAnswers } from '../api/questionnaireApi';
 import type { Question, QuestionnaireResult  } from '../types/questionnaire';
 import { 
   ArrowLeft, 
@@ -12,9 +13,33 @@ import {
   FileText
 } from 'lucide-react';
 
+const pageVariants = {
+  initial: {
+    x: 100,
+    opacity: 0
+  },
+  animate: {
+    x: 0,
+    opacity: 1,
+    transition: {
+      type: 'spring',
+      stiffness: 300,
+      damping: 30
+    }
+  },
+  exit: {
+    x: -100,
+    opacity: 0,
+    transition: {
+      duration: 0.3
+    }
+  }
+};
+
+
 const Questionnaire = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [isComplete, setIsComplete] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -24,19 +49,21 @@ const Questionnaire = () => {
   const location = useLocation();
   
   // Parse URL parameters and fetch questions
+  // Note: Currently only category is required, clientType is commented out for future use
+  // When client type filtering is re-enabled, update this useEffect and the API call accordingly
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const category = params.get('category');
-    const clientType = params.get('clientType');
+    // const clientType = params.get('clientType'); // Commented out for future use - we may need client type filtering again
     
-    if (category && clientType) {
+    if (category) {
       setIsLoading(true);
-      fetchQuestions(category, clientType)
+      fetchQuestionsByCategory(category)
         .then(fetchedQuestions => {
           setQuestions(fetchedQuestions);
           setIsLoading(false);
         })
-        .catch(err => {
+        .catch((err: unknown) => {
           setError('Error al cargar las preguntas');
           setIsLoading(false);
           console.error('Error fetching questions:', err);
@@ -193,6 +220,8 @@ const Questionnaire = () => {
     processOptions(currentQuestion),
   [currentQuestion, processOptions]);
 
+
+
   // If questions are still loading, show loading state
   if (isLoading) {
     return (
@@ -238,32 +267,51 @@ const Questionnaire = () => {
         setIsSubmitting(true);
         const params = new URLSearchParams(location.search);
         const category = params.get('category');
-        const clientType = params.get('clientType');
+        // const clientType = params.get('clientType'); // Commented out for future use - we may need client type filtering again
         
-        if (!category || !clientType) {
-          throw new Error('Información de categoría o tipo de cliente no encontrada');
+        if (!category) {
+          throw new Error('Información de categoría no encontrada');
         }
 
         // Prepare the data in a more structured way
+        // Note: clientType is set to 'N/A' as a placeholder since we're not currently filtering by client type
+        // When client type filtering is re-enabled, update this to use the actual clientType from URL params
         const questionnaireData: QuestionnaireResult = {
           metadata: {
             category,
-            clientType,
+            clientType: 'N/A', // Placeholder for future use when client type filtering is re-enabled
             timestamp: new Date().toISOString(),
           },
-          answers: questions.map(question => ({
-            questionId: question.id,
-            questionTitle: question.title,
-            answer: answers[question.id],
-            type: question.type
-          }))
+          answers: questions.map(question => {
+            const answer = answers[question.id];
+            // Ensure answer is always an array for backend compatibility
+            let answerArray: string[];
+            if (Array.isArray(answer)) {
+              answerArray = answer.map(String);
+            } else if (answer === null || answer === undefined) {
+              answerArray = [];
+            } else {
+              answerArray = [String(answer)];
+            }
+            
+            return {
+              questionId: question.id,
+              questionTitle: question.title,
+              answer: answerArray,
+              type: question.type
+            };
+          })
         };
 
-        // For now, just log the structured data
-        console.log('Questionnaire Data:', questionnaireData);
+        // Send questionnaire data to backend for AI analysis
+        const aiRecommendation = await submitQuestionnaireAnswers(questionnaireData);
         
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Store the AI recommendation in localStorage for the diagnostic review page
+        localStorage.setItem('aiRecommendation', aiRecommendation);
+        localStorage.setItem('questionnaireData', JSON.stringify(questionnaireData));
+        
+        console.log('AI Recommendation:', aiRecommendation);
+        console.log('Questionnaire Data:', questionnaireData);
         
         setIsComplete(true);
       } catch (err) {
@@ -281,10 +329,20 @@ const Questionnaire = () => {
     }
   };
 
-  const handleAnswerChange = (value: any) => {
+  const handleAnswerChange = (value: string | string[]) => {
+    // Ensure all answers are stored as arrays for backend compatibility
+    let answerValue: string[];
+    if (Array.isArray(value)) {
+      answerValue = value;
+    } else if (value === null || value === undefined) {
+      answerValue = [];
+    } else {
+      answerValue = [String(value)];
+    }
+    
     setAnswers(prev => ({
       ...prev,
-      [currentQuestion.id]: value
+      [currentQuestion.id]: answerValue
     }));
   };
 
@@ -295,7 +353,7 @@ const Questionnaire = () => {
           <textarea 
             className="textarea textarea-bordered w-full h-32" 
             placeholder="Escriba la respuesta aqui..."
-            value={answers[currentQuestion.id.toString()] || ''}
+            value={Array.isArray(answers[currentQuestion.id]) ? answers[currentQuestion.id][0] || '' : ''}
             onChange={(e) => handleAnswerChange(e.target.value)}
           />
         );
@@ -310,8 +368,8 @@ const Questionnaire = () => {
                     type="radio"
                     id={option.id}
                     name={currentQuestion.id.toString()}
-                    checked={answers[currentQuestion.id] === option.id}
-                    onChange={() => handleAnswerChange(option.id)}
+                    checked={Array.isArray(answers[currentQuestion.id]) && answers[currentQuestion.id][0] === option.text}
+                    onChange={() => handleAnswerChange(option.text)}
                     className="radio radio-primary"
                   />
                   <span 
@@ -333,13 +391,13 @@ const Questionnaire = () => {
                   <input
                     type="checkbox"
                     id={option.id}
-                    checked={answers[currentQuestion.id]?.includes(option.id) || false}
+                    checked={Array.isArray(answers[currentQuestion.id]) && answers[currentQuestion.id].includes(option.text)}
                     onChange={(e) => {
                       const currentAnswers = new Set(answers[currentQuestion.id] || []);
                       if (e.target.checked) {
-                        currentAnswers.add(option.id);
+                        currentAnswers.add(option.text);
                       } else {
-                        currentAnswers.delete(option.id);
+                        currentAnswers.delete(option.text);
                       }
                       handleAnswerChange(Array.from(currentAnswers));
                     }}
@@ -379,7 +437,7 @@ const Questionnaire = () => {
                 Volver al Inicio
               </button>
               <button 
-                onClick={() => navigate('/diagnostic-review')} 
+                onClick={() => navigate('/diagnostic-review?id=1')} 
                 className="btn btn-outline gap-2"
               >
                 <FileText className="h-5 w-5" />
@@ -392,73 +450,103 @@ const Questionnaire = () => {
     );
   }
 
+  if (isSubmitting) {
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="submitting"
+          className="min-h-screen bg-base-200 flex items-center justify-center p-4"
+          variants={pageVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+        >
+          <div className="card w-full max-w-2xl bg-base-100 shadow-xl">
+            <div className="card-body items-center text-center">
+              <div className="mb-6">
+                <Loader2 className="h-16 w-16 text-primary animate-spin mx-auto" />
+              </div>
+              <h2 className="card-title text-2xl mb-4">Procesando respuestas</h2>
+              <p className="mb-6">Estamos analizando sus respuestas y generando su diagnóstico.</p>
+              <div className="text-sm text-gray-500">
+                Esto puede tomar unos momentos...
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
-      <div className="card w-full max-w-4xl bg-base-100 shadow-xl">
-        <div className="card-body">
-          {/* Progress Bar */}
-          <div className="w-full bg-base-200 rounded-full h-2.5 mb-6">
-            <div 
-              className="bg-primary h-2.5 rounded-full transition-all duration-300" 
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
-          
-          {/* Progress Text */}
-          <div className="text-sm text-gray-500 mb-2">
-            Pregunta {currentQuestionIndex + 1} de {questions.length}
-          </div>
-          
-          {/* Question with keyword highlighting */}
-          <h2 
-            className="card-title text-2xl mb-6"
-            dangerouslySetInnerHTML={{ __html: processedTitle }}
-          />
-          
-          {/* Question Input */}
-          <div className="mb-8">
-            {renderQuestionInput()}
-          </div>
-          
-          {/* Navigation Buttons */}
-          <div className="flex justify-between">
-            <button
-              onClick={handlePrevious}
-              disabled={currentQuestionIndex === 0 || isSubmitting}
-              className="btn btn-ghost gap-2"
-            >
-              <ArrowLeft className="h-5 w-5" />
-              Anterior
-            </button>
-            <button
-              onClick={handleNext}
-              disabled={!answers[currentQuestion.id] || 
-                       (Array.isArray(answers[currentQuestion.id]) && 
-                        answers[currentQuestion.id].length === 0) ||
-                       isSubmitting}
-              className="btn btn-primary gap-2"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Enviando...
-                </>
-              ) : isLastQuestion ? (
-                <>
-                  Enviar
-                  <ArrowRight className="h-5 w-5" />
-                </>
-              ) : (
-                <>
-                  Siguiente
-                  <ArrowRight className="h-5 w-5" />
-                </>
-              )}
-            </button>
+    <AnimatePresence mode="wait">
+      <motion.div
+        key="questionnaire"
+        className="min-h-screen bg-base-200 flex items-center justify-center p-4"
+        variants={pageVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+      >
+        <div className="card w-full max-w-4xl bg-base-100 shadow-xl">
+          <div className="card-body">
+            {/* Progress Bar */}
+            <div className="w-full bg-base-200 rounded-full h-2.5 mb-6">
+              <div 
+                className="bg-primary h-2.5 rounded-full transition-all duration-300" 
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            
+            {/* Progress Text */}
+            <div className="text-sm text-gray-500 mb-2">
+              Pregunta {currentQuestionIndex + 1} de {questions.length}
+            </div>
+            
+            {/* Question with keyword highlighting */}
+            <h2 
+              className="card-title text-2xl mb-6"
+              dangerouslySetInnerHTML={{ __html: processedTitle }}
+            />
+            
+            {/* Question Input */}
+            <div className="mb-8">
+              {renderQuestionInput()}
+            </div>
+            
+            {/* Navigation Buttons */}
+            <div className="flex justify-between">
+              <button
+                onClick={handlePrevious}
+                disabled={currentQuestionIndex === 0}
+                className="btn btn-ghost gap-2"
+              >
+                <ArrowLeft className="h-5 w-5" />
+                Anterior
+              </button>
+              <button
+                onClick={handleNext}
+                disabled={!Array.isArray(answers[currentQuestion.id]) || 
+                        answers[currentQuestion.id].length === 0}
+                className={`btn gap-2 ${isLastQuestion ? 'btn-success' : 'btn-primary'}`}
+              >
+                {isLastQuestion ? (
+                  <>
+                    <FileText className="h-5 w-5" />
+                    Enviar Respuestas
+                  </>
+                ) : (
+                  <>
+                    Siguiente
+                    <ArrowRight className="h-5 w-5" />
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 
