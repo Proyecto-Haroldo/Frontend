@@ -183,10 +183,16 @@ const Questionnaire = () => {
           answers: questions.map(question => ({
             questionId: question.id,
             questionTitle: question.title,
-            answer: answers[question.id] || [],
+            answer: question.type === 'open'
+            ? answers[question.id] || []
+            : (answers[question.id] || []).map(
+                id => question.options?.find(opt => opt.id === id)?.text || id
+              ),
             type: question.type
           }))
         };
+
+        console.log('Submitting questionnaire data:', questionnaireData);
 
         const aiRecommendation = await submitQuestionnaireAnswers(questionnaireData);
 
