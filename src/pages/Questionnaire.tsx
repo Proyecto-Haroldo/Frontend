@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { fetchQuestionsByCategory, submitQuestionnaireAnswers } from '../api/questionnaireApi';
@@ -38,17 +38,22 @@ const pageVariants = {
 
 const HighlightedText = ({
   text,
-  keywords = []
+  keywords = [],
+  allowedKeywords
 }: {
   text: string;
   keywords: { title: string; description: string }[];
+  allowedKeywords: Set<string>;
 }) => {
   if (!keywords || keywords.length === 0) return <span>{text}</span>;
 
   // Create a map for quick keyword lookup (case-insensitive)
   const keywordMap = new Map();
   keywords.forEach(keyword => {
-    keywordMap.set(keyword.title.toLowerCase(), keyword);
+    const keyLower = keyword.title.toLowerCase();
+    if (allowedKeywords.has(keyLower)) {
+      keywordMap.set(keyLower, keyword);
+    }
   });
 
   // Split text into words while preserving spaces and punctuation
@@ -125,6 +130,49 @@ const Questionnaire = () => {
     type: 'open' as const,
     keywords: []
   };
+
+  // Pre-calculate which keywords should be highlighted to ensure each appears only once
+  const keywordAllocation = useMemo(() => {
+    const allocation = {
+      title: new Set<string>(),
+      options: new Map<string, Set<string>>()
+    };
+
+    if (!currentQuestion.keywords) return allocation;
+
+    const usedKeywords = new Set<string>();
+
+    // Helper function to find keywords in text
+    const findKeywordsInText = (text: string) => {
+      const foundKeywords = new Set<string>();
+      const words = text.split(/(\s+|[.,!?;:()"])/);
+      
+      words.forEach(word => {
+        if (!word || /^\s+$/.test(word)) return;
+        const cleanWord = word.toLowerCase().replace(/[.,!?;:()"]/g, '');
+        
+        currentQuestion.keywords?.forEach(keyword => {
+          const keywordLower = keyword.title.toLowerCase();
+          if (cleanWord === keywordLower && !usedKeywords.has(keywordLower)) {
+            foundKeywords.add(keywordLower);
+            usedKeywords.add(keywordLower);
+          }
+        });
+      });
+      
+      return foundKeywords;
+    };
+
+    // First, allocate keywords found in the title
+    allocation.title = findKeywordsInText(currentQuestion.title);
+
+    // Then, allocate keywords found in options (excluding those already used in title)
+    currentQuestion.options?.forEach(option => {
+      allocation.options.set(option.id, findKeywordsInText(option.text));
+    });
+
+    return allocation;
+  }, [currentQuestion]);
 
   const progress =
     questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
@@ -248,7 +296,11 @@ const Questionnaire = () => {
                     className="radio radio-primary"
                   />
                   <span className="label-text text-left">
-                    <HighlightedText text={option.text} keywords={currentQuestion.keywords || []} />
+                    <HighlightedText 
+                      text={option.text} 
+                      keywords={currentQuestion.keywords || []} 
+                      allowedKeywords={keywordAllocation.options.get(option.id) || new Set()}
+                    />
                   </span>
                 </label>
               </div>
@@ -278,7 +330,11 @@ const Questionnaire = () => {
                     className="checkbox checkbox-primary"
                   />
                   <span className="label-text text-left">
-                    <HighlightedText text={option.text} keywords={currentQuestion.keywords || []} />
+                    <HighlightedText 
+                      text={option.text} 
+                      keywords={currentQuestion.keywords || []} 
+                      allowedKeywords={keywordAllocation.options.get(option.id) || new Set()}
+                    />
                   </span>
                 </label>
               </div>
@@ -376,15 +432,16 @@ const Questionnaire = () => {
               Pregunta {currentQuestionIndex + 1} de {questions.length}
             </div>
 
-            {/* Question */}
+            {/* Question - Title is rendered first to establish keyword priority */}
             <h2 className="card-title text-2xl mb-6">
               <HighlightedText
                 text={currentQuestion.title}
                 keywords={currentQuestion.keywords || []}
+                allowedKeywords={keywordAllocation.title}
               />
             </h2>
 
-            {/* Question Input */}
+            {/* Question Input - Options are rendered after title so keywords used in title won't be highlighted again */}
             <div className="mb-8">{renderQuestionInput()}</div>
 
             {/* Navigation */}
