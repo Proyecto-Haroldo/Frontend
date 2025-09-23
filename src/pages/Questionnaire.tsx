@@ -244,7 +244,8 @@ const Questionnaire = () => {
 
         const aiRecommendation = await submitQuestionnaireAnswers(questionnaireData);
 
-        localStorage.setItem('aiRecommendation', aiRecommendation);
+        // Store the full JSON returned by backend: { resumenUsuario, colorSemaforo }
+        localStorage.setItem('aiRecommendation', JSON.stringify(aiRecommendation));
         localStorage.setItem('questionnaireData', JSON.stringify(questionnaireData));
 
         setIsComplete(true);
