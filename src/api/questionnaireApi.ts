@@ -61,9 +61,16 @@ export const fetchQuestionsByCategory = async (category: string): Promise<Questi
   }
 };
 
-export const submitQuestionnaireAnswers = async (questionnaireData: QuestionnaireResult): Promise<string> => {
+export interface AIRecommendationResult {
+  resumenUsuario: string;
+  colorSemaforo: string; // 'verde' | 'amarillo' | 'rojo'
+}
+
+export const submitQuestionnaireAnswers = async (
+  questionnaireData: QuestionnaireResult
+): Promise<AIRecommendationResult> => {
   try {
-    const response = await apiClient.post<string>('/respuestas', questionnaireData);
+    const response = await apiClient.post<AIRecommendationResult>('/respuestas', questionnaireData);
     return response.data;
   } catch (error) {
     console.error('Error submitting questionnaire answers:', error);
