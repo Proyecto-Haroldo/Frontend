@@ -1,0 +1,87 @@
+/* Contenedor del semáforo */
+.semaforo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Las luces en fila */
+.lights {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Base de cada luz */
+.light {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1f2937; /* gris oscuro cuando está apagada */
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.7);
+}
+
+/* Colores principales */
+.light.red {
+  color: #ef4444;       /* rojo brillante */
+  background: #7f1d1d;  /* apagado */
+}
+
+.light.yellow {
+  color: #facc15;       /* amarillo brillante */
+  background: #78350f;  /* apagado */
+}
+
+.light.green {
+  color: #22c55e;       /* verde brillante */
+  background: #064e3b;  /* apagado */
+}
+
+/* Cuando una luz está encendida */
+.light.on {
+  box-shadow:
+    0 0 20px 6px currentColor,
+    0 0 60px 12px currentColor,
+    inset 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* Animación de parpadeo (pulse) */
+.pulse {
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%   { filter: brightness(1); }
+  50%  { filter: brightness(1.5); }
+  100% { filter: brightness(1); }
+}
+
+/* Leyenda */
+.legend {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.legend .chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 13px;
+}
+
+.legend .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.dot.red { background: #ef4444; }
+.dot.yellow { background: #facc15; }
+.dot.green { background: #22c55e; }
