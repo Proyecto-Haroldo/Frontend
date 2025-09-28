@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { fetchQuestionsByCategory, submitQuestionnaireAnswers } from '../api/questionnaireApi';
-import type { Question, QuestionnaireResult } from '../types/questionnaire';
+import { fetchQuestionsByCategory, submitQuestionnaireAnswers } from '../../api/questionnaireApi';
+import type { Question, QuestionnaireResult } from '../../types/questionnaire';
 import {
   ArrowLeft,
   ArrowRight,
@@ -120,7 +120,7 @@ const Questionnaire = () => {
           console.error('Error fetching questions:', err);
         });
     } else {
-      navigate('/services');
+      navigate('/c/services');
     }
   }, [location, navigate]);
 
@@ -201,7 +201,7 @@ const Questionnaire = () => {
               <AlertCircle className="h-6 w-6" />
               <span>{error}</span>
             </div>
-            <button onClick={() => navigate('/services')} className="btn btn-primary gap-2">
+            <button onClick={() => navigate('/c/services')} className="btn btn-primary gap-2">
               <ArrowLeft className="h-5 w-5" />
               Volver a Servicios
             </button>
@@ -362,12 +362,12 @@ const Questionnaire = () => {
               pondrá en contacto con usted pronto para proporcionarle un diagnóstico personalizado.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <button onClick={() => navigate('/')} className="btn btn-primary gap-2">
+              <button onClick={() => navigate('/c')} className="btn btn-primary gap-2">
                 <Home className="h-5 w-5" />
                 Volver al Inicio
               </button>
               <button
-                onClick={() => navigate('/diagnostic-review?id=1')}
+                onClick={() => navigate('/c/diagnostic-review?id=1')}
                 className="btn btn-outline gap-2"
               >
                 <FileText className="h-5 w-5" />

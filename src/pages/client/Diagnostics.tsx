@@ -97,7 +97,7 @@ function Diagnostics() {
                   
                   <button 
                     className="btn btn-ghost btn-sm"
-                    onClick={() => navigate(`/diagnostic-review?id=${diagnostic.id}`)}
+                    onClick={() => navigate(`/c/diagnostic-review?id=${diagnostic.id}`)}
                   >
                     <ArrowRight className="h-5 w-5" />
                   </button>

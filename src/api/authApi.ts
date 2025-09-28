@@ -17,11 +17,22 @@ export interface RegisterRequest {
 
 export interface LoginResponse {
   token: string;
+  role: { id: number, name: string };
+  id: string;
+  message?: string;
+}
+
+export interface RegisterResponse {
+  token: string;
+  role: { id: number, name: string };
+  id: string;
+  message?: string;
 }
 
 export async function login(data: LoginRequest): Promise<LoginResponse> {
   try {
     const response = await apiClient.post<LoginResponse>('/auth/login', data);
+    console.log(response);
     return response.data;
   } catch (error: unknown) {
     if (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'status' in error.response && error.response.status === 401) {
@@ -31,9 +42,9 @@ export async function login(data: LoginRequest): Promise<LoginResponse> {
   }
 }
 
-export async function register(data: RegisterRequest): Promise<string> {
+export async function register(data: RegisterRequest): Promise<RegisterResponse> {
   try {
-    const response = await apiClient.post<string>('/auth/register', data);
+    const response = await apiClient.post<RegisterResponse>('/auth/register', data);
     return response.data;
   } catch (error: unknown) {
     if (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'status' in error.response && error.response.status === 409) {

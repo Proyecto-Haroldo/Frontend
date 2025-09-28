@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Mail, KeyRound, Eye, EyeOff, Banknote, Wallet, PiggyBank, TrendingUp, BarChart } from 'lucide-react';
-import { login } from '../api/authApi';
-import { useAuth } from '../context/AuthContext';
+import { login } from '../../api/authApi';
+import { useAuth } from '../../context/AuthContext';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -20,7 +20,7 @@ const Login: React.FC = () => {
     password: false
   });
 
-  const { setToken } = useAuth();
+  const { setAuth } = useAuth();
   const navigate = useNavigate();
 
   const validateForm = () => {
@@ -50,8 +50,19 @@ const Login: React.FC = () => {
     setLoading(true);
     try {
       const res = await login({ email, password });
-      setToken(res.token);
-      navigate('/');
+      setAuth(res.token, res.role.id);
+
+      const role = res?.role.id;
+
+      if (role === 1) {
+        navigate("/m");
+      } else if (role === 2) {
+        navigate("/c");
+      } else if (role === 3) {
+        navigate("/a");
+      } else {
+        setError("Rol no reconocido.");
+      }
     } catch {
       setError('Ocurrió un error. Por favor intenta nuevamente.');
     } finally {

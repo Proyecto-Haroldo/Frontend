@@ -14,8 +14,8 @@ import {
   IdCard,
   Building2,
 } from "lucide-react";
-import { register } from "../api/authApi";
-import  PasswordStrength  from "../components/User/PasswordStrength";
+import { register } from "../../api/authApi";
+import PasswordStrength from "../../components/User/PasswordStrength";
 
 const SignUp: React.FC = () => {
   const [form, setForm] = useState({
@@ -142,7 +142,7 @@ const SignUp: React.FC = () => {
         role: { id: 2 },
       });
       setSuccess("Usuario registrado con éxito");
-      navigate("/");
+      navigate("/c");
     } catch (err: unknown) {
       // Try to detect conflict (email or cedula/NIT already exists)
       if (
@@ -339,14 +339,13 @@ const SignUp: React.FC = () => {
                   value={form.password}
                   onChange={handleChange}
                   onFocus={handlePasswordFocus}
-                  className={`input input-bordered w-full pl-10 join-item ${
-                    (touched.password && !form.password) ||
-                    validationErrors.password
+                  className={`input input-bordered w-full pl-10 join-item ${(touched.password && !form.password) ||
+                      validationErrors.password
                       ? "input-error"
                       : form.password && isPasswordValid
                         ? "input-success"
                         : ""
-                  }`}
+                    }`}
                   placeholder="Mínimo 8 caracteres"
                   disabled={loading}
                   required
@@ -399,16 +398,15 @@ const SignUp: React.FC = () => {
                   name="confirmPassword"
                   value={form.confirmPassword}
                   onChange={handleChange}
-                  className={`input input-bordered w-full pl-10 join-item ${
-                    (touched.confirmPassword && !form.confirmPassword) ||
-                    validationErrors.confirmPassword
+                  className={`input input-bordered w-full pl-10 join-item ${(touched.confirmPassword && !form.confirmPassword) ||
+                      validationErrors.confirmPassword
                       ? "input-error"
                       : form.confirmPassword &&
-                          form.confirmPassword === form.password &&
-                          isPasswordValid
+                        form.confirmPassword === form.password &&
+                        isPasswordValid
                         ? "input-success"
                         : ""
-                  }`}
+                    }`}
                   disabled={loading}
                   required
                   minLength={8}
