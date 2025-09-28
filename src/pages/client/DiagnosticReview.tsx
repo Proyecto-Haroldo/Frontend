@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   ChevronDown, 
@@ -10,24 +10,56 @@ import {
   XCircle,
   AlertCircle
 } from 'lucide-react';
+import { 
+  Diagnostic, 
+  ColorSemaforo,
+  getRiskLevel,
+  getRiskDescription,
+  formatDiagnosticTitle
+} from '../../types/diagnostics';
 
 function DiagnosticReview() {
   const [showAnswers, setShowAnswers] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
-  const diagnosticId = searchParams.get('id');
 
-  // Get AI recommendation from localStorage
-  const aiRecommendation = localStorage.getItem('aiRecommendation');
-  const questionnaireData = localStorage.getItem('questionnaireData');
+  // Get diagnostic data from navigation state
+  const diagnostic = location.state?.diagnostic as Diagnostic | undefined;
 
-  // Normalize AI data: handle both legacy string and new JSON with resumenUsuario/colorSemaforo
-  let resumenUsuario: string = 'Basado en sus respuestas, hemos identificado áreas clave para mejorar su salud financiera...';
-  let colorSemaforo: 'rojo' | 'amarillo' | 'verde' = 'amarillo';
-  if (aiRecommendation) {
+  // Fallback: get diagnostic ID from URL params for direct navigation
+  const diagnosticIdFromUrl = searchParams.get('id');
+
+  // For backward compatibility with localStorage (questionnaire completion flow)
+  const aiRecommendationFromLS = localStorage.getItem('aiRecommendation');
+  const questionnaireDataFromLS = localStorage.getItem('questionnaireData');
+
+  let diagnosticData: { 
+    id: string; 
+    conteo: number;
+    timestamp: string; 
+    categoria: string;
+    recomendacionUsuario: string; 
+    colorSemaforo: ColorSemaforo 
+  } | null = null;
+
+  if (diagnostic) {
+    // Primary: Use data from navigation state
+    diagnosticData = {
+      id: diagnostic.id,
+      conteo: diagnostic.conteo,
+      timestamp: diagnostic.timestamp,
+      categoria: diagnostic.categoria,
+      recomendacionUsuario: diagnostic.recomendacionUsuario,
+      colorSemaforo: diagnostic.colorSemaforo
+    };
+  } else if (diagnosticIdFromUrl && aiRecommendationFromLS) {
+    // Fallback for direct URL navigation with localStorage data
+    let resumenUsuario = 'Basado en sus respuestas, hemos identificado áreas clave para mejorar su salud financiera...';
+    let colorSemaforo: ColorSemaforo = 'amarillo';
+    
     try {
-      const parsed = JSON.parse(aiRecommendation);
-      console.log('[DiagnosticReview] parsed aiRecommendation JSON:', parsed);
+      const parsed = JSON.parse(aiRecommendationFromLS);
       if (parsed && typeof parsed === 'object' && 'resumenUsuario' in parsed && 'colorSemaforo' in parsed) {
         const resumenField = (parsed as any).resumenUsuario;
         resumenUsuario = typeof resumenField === 'string' ? resumenField : JSON.stringify(resumenField);
@@ -36,38 +68,23 @@ function DiagnosticReview() {
         else if (rawColor === 'amarillo' || rawColor === 'yellow') colorSemaforo = 'amarillo';
         else if (rawColor === 'verde' || rawColor === 'green') colorSemaforo = 'verde';
       } else {
-        // Fallback: legacy plain string
-        resumenUsuario = aiRecommendation;
+        resumenUsuario = aiRecommendationFromLS;
       }
     } catch {
-      // Not JSON, treat as legacy plain string
-      resumenUsuario = aiRecommendation;
+      resumenUsuario = aiRecommendationFromLS;
     }
+
+    const parsedQuestionnaireData = questionnaireDataFromLS ? JSON.parse(questionnaireDataFromLS) : null;
+    
+    diagnosticData = {
+      id: diagnosticIdFromUrl,
+      conteo: 1, // Default to 1 for legacy localStorage data
+      timestamp: parsedQuestionnaireData?.metadata?.timestamp || new Date().toISOString(),
+      categoria: parsedQuestionnaireData?.metadata?.category || 'General',
+      recomendacionUsuario: resumenUsuario,
+      colorSemaforo: colorSemaforo
+    };
   }
-  console.log('[DiagnosticReview] normalized resumenUsuario:', resumenUsuario);
-  console.log('[DiagnosticReview] normalized colorSemaforo:', colorSemaforo);
-  
-  // Parse questionnaire data if available
-  const parsedQuestionnaireData = questionnaireData ? JSON.parse(questionnaireData) : null;
-  
-  // This would come from your API/state management in the future
-  const diagnostic = {
-    id: diagnosticId || 1,
-    type: parsedQuestionnaireData?.metadata?.clientType || 'Personal',
-    date: parsedQuestionnaireData?.metadata?.timestamp ? new Date(parsedQuestionnaireData.metadata.timestamp).toLocaleDateString('es-ES') : '15 Mar 2024',
-    status: 'completed',
-    aiAnalysis: {
-      summary: typeof resumenUsuario === 'string' ? resumenUsuario : JSON.stringify(resumenUsuario),
-      riskAssessment: {
-        overall: colorSemaforo === 'verde' ? 'Bajo' : colorSemaforo === 'amarillo' ? 'Moderado' : 'Alto',
-        details: colorSemaforo === 'verde' ? 
-          'Su situación financiera es estable y saludable.' : 
-          colorSemaforo === 'amarillo' ? 
-          'Su situación requiere algunas mejoras.' : 
-          'Su situación requiere atención inmediata.'
-      }
-    }
-  };
 
   // Status configuration
   const statusConfig = {
@@ -94,8 +111,65 @@ function DiagnosticReview() {
     }
   };
 
-  const currentStatus = statusConfig[colorSemaforo];
+  // If no diagnostic data is available, redirect to diagnostics page
+  useEffect(() => {
+    if (!diagnosticData) {
+      navigate('/c/diagnostics');
+    }
+  }, [diagnosticData, navigate]);
+
+  if (!diagnosticData) {
+    return (
+      <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+        <div className="card w-full max-w-lg bg-base-100 shadow-xl">
+          <div className="card-body items-center text-center">
+            <div className="mb-6">
+              <div className="w-16 h-16 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertCircle className="h-8 w-8 text-error" />
+              </div>
+            </div>
+            <h2 className="card-title text-xl mb-4">Diagnóstico no encontrado</h2>
+            <p className="text-base-content/70 mb-6">
+              No se encontró información del diagnóstico solicitado. 
+              Por favor, intente seleccionar un diagnóstico desde la lista.
+            </p>
+            <div className="card-actions">
+              <button onClick={() => navigate('/c/diagnostics')} className="btn btn-primary gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Volver a Diagnósticos
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const currentStatus = statusConfig[diagnosticData.colorSemaforo];
   const StatusIcon = currentStatus.icon;
+
+  const formatDate = (timestamp: string) => {
+    try {
+      return new Date(timestamp).toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch {
+      return timestamp;
+    }
+  };
+
+  const formatTime = (timestamp: string) => {
+    try {
+      return new Date(timestamp).toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return '';
+    }
+  };
 
   // Motion animation variants
   const containerVariants = {
@@ -198,11 +272,11 @@ function DiagnosticReview() {
                 {/* Green Light (TOP) */}
                 <div className="relative flex justify-center">
                   <div className={`w-20 h-20 rounded-full border-4 border-neutral-content/20 transition-all duration-700 ${
-                    colorSemaforo === 'verde' 
+                    diagnosticData.colorSemaforo === 'verde' 
                       ? 'bg-green-500 shadow-xl shadow-green-500/60' 
                       : 'bg-neutral-content/10 shadow-inner'
                   }`}>
-                    {colorSemaforo === 'verde' && (
+                    {diagnosticData.colorSemaforo === 'verde' && (
                       <>
                         <motion.div 
                           className="absolute inset-2 bg-green-400 rounded-full"
@@ -225,11 +299,11 @@ function DiagnosticReview() {
                 {/* Yellow Light (MIDDLE) */}
                 <div className="relative flex justify-center">
                   <div className={`w-20 h-20 rounded-full border-4 border-neutral-content/20 transition-all duration-700 ${
-                    colorSemaforo === 'amarillo' 
+                    diagnosticData.colorSemaforo === 'amarillo' 
                       ? 'bg-yellow-400 shadow-xl shadow-yellow-400/60' 
                       : 'bg-neutral-content/10 shadow-inner'
                   }`}>
-                    {colorSemaforo === 'amarillo' && (
+                    {diagnosticData.colorSemaforo === 'amarillo' && (
                       <>
                         <motion.div 
                           className="absolute inset-2 bg-yellow-300 rounded-full"
@@ -252,11 +326,11 @@ function DiagnosticReview() {
                 {/* Red Light (BOTTOM) */}
                 <div className="relative flex justify-center">
                   <div className={`w-20 h-20 rounded-full border-4 border-neutral-content/20 transition-all duration-700 ${
-                    colorSemaforo === 'rojo' 
+                    diagnosticData.colorSemaforo === 'rojo' 
                       ? 'bg-red-500 shadow-xl shadow-red-500/60' 
                       : 'bg-neutral-content/10 shadow-inner'
                   }`}>
-                    {colorSemaforo === 'rojo' && (
+                    {diagnosticData.colorSemaforo === 'rojo' && (
                       <>
                         <motion.div 
                           className="absolute inset-2 bg-red-400 rounded-full"
@@ -279,21 +353,21 @@ function DiagnosticReview() {
             </motion.div>
             
             {/* Subtle Glow Effect */}
-            {colorSemaforo === 'rojo' && (
+            {diagnosticData.colorSemaforo === 'rojo' && (
               <motion.div 
                 className="absolute inset-0 bg-red-500/10 rounded-3xl blur-xl -z-10"
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               />
             )}
-            {colorSemaforo === 'amarillo' && (
+            {diagnosticData.colorSemaforo === 'amarillo' && (
               <motion.div 
                 className="absolute inset-0 bg-yellow-400/10 rounded-3xl blur-xl -z-10"
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               />
             )}
-            {colorSemaforo === 'verde' && (
+            {diagnosticData.colorSemaforo === 'verde' && (
               <motion.div 
                 className="absolute inset-0 bg-green-500/10 rounded-3xl blur-xl -z-10"
                 animate={{ opacity: [0.5, 1, 0.5] }}
@@ -317,25 +391,12 @@ function DiagnosticReview() {
         >
           <h3 className="text-xl font-semibold mb-4 text-center">Resumen del Análisis</h3>
           <p className="text-base-content/80 leading-relaxed text-center">
-            {diagnostic.aiAnalysis.summary}
+            {diagnosticData.recomendacionUsuario}
           </p>
         </motion.div>
       </motion.div>
     </motion.div>
   );
-
-  // Effects
-  useEffect(() => {
-    if (diagnosticId) {
-      console.log('Fetching diagnostic with ID:', diagnosticId);
-    }
-  }, [diagnosticId]);
-
-  useEffect(() => {
-    if (!diagnosticId) {
-      navigate('/c/diagnostics');
-    }
-  }, [diagnosticId, navigate]);
 
   return (
     <motion.div 
@@ -363,9 +424,14 @@ function DiagnosticReview() {
                 <ArrowLeft className="w-4 h-4" />
                 Volver
               </motion.button>
-              <div className="flex items-center gap-2 text-base-content/60 text-sm">
-                <Clock className="w-4 h-4" />
-                {diagnostic.date}
+              <div className="flex items-center gap-4 text-base-content/60 text-sm">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  {formatDate(diagnosticData.timestamp)} - {formatTime(diagnosticData.timestamp)}
+                </div>
+                <div className="badge badge-outline">
+                  ID: {diagnosticData.id}
+                </div>
               </div>
             </motion.div>
 
@@ -385,10 +451,10 @@ function DiagnosticReview() {
                 transition={{ duration: 0.6, delay: 0.3, type: "spring", stiffness: 200 }}
               >
                 <h1 className="text-3xl font-bold mb-2">
-                  Diagnóstico {diagnostic.type}
+                  Diagnóstico {formatDiagnosticTitle(diagnosticData.categoria, diagnosticData.conteo)}
                 </h1>
                 <p className="text-base-content/60">
-                  Análisis de su situación financiera
+                  Análisis personalizado de su situación
                 </p>
               </motion.div>
 
@@ -404,54 +470,31 @@ function DiagnosticReview() {
                 </div>
               </motion.div>
 
-              {/* Risk Assessment Cards */}
+              {/* Risk Assessment Card */}
               <motion.div 
-                className="grid md:grid-cols-2 gap-6"
+                className="card bg-base-200/50"
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.7, delay: 0.6, ease: "easeOut" }}
+                whileHover={{ scale: 1.01 }}
               >
-                <motion.div 
-                  className="card bg-base-200/50"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                >
-                  <div className="card-body">
-                    <h3 className="card-title text-lg">Nivel de Riesgo</h3>
-                    <div className="flex items-center gap-3">
-                      <div className={`badge badge-lg transition-all duration-300 ${
-                        colorSemaforo === 'verde' ? 'badge-success' :
-                        colorSemaforo === 'amarillo' ? 'badge-warning' : 'badge-error'
-                      }`}>
-                        {diagnostic.aiAnalysis.riskAssessment.overall}
-                      </div>
-                      <span className="text-base-content/80 text-sm">
-                        {diagnostic.aiAnalysis.riskAssessment.details}
-                      </span>
+                <div className="card-body">
+                  <h3 className="card-title text-lg mb-4">Nivel de Riesgo</h3>
+                  <div className="flex items-center gap-4">
+                    <div className={`badge badge-lg px-4 py-3 transition-all duration-300 ${
+                      diagnosticData.colorSemaforo === 'verde' ? 'badge-success' :
+                      diagnosticData.colorSemaforo === 'amarillo' ? 'badge-warning' : 'badge-error'
+                    }`}>
+                      {getRiskLevel(diagnosticData.colorSemaforo)}
                     </div>
+                    <span className="text-base-content/80">
+                      {getRiskDescription(diagnosticData.colorSemaforo)}
+                    </span>
                   </div>
-                </motion.div>
-
-                <motion.div 
-                  className="card bg-base-200/50"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                >
-                  <div className="card-body">
-                    <h3 className="card-title text-lg">Tipo de Análisis</h3>
-                    <div className="flex items-center gap-3">
-                      <div className="badge badge-lg badge-primary transition-all duration-300">
-                        {diagnostic.type}
-                      </div>
-                      <span className="text-base-content/80 text-sm">
-                        Diagnóstico personalizado
-                      </span>
-                    </div>
-                  </div>
-                </motion.div>
+                </div>
               </motion.div>
 
-              {/* Answers Section */}
+              {/* Answers Section - Optional placeholder */}
               <motion.div 
                 className="card bg-base-200/50"
                 initial={{ y: 30, opacity: 0 }}
