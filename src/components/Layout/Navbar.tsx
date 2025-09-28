@@ -26,11 +26,11 @@ function Navbar() {
   };
 
   const navItems = [
-    { path: '/', icon: Home, label: 'Inicio' },
-    { path: '/services', icon: Briefcase, label: 'Servicios' },
-    { path: '/schedule', icon: Calendar, label: 'Agendar' },
-    { path: '/diagnostics', icon: FileText, label: 'Diagnósticos' },
-    { path: '/account', icon: User, label: 'Cuenta' },
+    { path: '/c', icon: Home, label: 'Inicio' },
+    { path: '/c/services', icon: Briefcase, label: 'Servicios' },
+    { path: '/c/schedule', icon: Calendar, label: 'Agendar' },
+    { path: '/c/diagnostics', icon: FileText, label: 'Diagnósticos' },
+    { path: '/c/account', icon: User, label: 'Cuenta' },
   ];
 
   const handleLogout = () => {

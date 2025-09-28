@@ -2,8 +2,6 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
-
-
 @plugin "daisyui/theme" {
   name: "light";
   default: true;
@@ -17,6 +15,8 @@
   --color-primary-content: oklch(98% 0.002 247.839);
   --color-secondary: #61428a;
   --color-secondary-content: oklch(98% 0 0);
+  --color-light-purple: #8761b8;
+  --color-dark-purple: #61428a;
   --color-accent: oklch(21% 0.006 285.885);
   --color-accent-content: oklch(100% 0 0);
   --color-neutral: oklch(21% 0.006 56.043);
@@ -39,7 +39,6 @@
   --noise: 1;
 }
 
-
 @plugin "daisyui/theme" {
   name: "dark";
   default: false;
@@ -49,12 +48,14 @@
   --color-base-200: oklch(23.26% 0.014 253.1);
   --color-base-300: oklch(21.15% 0.012 254.09);
   --color-base-content: oklch(97.807% 0.029 256.847);
-  --color-primary: #8761b8;
+  --color-primary: #a97be6;
   --color-primary-content: oklch(96% 0.018 272.314);
-  --color-secondary: #61428a;
+  --color-secondary: #7b5db0;
   --color-secondary-content: oklch(94% 0.028 342.258);
   --color-accent: oklch(94% 0.029 294.588);
   --color-accent-content: oklch(38% 0.189 293.745);
+  --color-light-purple: #a97be6;
+  --color-dark-purple: #7b5db0;
   --color-neutral: oklch(14% 0.005 285.823);
   --color-neutral-content: oklch(92% 0.004 286.32);
   --color-info: oklch(81% 0.111 293.571);
@@ -75,11 +76,8 @@
   --noise: 0;
 }
 
-
 @theme {
     --font-geist: "Geist", "sans-serif";
-
-    --color-light-purple: #8761b8;
-    --color-dark-purple: #61428a;
+    
     --color-warm-white: #f5f4f7;
 }

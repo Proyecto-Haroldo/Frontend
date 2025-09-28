@@ -333,7 +333,7 @@ function DiagnosticReview() {
 
   useEffect(() => {
     if (!diagnosticId) {
-      navigate('/diagnostics');
+      navigate('/c/diagnostics');
     }
   }, [diagnosticId, navigate]);
 

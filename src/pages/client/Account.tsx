@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { User, Mail, Phone, Building2, Shield, Bell } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
-import { getUserByEmail } from '../api/userApi';
+import { getUserByEmail } from '../../api/userApi';
 
 interface JwtPayload {
   sub: string; // email
