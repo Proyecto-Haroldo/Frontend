@@ -14,24 +14,43 @@ import {
   X,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { BarChart } from 'lucide-react';
 
 function Navbar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const { logout } = useAuth();
+  const { logout, role } = useAuth();
   const navigate = useNavigate();
 
   const isActive = (path: string) => {
     return location.pathname === path;
   };
 
-  const navItems = [
-    { path: '/c', icon: Home, label: 'Inicio' },
-    { path: '/c/services', icon: Briefcase, label: 'Servicios' },
-    { path: '/c/schedule', icon: Calendar, label: 'Agendar' },
-    { path: '/c/diagnostics', icon: FileText, label: 'Diagnósticos' },
-    { path: '/c/account', icon: User, label: 'Cuenta' },
-  ];
+  // Navigation items based on user role
+  const getNavItems = () => {
+    if (role === 1) { // Admin
+      return [
+        { path: '/m', icon: BarChart, label: 'Dashboard' },
+        { path: '/m/profile', icon: User, label: 'Perfil' },
+      ];
+    } else if (role === 2) { // Client
+      return [
+        { path: '/c', icon: Home, label: 'Inicio' },
+        { path: '/c/services', icon: Briefcase, label: 'Servicios' },
+        { path: '/c/schedule', icon: Calendar, label: 'Agendar' },
+        { path: '/c/diagnostics', icon: FileText, label: 'Diagnósticos' },
+        { path: '/c/account', icon: User, label: 'Cuenta' },
+      ];
+    } else if (role === 3) { // Adviser
+      return [
+        { path: '/a', icon: Home, label: 'Inicio' },
+        { path: '/a/profile', icon: User, label: 'Perfil' },
+      ];
+    }
+    return [];
+  };
+
+  const navItems = getNavItems();
 
   const handleLogout = () => {
     logout();
