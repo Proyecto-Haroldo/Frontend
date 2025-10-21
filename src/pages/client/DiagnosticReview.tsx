@@ -189,7 +189,7 @@ function DiagnosticReview() {
       y: 0,
       opacity: 1,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 300,
         damping: 30
       }
@@ -205,7 +205,7 @@ function DiagnosticReview() {
         duration: 1.6,
         repeat: Infinity,
         repeatDelay: 0.6,
-        ease: "easeOut"
+        ease: "easeOut" as const
       }
     }
   };
@@ -219,7 +219,7 @@ function DiagnosticReview() {
         duration: 1.4,
         repeat: Infinity,
         repeatDelay: 0.6,
-        ease: "easeOut"
+        ease: "easeOut" as const
       }
     }
   };
@@ -503,8 +503,11 @@ function DiagnosticReview() {
               >
                 <div className="card-body">
                   <div className="collapse">
+                    <label htmlFor='checkbox' title='checkbox' hidden>Answers</label>
                     <input 
                       type="checkbox" 
+                      name='checkbox'
+                      title='checkbox'
                       checked={showAnswers}
                       onChange={(e) => setShowAnswers(e.target.checked)}
                     />

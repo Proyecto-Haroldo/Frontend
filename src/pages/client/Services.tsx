@@ -24,7 +24,7 @@ function Services() {
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
   const [policyAccepted, setPolicyAccepted] = useState(false);
 
-  // Handle screen transitions - simplified with Framer Motion
+  // Handle screen transitions - simplified with Motion React
   const transition = (nextView: 'categories' | 'clientType' | 'diagnosticForm', moveDirection: 'forward' | 'backward' = 'forward') => {
     setDirection(moveDirection);
     if (nextView === 'clientType') {
@@ -111,7 +111,7 @@ function Services() {
       x: 0,
       opacity: 1,
       transition: {
-        type: 'spring',
+        type: 'spring' as const,
         stiffness: 300,
         damping: 30
       }

@@ -164,6 +164,7 @@ function Diagnostics() {
                     
                     <button 
                       className="btn btn-ghost btn-sm"
+                      title='diagnostic'
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDiagnosticClick(diagnostic);

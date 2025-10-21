@@ -1,45 +1,21 @@
 import { useEffect, useState } from 'react';
 import { getAllQuestionnaires } from '../../api/questionnaireApi';
-import { getAllClients } from '../../api/userApi';
-import { Client } from '../../core/models/ClientModel';
 import { Questionnaire } from '../../core/models/QuestionnaireModel';
 import { motion, AnimatePresence } from 'motion/react';
-import ClientSearchTable from '../../components/admin/tables/ClientsSearchTable';
+import { Users, ClipboardList, ArrowLeft } from 'lucide-react';
 import QuestionnairesSearchTable from '../../components/common/tables/QuestionnairesSearchTable';
 import HeaderStats from '../../components/common/headers/StatsHeader';
-import { Users, ClipboardList, ArrowLeft } from 'lucide-react';
+import MetricsTemplate from '../../components/template/MetricsTemplate';
 
-function AdminDashboard() {
+function AdviserDashboard() {
   const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
-  const [loadingClients, setLoadingClients] = useState(true);
-  const [errorClients, setErrorClients] = useState('');
   const [loadingQuestionnaires, setLoadingQuestionnaires] = useState(true);
   const [errorQuestionnaires, setErrorQuestionnaires] = useState('');
-  const [view, setView] = useState<'selector' | 'clients' | 'questionnaires'>('selector');
+  const [view, setView] = useState<'selector' | 'metrics' | 'questionnaires'>('selector');
 
   useEffect(() => {
     fetchQuestionnaires();
-    fetchClients();
   }, []);
-
-  const fetchClients = async () => {
-    try {
-      setLoadingClients(true);
-      const data = await getAllClients();
-      setClients(data);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error('Error fetching clients:', error.message);
-        setErrorClients(error.message);
-      } else {
-        console.error('Unexpected error fetching clients:', error);
-        setErrorClients('Unexpected error occurred');
-      }
-    } finally {
-      setLoadingClients(false);
-    }
-  };
 
   const fetchQuestionnaires = async () => {
     try {
@@ -61,7 +37,6 @@ function AdminDashboard() {
 
   const handleRefresh = () => {
     fetchQuestionnaires();
-    fetchClients();
   }
 
   const stats = {
@@ -110,13 +85,13 @@ function AdminDashboard() {
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
               className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg"
-              onClick={() => setView('clients')}
+              onClick={() => setView('metrics')}
             >
               <div className="card-body flex flex-col items-center text-center space-y-3">
                 <Users className="h-10 w-10 text-primary" />
-                <h2 className="card-title text-lg md:text-xl">Clientes</h2>
+                <h2 className="card-title text-lg md:text-xl">Métrics</h2>
                 <p className="text-sm text-base-content/70">
-                  Ver, filtrar y analizar los clientes registrados en el sistema.
+                  Ver y analizar gráfios estadísticos con métricas de tus questionarios.
                 </p>
               </div>
             </motion.div>
@@ -145,9 +120,9 @@ function AdminDashboard() {
         )}
 
         {/* Vista Clientes */}
-        {view === 'clients' && (
+        {view === 'metrics' && (
           <motion.div
-            key="clients"
+            key="metrics"
             initial={{ x: 100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -100, opacity: 0 }}
@@ -163,10 +138,10 @@ function AdminDashboard() {
                 Volver
               </button>
             </div>
-            <ClientSearchTable
-              loading={loadingClients}
-              error={errorClients}
-              clients={clients}
+            <MetricsTemplate
+              loading={loadingQuestionnaires}
+              error={errorQuestionnaires}
+              questionnaires={questionnaires}
             />
           </motion.div>
         )}
@@ -202,4 +177,4 @@ function AdminDashboard() {
   );
 }
 
-export default AdminDashboard;
+export default AdviserDashboard;

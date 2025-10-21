@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import ITMLogo from '../Common/ITMLogo';
+import ITMLogo from '../common/assets/ITMLogo';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import ThemeToggle from './ThemeToggle';

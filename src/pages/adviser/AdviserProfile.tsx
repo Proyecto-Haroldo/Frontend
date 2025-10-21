@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
-  User, Mail, Phone, Building2, Shield,
-  Bell, LogOut, Settings, Key,
+  User, Mail, Phone, Building2, LogOut, Settings, Key,
   SquareUserRound,
   BriefcaseBusiness
 } from 'lucide-react';
@@ -17,7 +16,7 @@ interface JwtPayload {
   [key: string]: unknown;
 }
 
-function AdminProfile() {
+function AdviserProfile() {
   const { token, logout } = useAuth();
   const [email, setEmail] = useState<string>('');
   const [name, setName] = useState<string>('');
@@ -71,7 +70,7 @@ function AdminProfile() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-2xl font-semibold">Perfil Administrativo</h1>
+      <h1 className="text-2xl font-semibold">Perfil del Asesor</h1>
 
       {/* Profile Section */}
       <div className="card bg-base-100 shadow-sm">
@@ -82,18 +81,17 @@ function AdminProfile() {
             </div>
             <div>
               <h2 className="font-medium">{name || 'Nombre de usuario'}</h2>
-              <p className="text-sm text-base-content/70">Administrador del Sistema</p>
+              <p className="text-sm text-base-content/70">Asesor</p>
             </div>
           </div>
-
+            <div className="flex items-center gap-3">
+              <BriefcaseBusiness className="h-5 w-5 text-base-content/50" />
+              <span>{clientData?.clientType || 'No disponible'}</span>
+            </div>
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <SquareUserRound className="h-5 w-5 text-base-content/50" />
               <span>{clientData?.cedulaOrNIT || 'No disponible'}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <BriefcaseBusiness className="h-5 w-5 text-base-content/50" />
-              <span>{clientData?.clientType || 'No disponible'}</span>
             </div>
             <div className="flex items-center gap-3">
               <Mail className="h-5 w-5 text-base-content/50" />
@@ -126,57 +124,20 @@ function AdminProfile() {
           <h2 className="font-medium mb-6">Configuración Administrativa</h2>
 
           <div className="space-y-4">
-            <div className="flex items-center justify-between py-3 border-b border-base-200">
-              <div className="flex items-center gap-3">
-                <Settings className="h-5 w-5 text-base-content/50" />
-                <div>
-                  <p className="font-medium">Configuración del Sistema</p>
-                  <p className="text-sm text-base-content/70">Gestión de parámetros del sistema</p>
-                </div>
-              </div>
-              <button className="btn btn-link p-0 text-sm font-semibold text-primary">
-                Configurar
-              </button>
-            </div>
 
             <div className="flex items-center justify-between py-3 border-b border-base-200">
               <div className="flex items-center gap-3">
                 <User className="h-5 w-5 text-base-content/50" />
                 <div>
-                  <p className="font-medium">Gestión de Usuarios</p>
-                  <p className="text-sm text-base-content/70">Administrar usuarios y permisos</p>
+                  <p className="font-medium">Gestión de Cuestionarios</p>
+                  <p className="text-sm text-base-content/70">Administrar cuestionarios y métricas</p>
                 </div>
               </div>
-              <button onClick={() => navigate('/m')} className="btn btn-link p-0 text-sm font-semibold text-primary">
+              <button onClick={() => navigate('/a')} className="btn btn-link p-0 text-sm font-semibold text-primary">
                 Gestionar
               </button>
             </div>
 
-            <div className="flex items-center justify-between py-3 border-b border-base-200">
-              <div className="flex items-center gap-3">
-                <Shield className="h-5 w-5 text-base-content/50" />
-                <div>
-                  <p className="font-medium">Seguridad</p>
-                  <p className="text-sm text-base-content/70">Configuración de seguridad y acceso</p>
-                </div>
-              </div>
-              <button className="btn btn-link p-0 text-sm font-semibold text-primary">
-                Configurar
-              </button>
-            </div>
-
-            <div className="flex items-center justify-between py-3">
-              <div className="flex items-center gap-3">
-                <Bell className="h-5 w-5 text-base-content/50" />
-                <div>
-                  <p className="font-medium">Notificaciones</p>
-                  <p className="text-sm text-base-content/70">Configurar alertas del sistema</p>
-                </div>
-              </div>
-              <button className="btn btn-link p-0 text-sm font-semibold text-primary">
-                Configurar
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -207,7 +168,7 @@ function AdminProfile() {
               <LogOut className="h-5 w-5 text-error" />
               <div>
                 <p className="font-medium">Cerrar Sesión</p>
-                <p className="text-sm text-base-content/70">Salir del panel administrativo</p>
+                <p className="text-sm text-base-content/70">Salir del panel de asesoría</p>
               </div>
             </div>
             <button
@@ -233,5 +194,5 @@ function AdminProfile() {
   );
 }
 
-export default AdminProfile;
+export default AdviserProfile;
 

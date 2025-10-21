@@ -22,7 +22,7 @@ const pageVariants = {
     x: 0,
     opacity: 1,
     transition: {
-      type: 'spring',
+      type: 'spring' as const,
       stiffness: 300,
       damping: 30
     }
@@ -287,9 +287,10 @@ const Questionnaire = () => {
           <div className="space-y-1">
             {currentQuestion.options?.map(option => (
               <div key={option.id} className="form-control">
-                <label className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg">
+                <label htmlFor={currentQuestion.id.toString()} className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg">
                   <input
                     type="radio"
+                    title={currentQuestion.id.toString()}
                     id={option.id}
                     name={currentQuestion.id.toString()}
                     checked={Array.isArray(answers[currentQuestion.id]) && answers[currentQuestion.id][0] === option.id}
