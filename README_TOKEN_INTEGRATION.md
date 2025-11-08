@@ -42,7 +42,7 @@ This document describes the changes made to ensure that authentication tokens ar
 1. When a questionnaire is completed, the data is sent to the backend `/api/respuestas` endpoint
 2. The backend processes the data and calls the AI microservice internally
 3. The AI recommendation is returned to the frontend and stored in localStorage
-4. The diagnostic review page displays the AI recommendation
+4. The analysis review page displays the AI recommendation
 5. A test page is available to demonstrate the AI functionality
 
 ## Usage
@@ -73,7 +73,7 @@ Make sure to set the following environment variables:
 ## Testing
 1. Login to the application
 2. Complete a questionnaire
-3. View the AI recommendation in the diagnostic review
+3. View the AI recommendation in the analysis review
 4. Test the AI functionality from the home page
 
 ## Security Features
