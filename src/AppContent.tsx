@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import Navbar from './components/Layout/Navbar';
+import { useAuth } from './shared/context/AuthContext';
+import Navbar from './shared/ui/layout/Navbar';
 import Home from './pages/client/Home';
 import Services from './pages/client/Services';
 import Schedule from './pages/client/Schedule';
-import Diagnostics from './pages/client/Diagnostics';
+import Analysis from './pages/client/Analysis';
 import Account from './pages/client/Account';
 import Questionnaire from './pages/client/Questionnaire';
-import DiagnosticReview from './pages/client/DiagnosticReview';
+import AnalysisReview from './pages/client/AnalysisReview';
 import Login from './pages/auth/Login';
 import SignUp from './pages/auth/SignUp';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProfile from './pages/admin/AdminProfile';
-import { useAuth } from './context/AuthContext';
+import AdviserDashboard from './pages/adviser/AdviserDashboard';
+import AdviserProfile from './pages/adviser/AdviserProfile';
 
 // AnimatedRoutes component wraps the nested Routes with AnimatePresence
 function AnimatedRoutes() {
@@ -43,10 +45,10 @@ function AnimatedRoutes() {
                     <Route path="" element={<Home />} />
                     <Route path="services" element={<Services />} />
                     <Route path="schedule" element={<Schedule />} />
-                    <Route path="diagnostics" element={<Diagnostics />} />
+                    <Route path="analysis" element={<Analysis />} />
                     <Route path="account" element={<Account />} />
                     <Route path="questionnaire" element={<Questionnaire />} />
-                    <Route path="diagnostic-review" element={<DiagnosticReview />} />
+                    <Route path="analysis-review" element={<AnalysisReview />} />
                 </Routes>
             </motion.div>
         </AnimatePresence>
@@ -86,9 +88,9 @@ function AppContent() {
             <Route path="/" element={
                 token ? (
                     role === 1 ? <Navigate to="/m" replace /> :
-                    role === 2 ? <Navigate to="/c" replace /> :
-                    role === 3 ? <Navigate to="/a" replace /> :
-                    <Navigate to="/login" replace />
+                        role === 2 ? <Navigate to="/c" replace /> :
+                            role === 3 ? <Navigate to="/a" replace /> :
+                                <Navigate to="/login" replace />
                 ) : (
                     <Navigate to="/login" replace />
                 )
@@ -124,10 +126,10 @@ function AppContent() {
                                     <Route path="" element={<Home />} />
                                     <Route path="services" element={<Services />} />
                                     <Route path="schedule" element={<Schedule />} />
-                                    <Route path="diagnostics" element={<Diagnostics />} />
+                                    <Route path="analysis" element={<Analysis />} />
                                     <Route path="account" element={<Account />} />
                                     <Route path="questionnaire" element={<Questionnaire />} />
-                                    <Route path="diagnostic-review" element={<DiagnosticReview />} />
+                                    <Route path="analysis-review" element={<AnalysisReview />} />
                                 </Routes>
                             ) : (
                                 <AnimatedRoutes />
@@ -144,7 +146,8 @@ function AppContent() {
                         <Navbar />
                         <main className="flex-1 p-4 md:p-8 md:ml-64 pt-20 md:pt-8">
                             <Routes>
-                                <Route path="" element={<h1>Adviser Dashboard</h1>} />
+                                <Route path="" element={<AdviserDashboard />} />
+                                <Route path="profile" element={<AdviserProfile />} />
                             </Routes>
                         </main>
                     </div>

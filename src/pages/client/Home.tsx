@@ -40,7 +40,7 @@ function Home() {
           </div>
         </div>
 
-        {/* Latest Diagnostic */}
+        {/* Latest Analysis */}
         <div className="card bg-base-100 shadow-sm border border-base-200">
           <div className="card-body">
             <div className="flex items-center justify-between">

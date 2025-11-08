@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { fetchQuestionsByCategory, submitQuestionnaireAnswers } from '../../api/questionnaireApi';
-import type { Question, QuestionnaireResult } from '../../types/questionnaire';
+import { fetchQuestionsByCategory, submitQuestionnaireAnswers } from '../../api/analysisApi';
+import type { Question, QuestionnaireResult } from '../../shared/types/questionnaire';
 import {
   ArrowLeft,
   ArrowRight,
@@ -22,7 +22,7 @@ const pageVariants = {
     x: 0,
     opacity: 1,
     transition: {
-      type: 'spring',
+      type: 'spring' as const,
       stiffness: 300,
       damping: 30
     }
@@ -287,9 +287,10 @@ const Questionnaire = () => {
           <div className="space-y-1">
             {currentQuestion.options?.map(option => (
               <div key={option.id} className="form-control">
-                <label className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg">
+                <label htmlFor={currentQuestion.id.toString()} className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg">
                   <input
                     type="radio"
+                    title={currentQuestion.id.toString()}
                     id={option.id}
                     name={currentQuestion.id.toString()}
                     checked={Array.isArray(answers[currentQuestion.id]) && answers[currentQuestion.id][0] === option.id}
@@ -367,7 +368,7 @@ const Questionnaire = () => {
                 Volver al Inicio
               </button>
               <button
-                onClick={() => navigate('/c/diagnostic-review?id=1')}
+                onClick={() => navigate('/c/analysis-review?id=1')}
                 className="btn btn-outline gap-2"
               >
                 <FileText className="h-5 w-5" />
