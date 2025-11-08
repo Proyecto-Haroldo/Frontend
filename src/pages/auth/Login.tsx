@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Mail, KeyRound, Eye, EyeOff, Banknote, Wallet, PiggyBank, TrendingUp, BarChart } from 'lucide-react';
 import { login } from '../../api/authApi';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../shared/context/AuthContext';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -50,7 +50,7 @@ const Login: React.FC = () => {
     setLoading(true);
     try {
       const res = await login({ email, password });
-      setAuth(res.token, res.role.id);
+      setAuth(res.token, res.role.id, res.id);
 
       const role = res?.role.id;
 
@@ -156,7 +156,7 @@ const Login: React.FC = () => {
         >
           <div className="space-y-4">
             <div className="form-control">
-              <label className="label">
+              <label htmlFor='email' className="label">
                 <span className="label-text text-base-content/70">Correo Electrónico</span>
               </label>
               <div className="relative">
@@ -165,6 +165,7 @@ const Login: React.FC = () => {
                 </div>
                 <input
                   type="email"
+                  title='email'
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
@@ -184,7 +185,7 @@ const Login: React.FC = () => {
             </div>
 
             <div className="form-control">
-              <label className="label">
+              <label htmlFor='password' className="label">
                 <span className="label-text text-base-content/70">Contraseña</span>
               </label>
               <div className="join w-full">
@@ -195,6 +196,7 @@ const Login: React.FC = () => {
                   <input
                     type={showPassword ? "text" : "password"}
                     value={password}
+                    title='password'
                     onChange={(e) => {
                       setPassword(e.target.value);
                       setValidationErrors(prev => ({ ...prev, password: undefined }));
