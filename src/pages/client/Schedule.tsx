@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Calendar, Clock, VideoIcon, Users, ChevronDown, Info, MapPin, User, Building2 } from 'lucide-react';
 import { DayPicker } from "react-day-picker";
 
-
 function Schedule() {
   const [appointmentType, setAppointmentType] = useState<'virtual' | 'presential'>('virtual');
   const [selectedService, setSelectedService] = useState<string>('');
