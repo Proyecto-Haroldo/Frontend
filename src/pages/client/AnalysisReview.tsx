@@ -11,30 +11,30 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { 
-  Diagnostic, 
+  Analysis, 
   ColorSemaforo,
   getRiskLevel,
   getRiskDescription,
-  formatDiagnosticTitle
-} from '../../types/diagnostics';
+  formatAnalysisTitle
+} from '../../shared/types/analysis';
 
-function DiagnosticReview() {
+function AnalysisReview() {
   const [showAnswers, setShowAnswers] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
 
-  // Get diagnostic data from navigation state
-  const diagnostic = location.state?.diagnostic as Diagnostic | undefined;
+  // Get analysis data from navigation state
+  const analysis = location.state?.analysis as Analysis | undefined;
 
-  // Fallback: get diagnostic ID from URL params for direct navigation
-  const diagnosticIdFromUrl = searchParams.get('id');
+  // Fallback: get analysis ID from URL params for direct navigation
+  const analysisIdFromUrl = searchParams.get('id');
 
   // For backward compatibility with localStorage (questionnaire completion flow)
   const aiRecommendationFromLS = localStorage.getItem('aiRecommendation');
   const questionnaireDataFromLS = localStorage.getItem('questionnaireData');
 
-  let diagnosticData: { 
+  let analysisData: { 
     id: string; 
     conteo: number;
     timestamp: string; 
@@ -43,17 +43,17 @@ function DiagnosticReview() {
     colorSemaforo: ColorSemaforo 
   } | null = null;
 
-  if (diagnostic) {
+  if (analysis) {
     // Primary: Use data from navigation state
-    diagnosticData = {
-      id: diagnostic.id,
-      conteo: diagnostic.conteo,
-      timestamp: diagnostic.timestamp,
-      categoria: diagnostic.categoria,
-      recomendacionUsuario: diagnostic.recomendacionUsuario,
-      colorSemaforo: diagnostic.colorSemaforo
+    analysisData = {
+      id: analysis.analysisId.toString(),
+      conteo: analysis.conteo,
+      timestamp: analysis.timeWhenSolved || new Date().toISOString(),
+      categoria: analysis.categoria,
+      recomendacionUsuario: analysis.recomendacionInicial,
+      colorSemaforo: analysis.colorSemaforo
     };
-  } else if (diagnosticIdFromUrl && aiRecommendationFromLS) {
+  } else if (analysisIdFromUrl && aiRecommendationFromLS) {
     // Fallback for direct URL navigation with localStorage data
     let resumenUsuario = 'Basado en sus respuestas, hemos identificado áreas clave para mejorar su salud financiera...';
     let colorSemaforo: ColorSemaforo = 'amarillo';
@@ -76,8 +76,8 @@ function DiagnosticReview() {
 
     const parsedQuestionnaireData = questionnaireDataFromLS ? JSON.parse(questionnaireDataFromLS) : null;
     
-    diagnosticData = {
-      id: diagnosticIdFromUrl,
+    analysisData = {
+      id: analysisIdFromUrl,
       conteo: 1, // Default to 1 for legacy localStorage data
       timestamp: parsedQuestionnaireData?.metadata?.timestamp || new Date().toISOString(),
       categoria: parsedQuestionnaireData?.metadata?.category || 'General',
@@ -111,14 +111,14 @@ function DiagnosticReview() {
     }
   };
 
-  // If no diagnostic data is available, redirect to diagnostics page
+  // If no analysis data is available, redirect to analysis page
   useEffect(() => {
-    if (!diagnosticData) {
-      navigate('/c/diagnostics');
+    if (!analysisData) {
+      navigate('/c/analysis');
     }
-  }, [diagnosticData, navigate]);
+  }, [analysisData, navigate]);
 
-  if (!diagnosticData) {
+  if (!analysisData) {
     return (
       <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
         <div className="card w-full max-w-lg bg-base-100 shadow-xl">
@@ -134,7 +134,7 @@ function DiagnosticReview() {
               Por favor, intente seleccionar un diagnóstico desde la lista.
             </p>
             <div className="card-actions">
-              <button onClick={() => navigate('/c/diagnostics')} className="btn btn-primary gap-2">
+              <button onClick={() => navigate('/c/analysis')} className="btn btn-primary gap-2">
                 <ArrowLeft className="h-4 w-4" />
                 Volver a Diagnósticos
               </button>
@@ -145,7 +145,7 @@ function DiagnosticReview() {
     );
   }
 
-  const currentStatus = statusConfig[diagnosticData.colorSemaforo];
+  const currentStatus = statusConfig[analysisData.colorSemaforo];
   const StatusIcon = currentStatus.icon;
 
   const formatDate = (timestamp: string) => {
@@ -189,7 +189,7 @@ function DiagnosticReview() {
       y: 0,
       opacity: 1,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 300,
         damping: 30
       }
@@ -205,7 +205,7 @@ function DiagnosticReview() {
         duration: 1.6,
         repeat: Infinity,
         repeatDelay: 0.6,
-        ease: "easeOut"
+        ease: "easeOut" as const
       }
     }
   };
@@ -219,7 +219,7 @@ function DiagnosticReview() {
         duration: 1.4,
         repeat: Infinity,
         repeatDelay: 0.6,
-        ease: "easeOut"
+        ease: "easeOut" as const
       }
     }
   };
@@ -272,11 +272,11 @@ function DiagnosticReview() {
                 {/* Green Light (TOP) */}
                 <div className="relative flex justify-center">
                   <div className={`w-20 h-20 rounded-full border-4 border-neutral-content/20 transition-all duration-700 ${
-                    diagnosticData.colorSemaforo === 'verde' 
+                    analysisData.colorSemaforo === 'verde' 
                       ? 'bg-green-500 shadow-xl shadow-green-500/60' 
                       : 'bg-neutral-content/10 shadow-inner'
                   }`}>
-                    {diagnosticData.colorSemaforo === 'verde' && (
+                    {analysisData.colorSemaforo === 'verde' && (
                       <>
                         <motion.div 
                           className="absolute inset-2 bg-green-400 rounded-full"
@@ -299,11 +299,11 @@ function DiagnosticReview() {
                 {/* Yellow Light (MIDDLE) */}
                 <div className="relative flex justify-center">
                   <div className={`w-20 h-20 rounded-full border-4 border-neutral-content/20 transition-all duration-700 ${
-                    diagnosticData.colorSemaforo === 'amarillo' 
+                    analysisData.colorSemaforo === 'amarillo' 
                       ? 'bg-yellow-400 shadow-xl shadow-yellow-400/60' 
                       : 'bg-neutral-content/10 shadow-inner'
                   }`}>
-                    {diagnosticData.colorSemaforo === 'amarillo' && (
+                    {analysisData.colorSemaforo === 'amarillo' && (
                       <>
                         <motion.div 
                           className="absolute inset-2 bg-yellow-300 rounded-full"
@@ -326,11 +326,11 @@ function DiagnosticReview() {
                 {/* Red Light (BOTTOM) */}
                 <div className="relative flex justify-center">
                   <div className={`w-20 h-20 rounded-full border-4 border-neutral-content/20 transition-all duration-700 ${
-                    diagnosticData.colorSemaforo === 'rojo' 
+                    analysisData.colorSemaforo === 'rojo' 
                       ? 'bg-red-500 shadow-xl shadow-red-500/60' 
                       : 'bg-neutral-content/10 shadow-inner'
                   }`}>
-                    {diagnosticData.colorSemaforo === 'rojo' && (
+                    {analysisData.colorSemaforo === 'rojo' && (
                       <>
                         <motion.div 
                           className="absolute inset-2 bg-red-400 rounded-full"
@@ -353,21 +353,21 @@ function DiagnosticReview() {
             </motion.div>
             
             {/* Subtle Glow Effect */}
-            {diagnosticData.colorSemaforo === 'rojo' && (
+            {analysisData.colorSemaforo === 'rojo' && (
               <motion.div 
                 className="absolute inset-0 bg-red-500/10 rounded-3xl blur-xl -z-10"
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               />
             )}
-            {diagnosticData.colorSemaforo === 'amarillo' && (
+            {analysisData.colorSemaforo === 'amarillo' && (
               <motion.div 
                 className="absolute inset-0 bg-yellow-400/10 rounded-3xl blur-xl -z-10"
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               />
             )}
-            {diagnosticData.colorSemaforo === 'verde' && (
+            {analysisData.colorSemaforo === 'verde' && (
               <motion.div 
                 className="absolute inset-0 bg-green-500/10 rounded-3xl blur-xl -z-10"
                 animate={{ opacity: [0.5, 1, 0.5] }}
@@ -391,7 +391,7 @@ function DiagnosticReview() {
         >
           <h3 className="text-xl font-semibold mb-4 text-center">Resumen del Análisis</h3>
           <p className="text-base-content/80 leading-relaxed text-center">
-            {diagnosticData.recomendacionUsuario}
+            {analysisData.recomendacionUsuario}
           </p>
         </motion.div>
       </motion.div>
@@ -427,10 +427,10 @@ function DiagnosticReview() {
               <div className="flex items-center gap-4 text-base-content/60 text-sm">
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  {formatDate(diagnosticData.timestamp)} - {formatTime(diagnosticData.timestamp)}
+                  {formatDate(analysisData.timestamp)} - {formatTime(analysisData.timestamp)}
                 </div>
                 <div className="badge badge-outline">
-                  ID: {diagnosticData.id}
+                  ID: {analysisData.id}
                 </div>
               </div>
             </motion.div>
@@ -451,7 +451,7 @@ function DiagnosticReview() {
                 transition={{ duration: 0.6, delay: 0.3, type: "spring", stiffness: 200 }}
               >
                 <h1 className="text-3xl font-bold mb-2">
-                  Diagnóstico {formatDiagnosticTitle(diagnosticData.categoria, diagnosticData.conteo)}
+                  Diagnóstico {formatAnalysisTitle(analysisData.categoria, analysisData.conteo)}
                 </h1>
                 <p className="text-base-content/60">
                   Análisis personalizado de su situación
@@ -482,13 +482,13 @@ function DiagnosticReview() {
                   <h3 className="card-title text-lg mb-4">Nivel de Riesgo</h3>
                   <div className="flex items-center gap-4">
                     <div className={`badge badge-lg px-4 py-3 transition-all duration-300 ${
-                      diagnosticData.colorSemaforo === 'verde' ? 'badge-success' :
-                      diagnosticData.colorSemaforo === 'amarillo' ? 'badge-warning' : 'badge-error'
+                      analysisData.colorSemaforo === 'verde' ? 'badge-success' :
+                      analysisData.colorSemaforo === 'amarillo' ? 'badge-warning' : 'badge-error'
                     }`}>
-                      {getRiskLevel(diagnosticData.colorSemaforo)}
+                      {getRiskLevel(analysisData.colorSemaforo)}
                     </div>
                     <span className="text-base-content/80">
-                      {getRiskDescription(diagnosticData.colorSemaforo)}
+                      {getRiskDescription(analysisData.colorSemaforo)}
                     </span>
                   </div>
                 </div>
@@ -503,8 +503,11 @@ function DiagnosticReview() {
               >
                 <div className="card-body">
                   <div className="collapse">
+                    <label htmlFor='checkbox' title='checkbox' hidden>Answers</label>
                     <input 
                       type="checkbox" 
+                      name='checkbox'
+                      title='checkbox'
                       checked={showAnswers}
                       onChange={(e) => setShowAnswers(e.target.checked)}
                     />
@@ -574,4 +577,4 @@ function DiagnosticReview() {
   );
 }
 
-export default DiagnosticReview;
+export default AnalysisReview;

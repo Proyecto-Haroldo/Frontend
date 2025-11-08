@@ -1,27 +1,29 @@
 import { FileText, ArrowRight, Clock, CheckCircle, AlertCircle, AlertTriangle, XCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { fetchUserDiagnostics, type Diagnostic } from '../../api/diagnosticApi';
+import { fetchUserAnalysis } from '../../api/analysisApi';
 import { 
   mapColorToProgress, 
-  formatDiagnosticTitle,
-  type DiagnosticStatus 
-} from '../../types/diagnostics';
+  formatAnalysisTitle,
+  type Analysis,
+  type AnalysisStatus 
+} from '../../shared/types/analysis';
+import { useAuth } from '../../shared/context/AuthContext';
 
-function Diagnostics() {
+function Analysis() {
   const navigate = useNavigate();
-
-  const [diagnostics, setDiagnostics] = useState<Diagnostic[] | null>(null);
+  const { userId } = useAuth();
+  const [analysis, setAnalysis] = useState<Analysis[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
-        const data = await fetchUserDiagnostics();
-        if (mounted) setDiagnostics(data);
+        const data = await fetchUserAnalysis(Number(userId));
+        if (mounted) setAnalysis(data);
       } catch (e: any) {
-        console.error('Failed to load diagnostics', e);
+        console.error('Failed to load analysis', e);
         if (mounted) setError('No se pudieron cargar los diagnósticos');
       }
     })();
@@ -30,7 +32,7 @@ function Diagnostics() {
     };
   }, []);
 
-  const getStatusIcon = (status: DiagnosticStatus) => {
+  const getStatusIcon = (status: AnalysisStatus) => {
     switch (status) {
       case 'completed':
         return <CheckCircle className="h-5 w-5 text-success" />;
@@ -41,7 +43,7 @@ function Diagnostics() {
     }
   };
 
-  const getStatusText = (status: DiagnosticStatus) => {
+  const getStatusText = (status: AnalysisStatus) => {
     switch (status) {
       case 'completed':
         return 'Completado';
@@ -52,7 +54,7 @@ function Diagnostics() {
     }
   };
 
-  const getSeverityIcon = (color: Diagnostic['colorSemaforo']) => {
+  const getSeverityIcon = (color: Analysis['colorSemaforo']) => {
     switch (color) {
       case 'verde':
         return <CheckCircle className="h-4 w-4 text-success"/>;
@@ -74,16 +76,18 @@ function Diagnostics() {
     }
   };
 
-  const handleDiagnosticClick = (diagnostic: Diagnostic) => {
-    // Navigate to diagnostic review with the diagnostic data passed in state
-    navigate('/c/diagnostic-review', {
+  const handleAnalysisClick = (analysis: Analysis) => {
+    // Navigate to analysis review with the analysis data passed in state
+    navigate('/c/analysis-review', {
       state: { 
-        diagnostic,
+        analysis,
         // For backward compatibility, also include id parameter
-        diagnosticId: diagnostic.id 
+        analysisId: analysis.analysisId 
       }
     });
   };
+
+  const analysisLength = analysis ? analysis.length : 0;
 
   return (
     <div className="space-y-6">
@@ -102,13 +106,13 @@ function Diagnostics() {
                 </div>
               </div>
             )}
-            {!diagnostics && !error && (
+            {!analysis && !error && (
               <div className="flex flex-col items-center justify-center py-16">
                 <span className="loading loading-spinner loading-lg text-primary mb-4"></span>
                 <p className="text-base-content/60">Cargando diagnósticos...</p>
               </div>
             )}
-            {diagnostics && diagnostics.length === 0 && (
+            {analysis && analysis.length === 0 && (
               <div className="flex flex-col items-center justify-center py-16">
                 <div className="text-center">
                   <FileText className="h-16 w-16 mx-auto text-base-content/30 mb-4" />
@@ -117,18 +121,18 @@ function Diagnostics() {
                 </div>
               </div>
             )}
-            {diagnostics && diagnostics.map((diagnostic, index) => {
-              // All diagnostics are at 50% completion, so always show "in-progress" status
-              const status: DiagnosticStatus = 'in-progress';
+            {analysis && analysis.map((analysis, index) => {
+              // All analysis are at 50% completion, so always show "in-progress" status
+              const status: AnalysisStatus = 'in-progress';
               const progress = mapColorToProgress();
               
               return (
                 <div 
-                  key={diagnostic.id}
+                  key={analysis.analysisId}
                   className={`flex items-center gap-4 p-6 hover:bg-base-200/70 transition-colors cursor-pointer ${
-                    index !== diagnostics.length - 1 ? 'border-b border-base-200 transition-colors duration-200' : ''
+                    index !== analysisLength - 1 ? 'border-b border-base-200 transition-colors duration-200' : ''
                   }`}
-                  onClick={() => handleDiagnosticClick(diagnostic)}
+                  onClick={() => handleAnalysisClick(analysis)}
                 >
                   <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
                     <FileText className="h-5 w-5 text-primary" />
@@ -136,10 +140,10 @@ function Diagnostics() {
                   
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-medium">Diagnóstico {formatDiagnosticTitle(diagnostic.categoria, diagnostic.conteo)}</h3>
-                      {getSeverityIcon(diagnostic.colorSemaforo)}
+                      <h3 className="font-medium">Diagnóstico {formatAnalysisTitle(analysis.categoria, analysis.conteo)}</h3>
+                      {getSeverityIcon(analysis.colorSemaforo)}
                     </div>
-                    <p className="text-sm text-base-content/70">{formatDate(diagnostic.timestamp)}</p>
+                    <p className="text-sm text-base-content/70">{formatDate(analysis?.timeWhenSolved || new Date().toISOString())}</p>
                   </div>
 
                   <div className="flex items-center gap-4">
@@ -164,9 +168,10 @@ function Diagnostics() {
                     
                     <button 
                       className="btn btn-ghost btn-sm"
+                      title='analysis'
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDiagnosticClick(diagnostic);
+                        handleAnalysisClick(analysis);
                       }}
                     >
                       <ArrowRight className="h-5 w-5" />
@@ -182,4 +187,4 @@ function Diagnostics() {
   );
 }
 
-export default Diagnostics;
+export default Analysis;
