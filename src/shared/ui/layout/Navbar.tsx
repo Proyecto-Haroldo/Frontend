@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import ITMLogo from '../Common/ITMLogo';
+import ITMLogo from '../../../../public/assets/ITMLogo';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import ThemeToggle from './ThemeToggle';
@@ -38,7 +38,7 @@ function Navbar() {
         { path: '/c', icon: Home, label: 'Inicio' },
         { path: '/c/services', icon: Briefcase, label: 'Servicios' },
         { path: '/c/schedule', icon: Calendar, label: 'Agendar' },
-        { path: '/c/diagnostics', icon: FileText, label: 'Diagnósticos' },
+        { path: '/c/analysis', icon: FileText, label: 'Diagnósticos' },
         { path: '/c/account', icon: User, label: 'Cuenta' },
       ];
     } else if (role === 3) { // Adviser
