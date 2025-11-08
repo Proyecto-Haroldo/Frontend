@@ -1,8 +1,16 @@
 import { useEffect, useState } from 'react';
-import { User, Mail, Phone, Building2, Shield, Bell, LogOut, Settings, Key } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import {
+  User, Mail, Phone, Building2, Shield,
+  Bell, LogOut, Settings, Key,
+  SquareUserRound,
+  BriefcaseBusiness
+} from 'lucide-react';
+import { useAuth } from '../../shared/context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
-import { getUserByEmail } from '../../api/userApi';
+import { getClientById } from '../../api/userApi';
+import { useNavigate } from 'react-router-dom';
+import { Client } from '../../core/models/ClientModel';
+import EditClientModal from '../../shared/ui/components/modals/EditClientModal';
 
 interface JwtPayload {
   sub: string; // email
@@ -13,7 +21,11 @@ function AdminProfile() {
   const { token, logout } = useAuth();
   const [email, setEmail] = useState<string>('');
   const [name, setName] = useState<string>('');
+  const [clientData, setClientData] = useState<Client | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const navigate = useNavigate();
 
+  // --- Obtener email desde token JWT ---
   useEffect(() => {
     if (token) {
       try {
@@ -25,16 +37,27 @@ function AdminProfile() {
     }
   }, [token]);
 
+  // --- Obtener clientId desde localStorage ---
   useEffect(() => {
-    if (email && token) {
-      getUserByEmail(email, token)
-        .then(user => setName(user.legalName))
-        .catch(() => setName(''));
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      const id = parseInt(storedUserId, 10);
+      getClientById(id)
+        .then(client => {
+          setClientData(client);
+          setName(client.legalName);
+        })
+        .catch(err => console.error('Error al obtener cliente:', err));
     }
-  }, [email, token]);
+  }, []);
 
   const handleLogout = () => {
     logout();
+  };
+
+  const handleUpdate = (updatedClient: Client) => {
+    setClientData(updatedClient);
+    setName(updatedClient.legalName);
   };
 
   return (
@@ -56,21 +79,32 @@ function AdminProfile() {
 
           <div className="space-y-4">
             <div className="flex items-center gap-3">
+              <SquareUserRound className="h-5 w-5 text-base-content/50" />
+              <span>{clientData?.cedulaOrNIT || 'No disponible'}</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <BriefcaseBusiness className="h-5 w-5 text-base-content/50" />
+              <span>{clientData?.clientType || 'No disponible'}</span>
+            </div>
+            <div className="flex items-center gap-3">
               <Mail className="h-5 w-5 text-base-content/50" />
               <span>{email || 'No disponible'}</span>
             </div>
             <div className="flex items-center gap-3">
               <Phone className="h-5 w-5 text-base-content/50" />
-              <span>+57 341 1548520</span>
+              <span>{clientData?.phone || '+57 000 0000000'}</span>
             </div>
             <div className="flex items-center gap-3">
               <Building2 className="h-5 w-5 text-base-content/50" />
-              <span>Medellin, Colombia</span>
+              <span>{clientData?.address || 'Medellín, Colombia'}</span>
             </div>
           </div>
 
           <div className="mt-6">
-            <button className="btn btn-link p-0 text-sm font-semibold text-primary">
+            <button
+              onClick={() => setShowEditModal(true)}
+              className="btn btn-link p-0 text-sm font-semibold text-primary"
+            >
               Editar información
             </button>
           </div>
@@ -81,9 +115,8 @@ function AdminProfile() {
       <div className="card bg-base-100 shadow-sm">
         <div className="card-body">
           <h2 className="font-medium mb-6">Configuración Administrativa</h2>
-          
+
           <div className="space-y-4">
-            {/* System Settings */}
             <div className="flex items-center justify-between py-3 border-b border-base-200">
               <div className="flex items-center gap-3">
                 <Settings className="h-5 w-5 text-base-content/50" />
@@ -97,7 +130,6 @@ function AdminProfile() {
               </button>
             </div>
 
-            {/* User Management */}
             <div className="flex items-center justify-between py-3 border-b border-base-200">
               <div className="flex items-center gap-3">
                 <User className="h-5 w-5 text-base-content/50" />
@@ -106,12 +138,11 @@ function AdminProfile() {
                   <p className="text-sm text-base-content/70">Administrar usuarios y permisos</p>
                 </div>
               </div>
-              <button className="btn btn-link p-0 text-sm font-semibold text-primary">
+              <button onClick={() => navigate('/m')} className="btn btn-link p-0 text-sm font-semibold text-primary">
                 Gestionar
               </button>
             </div>
 
-            {/* Security */}
             <div className="flex items-center justify-between py-3 border-b border-base-200">
               <div className="flex items-center gap-3">
                 <Shield className="h-5 w-5 text-base-content/50" />
@@ -125,7 +156,6 @@ function AdminProfile() {
               </button>
             </div>
 
-            {/* Notifications */}
             <div className="flex items-center justify-between py-3">
               <div className="flex items-center gap-3">
                 <Bell className="h-5 w-5 text-base-content/50" />
@@ -146,7 +176,6 @@ function AdminProfile() {
       <div className="card bg-base-100 shadow-sm">
         <div className="card-body">
           <h2 className="font-medium mb-6">Acciones Rápidas</h2>
-          
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <button className="btn btn-outline btn-sm gap-2">
               <Key className="h-4 w-4" />
@@ -172,7 +201,7 @@ function AdminProfile() {
                 <p className="text-sm text-base-content/70">Salir del panel administrativo</p>
               </div>
             </div>
-            <button 
+            <button
               onClick={handleLogout}
               className="btn btn-error btn-sm gap-2"
             >
@@ -182,8 +211,18 @@ function AdminProfile() {
           </div>
         </div>
       </div>
+
+      {/* Modal para editar perfil */}
+      {showEditModal && clientData && (
+        <EditClientModal
+          client={clientData}
+          onClose={() => setShowEditModal(false)}
+          onUpdate={handleUpdate}
+        />
+      )}
     </div>
   );
 }
 
 export default AdminProfile;
+
