@@ -11,6 +11,8 @@ import Questionnaire from './pages/client/Questionnaire';
 import DiagnosticReview from './pages/client/DiagnosticReview';
 import Login from './pages/auth/Login';
 import SignUp from './pages/auth/SignUp';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminProfile from './pages/admin/AdminProfile';
 import { useAuth } from './context/AuthContext';
 
 // AnimatedRoutes component wraps the nested Routes with AnimatePresence
@@ -55,7 +57,7 @@ function AnimatedRoutes() {
 function ProtectedRoute({ children, allowedRoles }: { children: React.ReactNode, allowedRoles?: number[] }) {
     const { token, role } = useAuth();
     if (!token) return <Navigate to="/login" replace />;
-    if (allowedRoles && !allowedRoles.includes(role!)) {
+    if (allowedRoles && (!role || !allowedRoles.includes(role))) {
         return <Navigate to="/login" replace />;
     }
     return <>{children}</>;
@@ -63,7 +65,7 @@ function ProtectedRoute({ children, allowedRoles }: { children: React.ReactNode,
 
 function AppContent() {
     const [isFirstMount, setIsFirstMount] = useState(true);
-    const { role } = useAuth();
+    const { role, token } = useAuth();
 
     useEffect(() => {
         setIsFirstMount(false);
@@ -80,6 +82,18 @@ function AppContent() {
 
     return (
         <Routes>
+            {/* Root route - redirect based on authentication */}
+            <Route path="/" element={
+                token ? (
+                    role === 1 ? <Navigate to="/m" replace /> :
+                    role === 2 ? <Navigate to="/c" replace /> :
+                    role === 3 ? <Navigate to="/a" replace /> :
+                    <Navigate to="/login" replace />
+                ) : (
+                    <Navigate to="/login" replace />
+                )
+            } />
+
             {/* Public routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
@@ -91,7 +105,8 @@ function AppContent() {
                         <Navbar />
                         <main className="flex-1 p-4 md:p-8 md:ml-64 pt-20 md:pt-8">
                             <Routes>
-                                <Route path="" element={<h1>Admin Dashboard</h1>} />
+                                <Route path="" element={<AdminDashboard />} />
+                                <Route path="profile" element={<AdminProfile />} />
                             </Routes>
                         </main>
                     </div>
