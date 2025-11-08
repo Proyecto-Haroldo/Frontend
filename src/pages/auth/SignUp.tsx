@@ -15,7 +15,8 @@ import {
   Building2,
 } from "lucide-react";
 import { register } from "../../api/authApi";
-import PasswordStrength from "../../components/User/PasswordStrength";
+import PasswordStrength from "../../shared/ui/security/PasswordStrength";
+import { useAuth } from "../../shared/context/AuthContext";
 
 const SignUp: React.FC = () => {
   const [form, setForm] = useState({
@@ -47,6 +48,7 @@ const SignUp: React.FC = () => {
   });
 
   const passwordInputRef = useRef<HTMLInputElement>(null);
+  const { setAuth } = useAuth();
   const navigate = useNavigate();
 
   const calculatePasswordStrength = (password: string) => {
@@ -133,7 +135,7 @@ const SignUp: React.FC = () => {
     setSuccess(null);
     setLoading(true);
     try {
-      await register({
+      const res = await register({
         email: form.email,
         password: form.password,
         cedulaOrNIT: form.cedulaOrNIT,
@@ -141,7 +143,10 @@ const SignUp: React.FC = () => {
         clientType: "persona",
         role: { id: 2 },
       });
+
+      setAuth(res.token, res.role.id, res.id);
       setSuccess("Usuario registrado con éxito");
+      console.log(res.message);
       navigate("/c");
     } catch (err: unknown) {
       // Try to detect conflict (email or cedula/NIT already exists)
@@ -298,7 +303,7 @@ const SignUp: React.FC = () => {
           noValidate
         >
           <div className="form-control">
-            <label className="label">
+            <label htmlFor="email" className="label">
               <span className="label-text text-base-content/70">
                 Correo Electrónico
               </span>
@@ -310,6 +315,7 @@ const SignUp: React.FC = () => {
               <input
                 type="email"
                 name="email"
+                title="email"
                 value={form.email}
                 onChange={handleChange}
                 className={`input input-bordered w-full pl-10 ${(touched.email && !form.email) || validationErrors.email ? "input-error" : ""}`}
@@ -327,6 +333,11 @@ const SignUp: React.FC = () => {
           </div>
 
           <div className="form-control">
+            <label htmlFor="password" className="label">
+              <span className="label-text text-base-content/70">
+                Contraseña
+              </span>
+            </label>
             <div className="join w-full">
               <div className="relative flex-1">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -336,15 +347,16 @@ const SignUp: React.FC = () => {
                   ref={passwordInputRef}
                   type={showPassword ? "text" : "password"}
                   name="password"
+                  title="password"
                   value={form.password}
                   onChange={handleChange}
                   onFocus={handlePasswordFocus}
                   className={`input input-bordered w-full pl-10 join-item ${(touched.password && !form.password) ||
-                      validationErrors.password
-                      ? "input-error"
-                      : form.password && isPasswordValid
-                        ? "input-success"
-                        : ""
+                    validationErrors.password
+                    ? "input-error"
+                    : form.password && isPasswordValid
+                      ? "input-success"
+                      : ""
                     }`}
                   placeholder="Mínimo 8 caracteres"
                   disabled={loading}
@@ -366,7 +378,7 @@ const SignUp: React.FC = () => {
               </button>
             </div>
             {validationErrors.password && (
-              <label className="label">
+              <label htmlFor="password" className="label">
                 <span className="label-text-alt text-error">
                   {validationErrors.password}
                 </span>
@@ -383,7 +395,7 @@ const SignUp: React.FC = () => {
           </div>
 
           <div className="form-control">
-            <label className="label">
+            <label htmlFor="confirmPassword" className="label">
               <span className="label-text text-base-content/70">
                 Confirmar Contraseña
               </span>
@@ -396,16 +408,17 @@ const SignUp: React.FC = () => {
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   name="confirmPassword"
+                  title="confirmPassword"
                   value={form.confirmPassword}
                   onChange={handleChange}
                   className={`input input-bordered w-full pl-10 join-item ${(touched.confirmPassword && !form.confirmPassword) ||
-                      validationErrors.confirmPassword
-                      ? "input-error"
-                      : form.confirmPassword &&
-                        form.confirmPassword === form.password &&
-                        isPasswordValid
-                        ? "input-success"
-                        : ""
+                    validationErrors.confirmPassword
+                    ? "input-error"
+                    : form.confirmPassword &&
+                      form.confirmPassword === form.password &&
+                      isPasswordValid
+                      ? "input-success"
+                      : ""
                     }`}
                   disabled={loading}
                   required
@@ -435,7 +448,7 @@ const SignUp: React.FC = () => {
           </div>
 
           <div className="form-control">
-            <label className="label">
+            <label htmlFor="cedulaOrNIT" className="label">
               <span className="label-text text-base-content/70">
                 Cédula o NIT
               </span>
@@ -446,6 +459,7 @@ const SignUp: React.FC = () => {
               </div>
               <input
                 type="text"
+                title="cedulaOrNIT"
                 name="cedulaOrNIT"
                 value={form.cedulaOrNIT}
                 onChange={handleChange}
@@ -464,7 +478,7 @@ const SignUp: React.FC = () => {
           </div>
 
           <div className="form-control">
-            <label className="label">
+            <label htmlFor="legalName" className="label">
               <span className="label-text text-base-content/70">
                 Nombre Legal
               </span>
@@ -475,6 +489,7 @@ const SignUp: React.FC = () => {
               </div>
               <input
                 type="text"
+                title="legalName"
                 name="legalName"
                 value={form.legalName}
                 onChange={handleChange}
