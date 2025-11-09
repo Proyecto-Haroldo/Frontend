@@ -10,13 +10,13 @@ import {
   Wallet,
   PiggyBank,
   TrendingUp,
-  BarChart,
   IdCard,
   Building2,
 } from "lucide-react";
 import { register } from "../../api/authApi";
 import PasswordStrength from "../../shared/ui/security/PasswordStrength";
 import { useAuth } from "../../shared/context/AuthContext";
+import HFIsotype from '../../../public/assets/HFIsotype';
 
 const SignUp: React.FC = () => {
   const [form, setForm] = useState({
@@ -236,7 +236,7 @@ const SignUp: React.FC = () => {
             transition={{ delay: 0.2, type: "spring" }}
             className="mb-4"
           >
-            <BarChart className="w-16 h-16 text-primary mx-auto animate-pulse" />
+            <HFIsotype className="w-16 h-16 mx-auto animate-pulse" />
           </motion.div>
           <motion.h1
             initial={{ scale: 0.8 }}

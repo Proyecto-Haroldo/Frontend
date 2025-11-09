@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { Mail, KeyRound, Eye, EyeOff, Banknote, Wallet, PiggyBank, TrendingUp, BarChart } from 'lucide-react';
 import { login } from '../../api/authApi';
 import { useAuth } from '../../shared/context/AuthContext';
+import HFIsotype from '../../../public/assets/HFIsotype';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -121,7 +122,7 @@ const Login: React.FC = () => {
             transition={{ delay: 0.2, type: "spring" }}
             className="mb-4"
           >
-            <BarChart className="w-16 h-16 text-success mx-auto animate-pulse" />
+            <HFIsotype className="w-16 h-16 mx-auto animate-pulse" />
           </motion.div>
           <motion.h1
             initial={{ scale: 0.8 }}
