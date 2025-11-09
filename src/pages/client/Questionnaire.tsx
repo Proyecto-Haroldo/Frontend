@@ -360,7 +360,7 @@ const Questionnaire = () => {
             <h2 className="card-title text-2xl mb-4">¡Cuestionario Completado!</h2>
             <p className="mb-6">
               Gracias por completar el cuestionario. Nuestro equipo analizará sus respuestas y se
-              pondrá en contacto con usted pronto para proporcionarle un diagnóstico personalizado.
+              pondrá en contacto con usted pronto para proporcionarle un análisis personalizado.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <button onClick={() => navigate('/c')} className="btn btn-primary gap-2">
@@ -372,7 +372,7 @@ const Questionnaire = () => {
                 className="btn btn-outline gap-2"
               >
                 <FileText className="h-5 w-5" />
-                Ver Diagnóstico
+                Ver análisis
               </button>
             </div>
           </div>
@@ -399,7 +399,7 @@ const Questionnaire = () => {
               </div>
               <h2 className="card-title text-2xl mb-4">Procesando respuestas</h2>
               <p className="mb-6">
-                Estamos analizando sus respuestas y generando su diagnóstico.
+                Estamos analizando sus respuestas y generando su análisis.
               </p>
               <div className="text-sm text-gray-500">Esto puede tomar unos momentos...</div>
             </div>

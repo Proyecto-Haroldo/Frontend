@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import ITMLogo from '../../../../public/assets/ITMLogo';
+import ITMLogo from '../../../../../public/assets/ITMLogo';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import ThemeToggle from './ThemeToggle';
+import ThemeToggle from '../theme/ThemeToggle';
 import {
   Home,
   Briefcase,
@@ -13,7 +13,7 @@ import {
   Menu,
   X,
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../../context/AuthContext';
 import { BarChart } from 'lucide-react';
 
 function Navbar() {
@@ -38,7 +38,7 @@ function Navbar() {
         { path: '/c', icon: Home, label: 'Inicio' },
         { path: '/c/services', icon: Briefcase, label: 'Servicios' },
         { path: '/c/schedule', icon: Calendar, label: 'Agendar' },
-        { path: '/c/analysis', icon: FileText, label: 'Diagnósticos' },
+        { path: '/c/analysis', icon: FileText, label: 'análisis' },
         { path: '/c/account', icon: User, label: 'Cuenta' },
       ];
     } else if (role === 3) { // Adviser
@@ -111,7 +111,7 @@ function Navbar() {
           <div className="h-12 w-12 flex items-center justify-center">
             <ITMLogo/>
           </div>
-          <span className="font-semibold text-xl">FinanceConsult</span>
+          <span className="font-semibold text-xl">Consultoría</span>
         </motion.div>
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
@@ -170,7 +170,7 @@ function Navbar() {
           <div className="h-12 w-12 flex items-center justify-center">
             <ITMLogo/>
           </div>
-          <span className="font-semibold text-xl">FinanceConsult</span>
+          <span className="font-semibold text-xl">Consultoría</span>
         </motion.div>
 
         <div className="space-y-2">
@@ -246,7 +246,7 @@ function Navbar() {
           <div className="h-12 w-12 flex items-center justify-center">
             <ITMLogo className='h-15 w-15 text-primary'/>
           </div>
-          <span className="font-semibold text-xl">FinanceConsult</span>
+          <span className="font-semibold text-xl">Consultoría</span>
         </motion.div>
 
         <div className="space-y-2">

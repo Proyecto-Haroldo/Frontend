@@ -1,21 +1,10 @@
 import React from 'react';
 import { Users, FileText, Clock, CheckCircle } from 'lucide-react';
 import { useThemeColors } from "../../../hooks/useThemeColors";
+import { Analysis } from '../../../../core/models/AnalysisModel';
 import { motion } from 'motion/react';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-
-interface Questionnaire {
-    id: number;
-    categoryName: string;
-    clientName: string;
-    timeWhenSolved: string;
-    state: string;
-    recomendacionUsuario: string;
-    colorSemaforo: string;
-    analisisAsesor: string;
-    conteo: number;
-}
 
 interface StatsHeaderProps {
     stats: {
@@ -26,7 +15,7 @@ interface StatsHeaderProps {
         yellow: number;
         red: number;
     };
-    questionnaires: Questionnaire[];
+    analysis: Analysis[];
     loading: boolean;
     error: string | null;
     onRefresh: () => void;
@@ -114,10 +103,10 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({
     loading,
     error,
     stats,
-    questionnaires,
+    analysis,
     onRefresh,
 }) => {
-    const uniqueClients = new Set(questionnaires.map((q) => q.clientName)).size;
+    const uniqueClients = new Set(analysis.map((q) => q.clientName)).size;
 
     if (loading) {
         return (
