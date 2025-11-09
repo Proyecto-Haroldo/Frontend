@@ -1,10 +1,11 @@
 import { apiClient } from './apiClient';
 import type { Question, QuestionnaireResult } from '../shared/types/questionnaire';
 import { QuestionDTO } from '../core/dto/QuestionDTO';
-import { Analysis, Questionnaire } from '../shared/types/analysis';
+import { Analysis } from '../core/models/AnalysisModel';
+import { Questionnaire } from '../core/models/QuestionnaireModel';
 
 // ---------------------- ANALYSIS ----------------------
-export const fetchAllAnalysis = async (): Promise<Analysis[]> => {
+export const getAllAnalysis = async (): Promise<Analysis[]> => {
     try {
         const response = await apiClient.get<Analysis[]>('/analysis/all');
         return response.data;
@@ -14,7 +15,7 @@ export const fetchAllAnalysis = async (): Promise<Analysis[]> => {
     }
 };
 
-export const fetchPendingAnalysis = async (): Promise<Analysis[]> => {
+export const getPendingAnalysis = async (): Promise<Analysis[]> => {
     try {
         const response = await apiClient.get<Analysis[]>('/analysis/pending');
         return response.data;
@@ -24,7 +25,7 @@ export const fetchPendingAnalysis = async (): Promise<Analysis[]> => {
     }
 };
 
-export const fetchCheckedAnalysis = async (): Promise<Analysis[]> => {
+export const getCheckedAnalysis = async (): Promise<Analysis[]> => {
     try {
         const response = await apiClient.get<Analysis[]>('/analysis/proofread');
         return response.data;
@@ -34,7 +35,7 @@ export const fetchCheckedAnalysis = async (): Promise<Analysis[]> => {
     }
 };
 
-export const fetchUserAnalysis = async (userId: number): Promise<Analysis[]> => {
+export const getUserAnalysis = async (userId: number): Promise<Analysis[]> => {
     try {
         const response = await apiClient.get<Analysis[]>(`/analysis/user/${userId}`);
         return response.data;
@@ -44,7 +45,7 @@ export const fetchUserAnalysis = async (userId: number): Promise<Analysis[]> => 
     }
 };
 
-export const fetchUserAnalysisByCategory = async (userId: number, category: string): Promise<Analysis[]> => {
+export const getUserAnalysisByCategory = async (userId: number, category: string): Promise<Analysis[]> => {
     try {
         const response = await apiClient.get<Analysis[]>(`/analysis/user/${userId}/category/${category}`);
         return response.data;
@@ -54,7 +55,7 @@ export const fetchUserAnalysisByCategory = async (userId: number, category: stri
     }
 };
 
-export const fetchAdviserAnalysis = async (adviserId: number): Promise<Analysis[]> => {
+export const getAdviserAnalysis = async (adviserId: number): Promise<Analysis[]> => {
     try {
         const response = await apiClient.get<Analysis[]>(`/analysis/adviser/${adviserId}`);
         return response.data;

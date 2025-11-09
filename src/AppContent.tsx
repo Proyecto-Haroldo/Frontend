@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from './shared/context/AuthContext';
-import Navbar from './shared/ui/layout/Navbar';
+import Navbar from './shared/ui/layout/navigation/Navbar';
 import Home from './pages/client/Home';
 import Services from './pages/client/Services';
 import Schedule from './pages/client/Schedule';
@@ -79,7 +79,7 @@ function AppContent() {
         if (role === 3) roleText = "Asesores";
 
         // Actualiza el título
-        document.title = `Finanzas${roleText ? " · " + roleText : ""}`;
+        document.title = `Haroldo Finanzas${roleText ? " · " + roleText : ""}`;
     }, [role]);
 
     return (

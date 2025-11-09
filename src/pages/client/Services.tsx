@@ -277,7 +277,7 @@ function Services() {
           {/* Header Section */}
           <div className="space-y-3">
             <h2 className="card-title text-xl">
-              {selectedType === 'persona' ? 'Diagnóstico Personal' : 'Diagnóstico Empresarial'}
+              {selectedType === 'persona' ? 'análisis Personal' : 'análisis Empresarial'}
             </h2>
   
             <p className="text-sm md:text-base text-base-content/70">
@@ -305,7 +305,7 @@ function Services() {
               className={`btn btn-primary gap-2 ${!policyAccepted ? 'btn-disabled' : ''}`}
               tabIndex={policyAccepted ? 0 : -1}
             >
-              Comenzar Diagnóstico
+              Comenzar análisis
               <ArrowRight className="h-5 w-5" />
             </Link>
           </motion.div>

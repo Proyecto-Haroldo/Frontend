@@ -128,15 +128,15 @@ function AnalysisReview() {
                 <AlertCircle className="h-8 w-8 text-error" />
               </div>
             </div>
-            <h2 className="card-title text-xl mb-4">Diagnóstico no encontrado</h2>
+            <h2 className="card-title text-xl mb-4">análisis no encontrado</h2>
             <p className="text-base-content/70 mb-6">
-              No se encontró información del diagnóstico solicitado. 
-              Por favor, intente seleccionar un diagnóstico desde la lista.
+              No se encontró información del análisis solicitado. 
+              Por favor, intente seleccionar un análisis desde la lista.
             </p>
             <div className="card-actions">
               <button onClick={() => navigate('/c/analysis')} className="btn btn-primary gap-2">
                 <ArrowLeft className="h-4 w-4" />
-                Volver a Diagnósticos
+                Volver a análisis
               </button>
             </div>
           </div>
@@ -244,7 +244,7 @@ function AnalysisReview() {
             <StatusIcon className={`w-10 h-10 ${currentStatus.color}`} />
           </motion.div>
           <motion.div variants={itemVariants}>
-            <h2 className="text-2xl font-bold mb-2">Estado del Diagnóstico</h2>
+            <h2 className="text-2xl font-bold mb-2">Estado del análisis</h2>
             <motion.div 
               className={`inline-block px-4 py-2 rounded-full text-sm font-medium border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}
               whileHover={{ scale: 1.05 }}
@@ -451,7 +451,7 @@ function AnalysisReview() {
                 transition={{ duration: 0.6, delay: 0.3, type: "spring", stiffness: 200 }}
               >
                 <h1 className="text-3xl font-bold mb-2">
-                  Diagnóstico {formatAnalysisTitle(analysisData.categoria, analysisData.conteo)}
+                  análisis {formatAnalysisTitle(analysisData.categoria, analysisData.conteo)}
                 </h1>
                 <p className="text-base-content/60">
                   Análisis personalizado de su situación

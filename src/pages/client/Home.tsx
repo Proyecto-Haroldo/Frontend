@@ -44,12 +44,12 @@ function Home() {
         <div className="card bg-base-100 shadow-sm border border-base-200">
           <div className="card-body">
             <div className="flex items-center justify-between">
-              <h2 className="card-title text-base">Último Diagnóstico</h2>
+              <h2 className="card-title text-base">Último análisis</h2>
               <div className="badge badge-success">Completado</div>
             </div>
             <div className="space-y-3">
               <p className="text-sm text-base-content/70">
-                Diagnóstico Personal - 15 Mar 2024
+                análisis Personal - 15 Mar 2024
               </p>
               <div className="flex items-center gap-2">
                 <progress className="progress progress-success w-full" value="100" max="100"></progress>
@@ -71,7 +71,7 @@ function Home() {
             </div>
             <div className="space-y-3">
               <p className="text-sm text-base-content/70">
-                Diagnóstico Empresarial - 18 Mar 2024
+                análisis Empresarial - 18 Mar 2024
               </p>
               <div className="flex items-center gap-2">
                 <progress className="progress progress-warning w-full" value="50" max="100"></progress>

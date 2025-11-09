@@ -1,23 +1,4 @@
-export interface Analysis {
-  analysisId: number;
-  asesorName: string;
-  clientName: string;
-  status: string;
-  recomendacionInicial: string;
-  colorSemaforo: string;
-  contenidoRevision: string;
-  timeWhenSolved: string | null; 
-  timeWhenChecked: string | null;
-  conteo: number;
-  categoria: string;
-}
-
-export interface Questionnaire {
-  id: number;
-  category: string;
-  creator: string;
-  questions: Question[];
-}
+import { Analysis } from "../../core/models/AnalysisModel";
 
 export type ClientType = "persona" | "empresa";
 
@@ -28,7 +9,8 @@ export interface Question {
   question: string;
   questionType: QuestionType;
   clientType?: ClientType;
-  questionnaire: Questionnaire;
+  questionnaireName: string;
+  questionnaireId: string;
   options: MultipleOptionQuestionAnswer[];
   answersInQuestionnaires: AnswersOfQuestionnaire[];
 }
