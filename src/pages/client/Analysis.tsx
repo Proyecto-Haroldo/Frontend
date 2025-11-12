@@ -8,12 +8,12 @@ import {
   type AnalysisStatus
 } from '../../shared/types/analysis';
 import { useAuth } from '../../shared/context/AuthContext';
-import { type Analysis } from '../../core/models/AnalysisModel';
+import { IAnalysis } from '../../core/models/analysis';
 
 function Analysis() {
   const navigate = useNavigate();
   const { userId } = useAuth();
-  const [analysis, setAnalysis] = useState<Analysis[] | null>(null);
+  const [analysis, setAnalysis] = useState<IAnalysis[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ function Analysis() {
     }
   };
 
-  const getSeverityIcon = (color: Analysis['colorSemaforo']) => {
+  const getSeverityIcon = (color: IAnalysis['colorSemaforo']) => {
     switch (color) {
       case 'verde':
         return <CheckCircle className="h-4 w-4 text-success" />;
@@ -82,7 +82,7 @@ function Analysis() {
     }
   };
 
-  const handleAnalysisClick = (analysis: Analysis) => {
+  const handleAnalysisClick = (analysis: IAnalysis) => {
     // Navigate to analysis review with the analysis data passed in state
     navigate('/c/analysis-review', {
       state: {
@@ -122,8 +122,8 @@ function Analysis() {
               <div className="flex flex-col items-center justify-center py-16">
                 <div className="text-center">
                   <FileText className="h-16 w-16 mx-auto text-base-content/30 mb-4" />
-                  <p className="text-lg font-medium text-base-content/60 mb-2">No hay análisis disponibles</p>
-                  <p className="text-sm text-base-content/40">Complete un cuestionario para ver su primer análisis</p>
+                  <p className="text-lg font-medium text-base-content/60 mb-2">No hay análisis disponibles.</p>
+                  <p className="text-sm text-base-content/40">Complete un cuestionario para ver su primer análisis.</p>
                 </div>
               </div>
             )}

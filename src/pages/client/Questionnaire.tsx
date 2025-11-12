@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { fetchQuestionsByCategory, submitQuestionnaireAnswers } from '../../api/analysisApi';
-import type { Question, QuestionnaireResult } from '../../shared/types/questionnaire';
+import type { QuestionnaireResult } from '../../shared/types/questionnaire';
 import {
   ArrowLeft,
   ArrowRight,
@@ -12,6 +12,7 @@ import {
   Loader2,
   FileText
 } from 'lucide-react';
+import { IQuestion } from '../../core/models/question';
 
 const pageVariants = {
   initial: {
@@ -95,7 +96,7 @@ const Questionnaire = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const [isComplete, setIsComplete] = useState(false);
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions, setQuestions] = useState<IQuestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -234,12 +235,12 @@ const Questionnaire = () => {
           answers: questions.map(question => ({
             questionId: question.id,
             questionTitle: question.title,
-            answer: question.type === 'open'
+            answer: question.questionType === 'open'
             ? answers[question.id] || []
             : (answers[question.id] || []).map(
                 id => question.options?.find(opt => opt.id === id)?.text || id
               ),
-            type: question.type
+            type: question.questionType
           }))
         };
 
@@ -274,7 +275,7 @@ const Questionnaire = () => {
   };
 
   const renderQuestionInput = () => {
-    switch (currentQuestion.type) {
+    switch (currentQuestion.questionType) {
       case 'open':
         return (
           <textarea
@@ -406,7 +407,7 @@ const Questionnaire = () => {
               <div className="mb-6">
                 <Loader2 className="h-16 w-16 text-primary animate-spin mx-auto" />
               </div>
-              <h2 className="card-title text-2xl mb-4">Procesando respuestas</h2>
+              <h2 className="card-title text-2xl mb-4">Procesando respuestas.</h2>
               <p className="mb-6">
                 Estamos analizando sus respuestas y generando su análisis.
               </p>

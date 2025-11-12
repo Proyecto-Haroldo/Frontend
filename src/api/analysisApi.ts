@@ -1,8 +1,8 @@
 import { apiClient } from './apiClient';
-import type { Question, QuestionType, QuestionnaireResult } from '../shared/types/questionnaire';
-import { QuestionDTO } from '../core/dto/QuestionDTO';
-import { Analysis } from '../core/models/AnalysisModel';
-import { Questionnaire } from '../core/models/QuestionnaireModel';
+import type { QuestionnaireResult } from '../shared/types/questionnaire';
+import { IAnalysis } from '../core/models/analysis';
+import { IQuestionnaire } from '../core/models/questionnaire';
+import { IQuestion, QuestionType } from '../core/models/question';
 
 const normalizeQuestionType = (value?: string): QuestionType => {
     switch (value?.toLowerCase()) {
@@ -17,7 +17,7 @@ const normalizeQuestionType = (value?: string): QuestionType => {
     }
 };
 
-const mapQuestionFromDTO = (question: QuestionDTO): Question => {
+const mapQuestionFromDTO = (question: IQuestion): IQuestion => {
     const options =
         question.options
             ?.filter(option => option != null)
@@ -36,17 +36,17 @@ const mapQuestionFromDTO = (question: QuestionDTO): Question => {
 
     return {
         id: question.id,
-        title: question.title ?? question.question ?? '',
-        type: normalizeQuestionType(question.type ?? question.questionType),
+        title: question.title ?? question.title ?? '',
+        questionType: normalizeQuestionType(question.questionType ?? question.questionType),
         options: options.length > 0 ? options : undefined,
         keywords
     };
 };
 
 // ---------------------- ANALYSIS ----------------------
-export const getAllAnalysis = async (): Promise<Analysis[]> => {
+export const getAllAnalysis = async (): Promise<IAnalysis[]> => {
     try {
-        const response = await apiClient.get<Analysis[]>('/analysis/all');
+        const response = await apiClient.get<IAnalysis[]>('/analysis/all');
         return response.data;
     } catch (error) {
         console.error('Error fetching all analysis:', error);
@@ -54,9 +54,9 @@ export const getAllAnalysis = async (): Promise<Analysis[]> => {
     }
 };
 
-export const getPendingAnalysis = async (): Promise<Analysis[]> => {
+export const getPendingAnalysis = async (): Promise<IAnalysis[]> => {
     try {
-        const response = await apiClient.get<Analysis[]>('/analysis/pending');
+        const response = await apiClient.get<IAnalysis[]>('/analysis/pending');
         return response.data;
     } catch (error) {
         console.error('Error fetching pending analysis:', error);
@@ -64,9 +64,9 @@ export const getPendingAnalysis = async (): Promise<Analysis[]> => {
     }
 };
 
-export const getCheckedAnalysis = async (): Promise<Analysis[]> => {
+export const getCheckedAnalysis = async (): Promise<IAnalysis[]> => {
     try {
-        const response = await apiClient.get<Analysis[]>('/analysis/proofread');
+        const response = await apiClient.get<IAnalysis[]>('/analysis/proofread');
         return response.data;
     } catch (error) {
         console.error('Error fetching checked analysis:', error);
@@ -74,9 +74,9 @@ export const getCheckedAnalysis = async (): Promise<Analysis[]> => {
     }
 };
 
-export const getUserAnalysis = async (userId: number): Promise<Analysis[]> => {
+export const getUserAnalysis = async (userId: number): Promise<IAnalysis[]> => {
     try {
-        const response = await apiClient.get<Analysis[]>(`/analysis/user/${userId}`);
+        const response = await apiClient.get<IAnalysis[]>(`/analysis/user/${userId}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching user analysis:', error);
@@ -84,9 +84,9 @@ export const getUserAnalysis = async (userId: number): Promise<Analysis[]> => {
     }
 };
 
-export const getUserAnalysisByCategory = async (userId: number, category: string): Promise<Analysis[]> => {
+export const getUserAnalysisByCategory = async (userId: number, category: string): Promise<IAnalysis[]> => {
     try {
-        const response = await apiClient.get<Analysis[]>(`/analysis/user/${userId}/category/${category}`);
+        const response = await apiClient.get<IAnalysis[]>(`/analysis/user/${userId}/category/${category}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching user analysis by category:', error);
@@ -94,9 +94,9 @@ export const getUserAnalysisByCategory = async (userId: number, category: string
     }
 };
 
-export const getAdviserAnalysis = async (adviserId: number): Promise<Analysis[]> => {
+export const getAdviserAnalysis = async (adviserId: number): Promise<IAnalysis[]> => {
     try {
-        const response = await apiClient.get<Analysis[]>(`/analysis/adviser/${adviserId}`);
+        const response = await apiClient.get<IAnalysis[]>(`/analysis/adviser/${adviserId}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching adviser analysis:', error);
@@ -104,9 +104,9 @@ export const getAdviserAnalysis = async (adviserId: number): Promise<Analysis[]>
     }
 };
 
-export const updateAnalysis = async (id: number, analysisDTO: Partial<Analysis>): Promise<Analysis> => {
+export const updateAnalysis = async (id: number, analysisDTO: Partial<IAnalysis>): Promise<IAnalysis> => {
     try {
-        const response = await apiClient.put<Analysis>(`/analysis/${id}`, analysisDTO);
+        const response = await apiClient.put<IAnalysis>(`/analysis/${id}`, analysisDTO);
         return response.data;
     } catch (error) {
         console.error('Error updating analysis:', error);
@@ -114,9 +114,9 @@ export const updateAnalysis = async (id: number, analysisDTO: Partial<Analysis>)
     }
 };
 
-export const setCheckedAnalysis = async (id: number): Promise<Analysis> => {
+export const setCheckedAnalysis = async (id: number): Promise<IAnalysis> => {
     try {
-        const response = await apiClient.put<Analysis>(`/analysis/setChecked/${id}`);
+        const response = await apiClient.put<IAnalysis>(`/analysis/setChecked/${id}`);
         return response.data;
     } catch (error) {
         console.error('Error setting analysis as checked:', error);
@@ -124,9 +124,9 @@ export const setCheckedAnalysis = async (id: number): Promise<Analysis> => {
     }
 };
 
-export const createAnalysis = async (analysisDTO: Partial<Analysis>): Promise<Analysis> => {
+export const createAnalysis = async (analysisDTO: Partial<IAnalysis>): Promise<IAnalysis> => {
     try {
-        const response = await apiClient.post<Analysis>('/analysis', analysisDTO);
+        const response = await apiClient.post<IAnalysis>('/analysis', analysisDTO);
         return response.data;
     } catch (error) {
         console.error('Error creating analysis:', error);
@@ -135,9 +135,9 @@ export const createAnalysis = async (analysisDTO: Partial<Analysis>): Promise<An
 };
 
 // ---------------------- QUESTIONNAIRE ----------------------
-export const getAllQuestionnaires = async (): Promise<Questionnaire[]> => {
+export const getAllQuestionnaires = async (): Promise<IQuestionnaire[]> => {
     try {
-        const response = await apiClient.get<Questionnaire[]>('/questionnaires');
+        const response = await apiClient.get<IQuestionnaire[]>('/questionnaires');
         return response.data;
     } catch (error) {
         console.error('Error fetching questionnaires:', error);
@@ -145,9 +145,9 @@ export const getAllQuestionnaires = async (): Promise<Questionnaire[]> => {
     }
 };
 
-export const getQuestionnaireById = async (id: number): Promise<Questionnaire> => {
+export const getQuestionnaireById = async (id: number): Promise<IQuestionnaire> => {
     try {
-        const response = await apiClient.get<Questionnaire>(`/questionnaires/${id}`);
+        const response = await apiClient.get<IQuestionnaire>(`/questionnaires/${id}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching questionnaire by id:', error);
@@ -155,9 +155,9 @@ export const getQuestionnaireById = async (id: number): Promise<Questionnaire> =
     }
 };
 
-export const getQuestionnairesByCategory = async (categoryId: number): Promise<Questionnaire[]> => {
+export const getQuestionnairesByCategory = async (categoryId: number): Promise<IQuestionnaire[]> => {
     try {
-        const response = await apiClient.get<Questionnaire[]>(`/questionnaires/category/${categoryId}`);
+        const response = await apiClient.get<IQuestionnaire[]>(`/questionnaires/category/${categoryId}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching questionnaires by category:', error);
@@ -165,9 +165,9 @@ export const getQuestionnairesByCategory = async (categoryId: number): Promise<Q
     }
 };
 
-export const createQuestionnaire = async (questionnaire: Partial<Questionnaire>): Promise<Questionnaire> => {
+export const createQuestionnaire = async (questionnaire: Partial<IQuestionnaire>): Promise<IQuestionnaire> => {
     try {
-        const response = await apiClient.post<Questionnaire>('/questionnaires', questionnaire);
+        const response = await apiClient.post<IQuestionnaire>('/questionnaires', questionnaire);
         return response.data;
     } catch (error) {
         console.error('Error creating questionnaire:', error);
@@ -175,9 +175,9 @@ export const createQuestionnaire = async (questionnaire: Partial<Questionnaire>)
     }
 };
 
-export const updateQuestionnaire = async (id: number, questionnaire: Partial<Questionnaire>): Promise<Questionnaire> => {
+export const updateQuestionnaire = async (id: number, questionnaire: Partial<IQuestionnaire>): Promise<IQuestionnaire> => {
     try {
-        const response = await apiClient.put<Questionnaire>(`/questionnaires/${id}`, questionnaire);
+        const response = await apiClient.put<IQuestionnaire>(`/questionnaires/${id}`, questionnaire);
         return response.data;
     } catch (error) {
         console.error('Error updating questionnaire:', error);
@@ -211,9 +211,9 @@ export const submitQuestionnaireAnswers = async (questionnaireData: Questionnair
 };
 
 // ---------------------- WEB QUESTIONS ----------------------
-export const fetchAllQuestions = async (): Promise<Question[]> => {
+export const fetchAllQuestions = async (): Promise<IQuestion[]> => {
     try {
-        const response = await apiClient.get<QuestionDTO[]>('/preguntas');
+        const response = await apiClient.get<IQuestion[]>('/preguntas');
         return response.data.map(mapQuestionFromDTO);
     } catch (error) {
         console.error('Error fetching questions:', error);
@@ -221,9 +221,9 @@ export const fetchAllQuestions = async (): Promise<Question[]> => {
     }
 };
 
-export const fetchQuestionsByCategory = async (category: string): Promise<Question[]> => {
+export const fetchQuestionsByCategory = async (category: string): Promise<IQuestion[]> => {
     try {
-        const response = await apiClient.get<QuestionDTO[]>(`/preguntas/category/${category}`);
+        const response = await apiClient.get<IQuestion[]>(`/preguntas/category/${category}`);
         return response.data.map(mapQuestionFromDTO);
     } catch (error) {
         console.error('Error fetching questions by category:', error);
@@ -231,9 +231,9 @@ export const fetchQuestionsByCategory = async (category: string): Promise<Questi
     }
 };
 
-export const createQuestion = async (questionWebModel: QuestionDTO): Promise<QuestionDTO> => {
+export const createQuestion = async (questionWebModel: IQuestion): Promise<IQuestion> => {
     try {
-        const response = await apiClient.post<QuestionDTO>('/preguntas', questionWebModel);
+        const response = await apiClient.post<IQuestion>('/preguntas', questionWebModel);
         return response.data;
     } catch (error) {
         console.error('Error creating question:', error);
@@ -241,9 +241,9 @@ export const createQuestion = async (questionWebModel: QuestionDTO): Promise<Que
     }
 };
 
-export const updateQuestion = async (id: number, questionWebModel: QuestionDTO): Promise<QuestionDTO> => {
+export const updateQuestion = async (id: number, questionWebModel: IQuestion): Promise<IQuestion> => {
     try {
-        const response = await apiClient.put<QuestionDTO>(`/preguntas/${id}`, questionWebModel);
+        const response = await apiClient.put<IQuestion>(`/preguntas/${id}`, questionWebModel);
         return response.data;
     } catch (error) {
         console.error('Error updating question:', error);

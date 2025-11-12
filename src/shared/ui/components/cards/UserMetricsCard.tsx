@@ -14,8 +14,8 @@ import { User, BarChart2 } from "lucide-react";
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-interface ClientMetricsCardProps {
-    client: {
+interface UserMetricsCardProps {
+    user: {
         legalName: string;
         sector: string;
         role: { name: string };
@@ -27,25 +27,25 @@ interface ClientMetricsCardProps {
     };
 }
 
-const ClientMetricsCard: React.FC<ClientMetricsCardProps> = ({ client }) => {
+const UserMetricsCard: React.FC<UserMetricsCardProps> = ({ user }) => {
     // Contar estados (pending, completed, etc.)
     const stateCounts = useMemo(() => {
         const counts: Record<string, number> = {};
-        client.questionnaires.forEach((q) => {
+        user.questionnaires.forEach((q) => {
             counts[q.state] = (counts[q.state] || 0) + 1;
         });
         return counts;
-    }, [client]);
+    }, [user]);
 
     // Agrupar por categoría
     const categoryData = useMemo(() => {
         const counts: Record<string, number> = {};
-        client.questionnaires.forEach((q) => {
+        user.questionnaires.forEach((q) => {
             const category = q.category?.category || "Sin categoría";
             counts[category] = (counts[category] || 0) + (q.conteo || 0);
         });
         return counts;
-    }, [client]);
+    }, [user]);
 
     // Datos para Doughnut (estados)
     const doughnutData = {
@@ -85,9 +85,9 @@ const ClientMetricsCard: React.FC<ClientMetricsCardProps> = ({ client }) => {
                     <User className="text-primary h-6 w-6" />
                 </div>
                 <div>
-                    <h2 className="font-semibold text-base-content">{client.legalName}</h2>
+                    <h2 className="font-semibold text-base-content">{user.legalName}</h2>
                     <p className="text-sm text-base-content/70">
-                        {client.role?.name} • {client.sector}
+                        {user.role?.name} • {user.sector}
                     </p>
                 </div>
             </div>
@@ -118,4 +118,4 @@ const ClientMetricsCard: React.FC<ClientMetricsCardProps> = ({ client }) => {
     );
 };
 
-export default ClientMetricsCard;
+export default UserMetricsCard;

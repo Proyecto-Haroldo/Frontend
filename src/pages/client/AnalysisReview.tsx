@@ -11,12 +11,12 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { 
-  Analysis, 
   ColorSemaforo,
   getRiskLevel,
   getRiskDescription,
   formatAnalysisTitle
 } from '../../shared/types/analysis';
+import { IAnalysis } from '../../core/models/analysis';
 
 function AnalysisReview() {
   const [showAnswers, setShowAnswers] = useState(false);
@@ -25,7 +25,7 @@ function AnalysisReview() {
   const [searchParams] = useSearchParams();
 
   // Get analysis data from navigation state
-  const analysis = location.state?.analysis as Analysis | undefined;
+  const analysis = location.state?.analysis as IAnalysis | undefined;
 
   // Fallback: get analysis ID from URL params for direct navigation
   const analysisIdFromUrl = searchParams.get('id');
@@ -141,7 +141,7 @@ function AnalysisReview() {
                 <AlertCircle className="h-8 w-8 text-error" />
               </div>
             </div>
-            <h2 className="card-title text-xl mb-4">Análisis no encontrado</h2>
+            <h2 className="card-title text-xl mb-4">Análisis no encontrado.</h2>
             <p className="text-base-content/70 mb-6">
               No se encontró información del análisis solicitado. 
               Por favor, intente seleccionar un análisis desde la lista.

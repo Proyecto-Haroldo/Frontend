@@ -1,7 +1,7 @@
 import React from 'react';
 import { Users, FileText, Clock, CheckCircle } from 'lucide-react';
 import { useThemeColors } from "../../../hooks/useThemeColors";
-import { Analysis } from '../../../../core/models/AnalysisModel';
+import { IAnalysis } from '../../../../core/models/analysis';
 import { motion } from 'motion/react';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
@@ -15,7 +15,7 @@ interface StatsHeaderProps {
         yellow: number;
         red: number;
     };
-    analysis: Analysis[];
+    analysis: IAnalysis[];
     loading: boolean;
     error: string | null;
     onRefresh: () => void;

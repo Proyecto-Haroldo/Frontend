@@ -1,43 +1,32 @@
-interface Role {
+import { IQuestion } from "../../shared/types/analysis";
+
+export type ClientType = "persona" | "empresa";
+
+interface IRole {
   id: number;
   name: string;
 }
 
-interface OptionAnswer {
-  optionanswerid: number;
-  answertext: string;
-  question: string;
-}
-
-interface Question {
-  questionid: number;
-  question: string;
-  questionType: string;  // 'open' o cualquier otro tipo
-  clientType: string;    // 'persona' o 'empresa'
-  category: string;
-  options: OptionAnswer[];
-}
-
-interface Category {
+interface ICategory {
   categoryid: number;
   category: string;
   decimalvalue: number;
-  questions: Question[];
+  questions: IQuestion[];
 }
 
-interface Answer {
+interface IAnswer {
   answerId: number;
   questionnaire: string;
-  question: Question;
+  question: IQuestion;
   answerText: string;
 }
 
-interface Questionnaire {
+interface IQuestionnaire {
   id: number;
-  category: Category;
+  category: ICategory;
   client: string;
   timeWhenSolved: string; // ISO string
-  answers: Answer[];
+  answers: IAnswer[];
   state: string; // 'pending', 'completed', etc.
   recomendacionUsuario: string;
   colorSemaforo: string;
@@ -45,7 +34,7 @@ interface Questionnaire {
   conteo: number;
 }
 
-export interface Client {
+export interface IUser {
   clientId: number;
   cedulaOrNIT: string;
   legalName: string;
@@ -53,8 +42,8 @@ export interface Client {
   email: string;
   password: string;
   sector: string;
-  role: Role;
+  role: IRole;
   phone?: string;    // OJO!! AÑADIR ATRIBUTOS
   address?: string;  // OJO!! AÑADIR ATRIBUTOS
-  questionnaires: Questionnaire[];
+  questionnaires: IQuestionnaire[];
 }

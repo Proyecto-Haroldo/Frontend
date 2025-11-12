@@ -1,13 +1,7 @@
-import { Analysis } from "../../core/models/AnalysisModel";
+import { QuestionType } from "../../core/models/question";
+import { ClientType } from "../../core/models/user";
 
-// Re-export Analysis type
-export type { Analysis };
-
-export type ClientType = "persona" | "empresa";
-
-export type QuestionType = "open" | "single" | "multiple";
-
-export interface Question {
+export interface IQuestion {
   questionid: number;
   question: string;
   questionType: QuestionType;

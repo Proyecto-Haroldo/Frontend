@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Filter, Search, Eye } from "lucide-react";
 import { useThemeColors } from "../../../hooks/useThemeColors";
-import { Questionnaire } from "../../../../core/models/QuestionnaireModel";
+import { IQuestionnaire } from "../../../../core/models/questionnaire";
 import { motion } from "motion/react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 interface QuestionnairesSearchTableProps {
-    questionnaires: Questionnaire[];
+    questionnaires: IQuestionnaire[];
     loading: boolean;
     error: string | null;
 }
@@ -67,10 +67,10 @@ const QuestionnairesSearchTable: React.FC<QuestionnairesSearchTableProps> = ({
     const [filter, setFilter] = useState<string>("all");
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredQuestionnaires, setFilteredQuestionnaires] = useState<
-        Questionnaire[]
+        IQuestionnaire[]
     >([]);
     const [selectedQuestionnaire, setSelectedQuestionnaire] =
-        useState<Questionnaire | null>(null);
+        useState<IQuestionnaire | null>(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
 
     // Obtener categorías únicas para el filtro
@@ -104,7 +104,7 @@ const QuestionnairesSearchTable: React.FC<QuestionnairesSearchTableProps> = ({
         filterQuestionnaires();
     }, [filterQuestionnaires]);
 
-    const handleViewDetails = (questionnaire: Questionnaire) => {
+    const handleViewDetails = (questionnaire: IQuestionnaire) => {
         setSelectedQuestionnaire(questionnaire);
         setShowDetailsModal(true);
     };

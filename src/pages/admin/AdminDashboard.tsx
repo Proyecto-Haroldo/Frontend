@@ -1,49 +1,49 @@
 import { useEffect, useState } from 'react';
 import { getAllAnalysis, getAllQuestionnaires } from '../../api/analysisApi';
-import { getAllClients } from '../../api/userApi';
-import { Client } from '../../core/models/ClientModel';
-import { Questionnaire } from '../../core/models/QuestionnaireModel';
-import { Analysis } from '../../core/models/AnalysisModel';
+import { getAllUsers } from '../../api/userApi';
+import { IUser } from '../../core/models/user';
+import { IQuestionnaire } from '../../core/models/questionnaire';
+import { IAnalysis } from '../../core/models/analysis';
 import { motion, AnimatePresence } from 'motion/react';
 import { Users, ClipboardList, ArrowLeft } from 'lucide-react';
-import ClientSearchTable from '../../shared/ui/components/tables/ClientsSearchTable';
+import UserSearchTable from '../../shared/ui/components/tables/UsersSearchTable';
+import AnalysisSearchTable from '../../shared/ui/components/tables/AnalysisSearchTable';
 import QuestionnairesSearchTable from '../../shared/ui/components/tables/QuestionnairesSearchTable';
 import HeaderStats from '../../shared/ui/components/headers/StatsHeader';
-import AnalysisSearchTable from '../../shared/ui/components/tables/AnalysisSearchTable';
 
 function AdminDashboard() {
-  const [analysis, setAnalysis] = useState<Analysis[]>([]);
-  const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
-  const [loadingClients, setLoadingClients] = useState(true);
-  const [errorClients, setErrorClients] = useState('');
+  const [analysis, setAnalysis] = useState<IAnalysis[]>([]);
+  const [questionnaires, setQuestionnaires] = useState<IQuestionnaire[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [errorUsers, setErrorUsers] = useState('');
   const [loadingAnalysis, setLoadingAnalysis] = useState(true);
   const [errorAnalysis, setErrorAnalysis] = useState('');
   const [loadingQuestionnaires, setLoadingQuestionnaires] = useState(true);
   const [errorQuestionnaires, setErrorQuestionnaires] = useState('');
-  const [view, setView] = useState<'selector' | 'clients' | 'questionnaires' | 'analysis'>('selector');
+  const [view, setView] = useState<'selector' | 'metrics' | 'users' | 'questionnaires' | 'analysis'>('selector');
 
   useEffect(() => {
     fetchAnalysis();
     fetchQuestionnaires();
-    fetchClients();
+    fetchUsers();
   }, []);
 
-  const fetchClients = async () => {
+  const fetchUsers = async () => {
     try {
-      setLoadingClients(true);
-      const data = await getAllClients();
-      setClients(data);
+      setLoadingUsers(true);
+      const data = await getAllUsers();
+      setUsers(data);
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error('Error fetching clients:', error.message);
-        setErrorClients(error.message);
+        console.error('Error fetching users:', error.message);
+        setErrorUsers(error.message);
       } else {
-        console.error('Unexpected error fetching clients:', error);
-        setErrorClients('Unexpected error occurred');
+        console.error('Unexpected error fetching users:', error);
+        setErrorUsers('Unexpected error occurred');
       }
     } finally {
-      setLoadingClients(false);
+      setLoadingUsers(false);
     }
   };
 
@@ -85,7 +85,7 @@ function AdminDashboard() {
 
   const handleRefresh = () => {
     fetchQuestionnaires();
-    fetchClients();
+    fetchUsers();
   }
 
   const stats = {
@@ -124,7 +124,7 @@ function AdminDashboard() {
             transition={{ duration: 0.4 }}
             className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6"
           >
-            {/* Card Clientes */}
+            {/* Card Usuarios */}
             <motion.div
               variants={cardVariants}
               initial="initial"
@@ -134,13 +134,13 @@ function AdminDashboard() {
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
               className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg"
-              onClick={() => setView('clients')}
+              onClick={() => setView('users')}
             >
               <div className="card-body flex flex-col items-center text-center space-y-3">
                 <Users className="h-10 w-10 text-primary" />
-                <h2 className="card-title text-lg md:text-xl">Clientes</h2>
+                <h2 className="card-title text-lg md:text-xl">Usuarios</h2>
                 <p className="text-sm text-base-content/70">
-                  Ver, filtrar y analizar los clientes registrados en el sistema.
+                  Ver, filtrar y analizar los usuarios registrados en el sistema.
                 </p>
               </div>
             </motion.div>
@@ -189,10 +189,10 @@ function AdminDashboard() {
           </motion.div>
         )}
 
-        {/* Vista Clientes */}
-        {view === 'clients' && (
+        {/* Vista Usuarios */}
+        {view === 'users' && (
           <motion.div
-            key="clients"
+            key="users"
             initial={{ x: 100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -100, opacity: 0 }}
@@ -208,10 +208,10 @@ function AdminDashboard() {
                 Volver
               </button>
             </div>
-            <ClientSearchTable
-              loading={loadingClients}
-              error={errorClients}
-              clients={clients}
+            <UserSearchTable
+              loading={loadingUsers}
+              error={errorUsers}
+              users={users}
             />
           </motion.div>
         )}

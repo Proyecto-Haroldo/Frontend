@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'react';
 import { getAllAnalysis, getAllQuestionnaires } from '../../api/analysisApi';
-import { Questionnaire } from '../../core/models/QuestionnaireModel';
+import { IQuestionnaire } from '../../core/models/questionnaire';
 import { motion, AnimatePresence } from 'motion/react';
-import { Users, ClipboardList, ArrowLeft } from 'lucide-react';
+import { ClipboardList, ArrowLeft } from 'lucide-react';
+import { IAnalysis } from '../../core/models/analysis';
 import QuestionnairesSearchTable from '../../shared/ui/components/tables/QuestionnairesSearchTable';
 import HeaderStats from '../../shared/ui/components/headers/StatsHeader';
-import MetricsTemplate from '../../shared/ui/template/MetricsTemplate';
-import { Analysis } from '../../core/models/AnalysisModel';
 import AnalysisSearchTable from '../../shared/ui/components/tables/AnalysisSearchTable';
 
 function AdviserDashboard() {
-  const [analysis, setAnalysis] = useState<Analysis[]>([]);
-  const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
+  const [analysis, setAnalysis] = useState<IAnalysis[]>([]);
+  const [questionnaires, setQuestionnaires] = useState<IQuestionnaire[]>([]);
   const [loadingQuestionnaires, setLoadingQuestionnaires] = useState(true);
   const [errorQuestionnaires, setErrorQuestionnaires] = useState('');
   const [loadingAnalysis, setLoadingAnalysis] = useState(true);
@@ -97,29 +96,8 @@ function AdviserDashboard() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, x: -100 }}
             transition={{ duration: 0.4 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6"
           >
-            {/* Card Clientes */}
-            <motion.div
-              variants={cardVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              transition={{ duration: 0.4 }}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg"
-              onClick={() => setView('metrics')}
-            >
-              <div className="card-body flex flex-col items-center text-center space-y-3">
-                <Users className="h-10 w-10 text-primary" />
-                <h2 className="card-title text-lg md:text-xl">Métrics</h2>
-                <p className="text-sm text-base-content/70">
-                  Ver y analizar gráfios estadísticos con métricas de tus questionarios.
-                </p>
-              </div>
-            </motion.div>
-
             {/* Card Cuestionarios */}
             <motion.div
               variants={cardVariants}
@@ -161,33 +139,6 @@ function AdviserDashboard() {
                 </p>
               </div>
             </motion.div>
-          </motion.div>
-        )}
-
-        {/* Vista Clientes */}
-        {view === 'metrics' && (
-          <motion.div
-            key="metrics"
-            initial={{ x: 100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -100, opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-4"
-          >
-            <div className="flex justify-between items-center">
-              <button
-                onClick={() => setView('selector')}
-                className="btn btn-outline btn-sm gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Volver
-              </button>
-            </div>
-            <MetricsTemplate
-              loading={loadingQuestionnaires}
-              error={errorQuestionnaires}
-              questionnaires={questionnaires}
-            />
           </motion.div>
         )}
 
