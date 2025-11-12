@@ -143,7 +143,10 @@ const Questionnaire = () => {
     const usedKeywords = new Set<string>();
 
     // Helper function to find keywords in text
-    const findKeywordsInText = (text: string) => {
+    const findKeywordsInText = (text: string | undefined | null) => {
+      if (!text?.trim()) {
+        return new Set<string>();
+      }
       const foundKeywords = new Set<string>();
       const words = text.split(/(\s+|[.,!?;:()"])/);
       
@@ -287,7 +290,10 @@ const Questionnaire = () => {
           <div className="space-y-1">
             {currentQuestion.options?.map(option => (
               <div key={option.id} className="form-control">
-                <label htmlFor={currentQuestion.id.toString()} className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg">
+                <label
+                  htmlFor={option.id}
+                  className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg"
+                >
                   <input
                     type="radio"
                     title={currentQuestion.id.toString()}
@@ -315,7 +321,10 @@ const Questionnaire = () => {
           <div className="space-y-1">
             {currentQuestion.options?.map(option => (
               <div key={option.id} className="form-control">
-                <label className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg">
+                <label
+                  htmlFor={option.id}
+                  className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg"
+                >
                   <input
                     type="checkbox"
                     id={option.id}

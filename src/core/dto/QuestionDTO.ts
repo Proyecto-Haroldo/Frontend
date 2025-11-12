@@ -1,10 +1,12 @@
 export interface QuestionDTO {
     id: number;
-    title: string;
-    type: 'open' | 'single' | 'multiple';
+    title?: string;
+    question?: string;
+    type?: string;
+    questionType?: string;
     options?: Array<{
         id: string | number;
-        text: string;
+        text?: string;
     }>;
     keywords?: Array<{
         title: string;

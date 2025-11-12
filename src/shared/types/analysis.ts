@@ -1,5 +1,8 @@
 import { Analysis } from "../../core/models/AnalysisModel";
 
+// Re-export Analysis type
+export type { Analysis };
+
 export type ClientType = "persona" | "empresa";
 
 export type QuestionType = "open" | "single" | "multiple";
@@ -29,7 +32,7 @@ export interface AnswersOfQuestionnaire {
 
 export type AnalysisStatus = 'completed' | 'in-progress' | 'pending';
 
-export type ColorSemaforo = Analysis['colorSemaforo'];
+export type ColorSemaforo = 'verde' | 'amarillo' | 'rojo';
 
 // Utility functions for analysis processing
 export const mapColorToStatus = (color: ColorSemaforo): AnalysisStatus => {

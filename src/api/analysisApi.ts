@@ -1,8 +1,47 @@
 import { apiClient } from './apiClient';
-import type { Question, QuestionnaireResult } from '../shared/types/questionnaire';
+import type { Question, QuestionType, QuestionnaireResult } from '../shared/types/questionnaire';
 import { QuestionDTO } from '../core/dto/QuestionDTO';
 import { Analysis } from '../core/models/AnalysisModel';
 import { Questionnaire } from '../core/models/QuestionnaireModel';
+
+const normalizeQuestionType = (value?: string): QuestionType => {
+    switch (value?.toLowerCase()) {
+        case 'single':
+            return 'single';
+        case 'multiple':
+            return 'multiple';
+        case 'open':
+            return 'open';
+        default:
+            return 'open';
+    }
+};
+
+const mapQuestionFromDTO = (question: QuestionDTO): Question => {
+    const options =
+        question.options
+            ?.filter(option => option != null)
+            .map(option => ({
+                id: String(option.id),
+                text: option.text ?? ''
+            })) ?? [];
+
+    const keywords =
+        (question.keywords ?? [])
+            .map(keyword => ({
+                title: keyword?.title ?? '',
+                description: keyword?.description ?? ''
+            }))
+            .filter(keyword => keyword.title);
+
+    return {
+        id: question.id,
+        title: question.title ?? question.question ?? '',
+        type: normalizeQuestionType(question.type ?? question.questionType),
+        options: options.length > 0 ? options : undefined,
+        keywords
+    };
+};
 
 // ---------------------- ANALYSIS ----------------------
 export const getAllAnalysis = async (): Promise<Analysis[]> => {
@@ -175,13 +214,7 @@ export const submitQuestionnaireAnswers = async (questionnaireData: Questionnair
 export const fetchAllQuestions = async (): Promise<Question[]> => {
     try {
         const response = await apiClient.get<QuestionDTO[]>('/preguntas');
-        return response.data.map(q => ({
-            id: q.id,
-            title: q.title,
-            type: q.type,
-            options: q.options?.map(opt => ({ id: String(opt.id), text: opt.text })),
-            keywords: q.keywords || []
-        }));
+        return response.data.map(mapQuestionFromDTO);
     } catch (error) {
         console.error('Error fetching questions:', error);
         throw new Error('Error al obtener las preguntas');
@@ -190,14 +223,8 @@ export const fetchAllQuestions = async (): Promise<Question[]> => {
 
 export const fetchQuestionsByCategory = async (category: string): Promise<Question[]> => {
     try {
-        const response = await apiClient.get<QuestionDTO[]>(`/preguntas/categoria/${category}`);
-        return response.data.map(q => ({
-            id: q.id,
-            title: q.title,
-            type: q.type,
-            options: q.options?.map(opt => ({ id: String(opt.id), text: opt.text })),
-            keywords: q.keywords || []
-        }));
+        const response = await apiClient.get<QuestionDTO[]>(`/preguntas/category/${category}`);
+        return response.data.map(mapQuestionFromDTO);
     } catch (error) {
         console.error('Error fetching questions by category:', error);
         throw new Error('Error al obtener preguntas por categoría');
