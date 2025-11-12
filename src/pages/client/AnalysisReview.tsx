@@ -11,12 +11,12 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { 
-  Analysis, 
   ColorSemaforo,
   getRiskLevel,
   getRiskDescription,
   formatAnalysisTitle
 } from '../../shared/types/analysis';
+import { IAnalysis } from '../../core/models/analysis';
 
 function AnalysisReview() {
   const [showAnswers, setShowAnswers] = useState(false);
@@ -25,7 +25,7 @@ function AnalysisReview() {
   const [searchParams] = useSearchParams();
 
   // Get analysis data from navigation state
-  const analysis = location.state?.analysis as Analysis | undefined;
+  const analysis = location.state?.analysis as IAnalysis | undefined;
 
   // Fallback: get analysis ID from URL params for direct navigation
   const analysisIdFromUrl = searchParams.get('id');
@@ -45,13 +45,20 @@ function AnalysisReview() {
 
   if (analysis) {
     // Primary: Use data from navigation state
+    // Normalize colorSemaforo to ensure it's a valid ColorSemaforo value
+    const rawColor = String(analysis.colorSemaforo || 'amarillo').toLowerCase();
+    let colorSemaforo: ColorSemaforo = 'amarillo';
+    if (rawColor === 'rojo' || rawColor === 'red') colorSemaforo = 'rojo';
+    else if (rawColor === 'amarillo' || rawColor === 'yellow') colorSemaforo = 'amarillo';
+    else if (rawColor === 'verde' || rawColor === 'green') colorSemaforo = 'verde';
+    
     analysisData = {
       id: analysis.analysisId.toString(),
       conteo: analysis.conteo,
       timestamp: analysis.timeWhenSolved || new Date().toISOString(),
       categoria: analysis.categoria,
       recomendacionUsuario: analysis.recomendacionInicial,
-      colorSemaforo: analysis.colorSemaforo
+      colorSemaforo: colorSemaforo
     };
   } else if (analysisIdFromUrl && aiRecommendationFromLS) {
     // Fallback for direct URL navigation with localStorage data
@@ -87,7 +94,13 @@ function AnalysisReview() {
   }
 
   // Status configuration
-  const statusConfig = {
+  const statusConfig: Record<ColorSemaforo, {
+    icon: typeof CheckCircle;
+    title: string;
+    color: string;
+    bgColor: string;
+    borderColor: string;
+  }> = {
     verde: {
       icon: CheckCircle,
       title: 'Situación Saludable',
@@ -128,7 +141,7 @@ function AnalysisReview() {
                 <AlertCircle className="h-8 w-8 text-error" />
               </div>
             </div>
-            <h2 className="card-title text-xl mb-4">análisis no encontrado</h2>
+            <h2 className="card-title text-xl mb-4">Análisis no encontrado.</h2>
             <p className="text-base-content/70 mb-6">
               No se encontró información del análisis solicitado. 
               Por favor, intente seleccionar un análisis desde la lista.
@@ -451,7 +464,7 @@ function AnalysisReview() {
                 transition={{ duration: 0.6, delay: 0.3, type: "spring", stiffness: 200 }}
               >
                 <h1 className="text-3xl font-bold mb-2">
-                  análisis {formatAnalysisTitle(analysisData.categoria, analysisData.conteo)}
+                  Análisis {formatAnalysisTitle(analysisData.categoria, analysisData.conteo)}
                 </h1>
                 <p className="text-base-content/60">
                   Análisis personalizado de su situación

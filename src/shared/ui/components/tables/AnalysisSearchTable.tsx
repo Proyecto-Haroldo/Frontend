@@ -1,14 +1,14 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
 import { Clock, CheckCircle, Filter, Search, Eye, User } from "lucide-react";
-import { Analysis } from "../../../../core/models/AnalysisModel";
+import { IAnalysis } from "../../../../core/models/analysis";
 import { useThemeColors } from "../../../hooks/useThemeColors";
 import { motion } from "motion/react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 interface AnalysisSearchTableProps {
-    analysis: Analysis[];
+    analysis: IAnalysis[];
     loading: boolean;
     error: string | null;
 }
@@ -94,8 +94,8 @@ const AnalysisSearchTable: React.FC<AnalysisSearchTableProps> = ({
 }) => {
     const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
     const [searchTerm, setSearchTerm] = useState("");
-    const [filteredAnalysis, setFilteredAnalysis] = useState<Analysis[]>([]);
-    const [selectedAnalysis, setSelectedAnalysis] = useState<Analysis | null>(
+    const [filteredAnalysis, setFilteredAnalysis] = useState<IAnalysis[]>([]);
+    const [selectedAnalysis, setSelectedAnalysis] = useState<IAnalysis | null>(
         null
     );
     const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -175,7 +175,7 @@ const AnalysisSearchTable: React.FC<AnalysisSearchTableProps> = ({
         }
     };
 
-    const handleViewDetails = (analysis: Analysis) => {
+    const handleViewDetails = (analysis: IAnalysis) => {
         setSelectedAnalysis(analysis);
         setShowDetailsModal(true);
     };

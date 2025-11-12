@@ -16,7 +16,7 @@ import {
 } from "chart.js";
 import { Bar, Pie, Line, Bubble } from "react-chartjs-2";
 import { motion } from "framer-motion";
-import { Questionnaire } from "../../../core/models/QuestionnaireModel";
+import { IAnalysis } from "../../../core/models/analysis";
 
 // Registrar todos los módulos de Chart.js necesarios
 ChartJS.register(
@@ -37,7 +37,7 @@ ChartJS.register(
 interface MetricsTemplateProps {
     loading: boolean;
     error: string | null;
-    questionnaires: Questionnaire[];
+    analysis: IAnalysis[];
 }
 
 type FiltersByTime = "day" | "week" | "month" | "year";
@@ -72,16 +72,16 @@ const SkeletonCard = () => (
     <div className="bg-base-200 animate-pulse rounded-2xl p-4 h-64 shadow-sm" />
 );
 
-export default function MetricsTemplate({ loading, error, questionnaires }: MetricsTemplateProps) {
+export default function MetricsTemplate({ loading, error, analysis }: MetricsTemplateProps) {
     const [filter, setFilter] = useState<FiltersByTime>("month");
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
-    const [selectedClient, setSelectedClient] = useState<string>("all");
+    const [selectedUser, setSelectedUser] = useState<string>("all");
 
     // Filtrado
     const filteredData = useMemo(() => {
         const now = new Date();
-        return questionnaires.filter((q) => {
-            const date = new Date(q.timeWhenSolved);
+        return analysis.filter((a) => {
+            const date = new Date(a.timeWhenSolved);
             const diffDays = (now.getTime() - date.getTime()) / (1000 * 3600 * 24);
 
             const dateFilter =
@@ -93,31 +93,31 @@ export default function MetricsTemplate({ loading, error, questionnaires }: Metr
                             ? diffDays <= 30
                             : diffDays <= 365;
 
-            const categoryFilter = selectedCategory === "all" || q.categoryName === selectedCategory;
-            const clientFilter = selectedClient === "all" || q.clientName === selectedClient;
+            const categoryFilter = selectedCategory === "all" || a.categoria === selectedCategory;
+            const clientFilter = selectedUser === "all" || a.clientName === selectedUser;
 
             return dateFilter && categoryFilter && clientFilter;
         });
-    }, [filter, selectedCategory, selectedClient, questionnaires]);
+    }, [filter, selectedCategory, selectedUser, analysis]);
 
     // Agrupaciones
     const byCategory = useMemo(() => {
         const map: Record<string, number> = {};
-        filteredData.forEach((q) => (map[q.categoryName] = (map[q.categoryName] || 0) + 1));
+        filteredData.forEach((a) => (map[a.categoria] = (map[a.categoria] || 0) + 1));
         return Object.entries(map);
     }, [filteredData]);
 
     const byState = useMemo(() => {
         const map: Record<string, number> = {};
-        filteredData.forEach((q) => (map[q.state] = (map[q.state] || 0) + 1));
+        filteredData.forEach((a) => (map[a.status] = (map[a.status] || 0) + 1));
         return Object.entries(map);
     }, [filteredData]);
 
     const bySemaforo = useMemo(() => {
         const map: Record<string, number> = { verde: 0, amarillo: 0, rojo: 0 };
 
-        filteredData.forEach((q) => {
-            const key = q.colorSemaforo?.toLowerCase();
+        filteredData.forEach((a) => {
+            const key = a.colorSemaforo?.toLowerCase();
             if (map[key] !== undefined) map[key]++;
         });
 
@@ -187,16 +187,16 @@ export default function MetricsTemplate({ loading, error, questionnaires }: Metr
 
     const byDate = useMemo(() => {
         const map: Record<string, number> = {};
-        filteredData.forEach((q) => {
-            const date = new Date(q.timeWhenSolved).toLocaleDateString();
+        filteredData.forEach((a) => {
+            const date = new Date(a.timeWhenSolved).toLocaleDateString();
             map[date] = (map[date] || 0) + 1;
         });
         return Object.entries(map);
     }, [filteredData]);
 
-    const byClient = useMemo(() => {
+    const byUser = useMemo(() => {
         const map: Record<string, number> = {};
-        filteredData.forEach((q) => (map[q.clientName] = (map[q.clientName] || 0) + 1));
+        filteredData.forEach((a) => (map[a.clientName] = (map[a.clientName] || 0) + 1));
         return Object.entries(map);
     }, [filteredData]);
 
@@ -274,7 +274,7 @@ export default function MetricsTemplate({ loading, error, questionnaires }: Metr
         <div className="space-y-6">
             {/* Filtros */}
             <div className="flex flex-wrap justify-between items-center gap-4">
-                <h2 className="text-2xl font-semibold">Overview de Cuestionarios</h2>
+                <h2 className="text-2xl font-semibold">Overview de Análisis</h2>
                 <div className="flex flex-wrap gap-3">
                     {["day", "week", "month", "year"].map((key) => (
                         <button
@@ -298,18 +298,18 @@ export default function MetricsTemplate({ loading, error, questionnaires }: Metr
                         className="select select-sm bg-base-200 rounded-xl"
                     >
                         <option value="all">Todas las categorías</option>
-                        {Array.from(new Set(questionnaires.map((q) => q.categoryName))).map((cat) => (
+                        {Array.from(new Set(analysis.map((a) => a.categoria))).map((cat) => (
                             <option key={cat}>{cat}</option>
                         ))}
                     </select>
                     <select
-                        value={selectedClient}
+                        value={selectedUser}
                         title="client"
-                        onChange={(e) => setSelectedClient(e.target.value)}
+                        onChange={(e) => setSelectedUser(e.target.value)}
                         className="select select-sm bg-base-200 rounded-xl"
                     >
                         <option value="all">Todos los clientes</option>
-                        {Array.from(new Set(questionnaires.map((q) => q.clientName))).map((client) => (
+                        {Array.from(new Set(analysis.map((a) => a.clientName))).map((client) => (
                             <option key={client}>{client}</option>
                         ))}
                     </select>
@@ -358,15 +358,15 @@ export default function MetricsTemplate({ loading, error, questionnaires }: Metr
 
                 {/* Estados */}
                 <motion.div className="card bg-base-100 p-4 rounded-2xl shadow-sm">
-                    <h3 className="font-semibold mb-2">Estados de Cuestionarios</h3>
+                    <h3 className="font-semibold mb-2">Estados de Análisis</h3>
                     <Pie className="max-h-50" data={createChartData(byState.map(x => x[0]), byState.map(x => x[1] as number), "Estados")} options={chartOptions} />
                 </motion.div>
 
-                {/* Por Cliente */}
+                {/* Por Usuario */}
                 <motion.div className="card bg-base-100 p-4 rounded-2xl shadow-sm">
-                    <h3 className="font-semibold mb-2">Cuestionarios por Cliente</h3>
+                    <h3 className="font-semibold mb-2">Análisis por Usuario</h3>
                     <Line
-                        data={createChartData(byClient.map(x => x[0]), byClient.map(x => x[1] as number), "Cuestionarios")}
+                        data={createChartData(byUser.map(x => x[0]), byUser.map(x => x[1] as number), "Análisis")}
                         options={{
                             ...chartOptions,
                             scales: {

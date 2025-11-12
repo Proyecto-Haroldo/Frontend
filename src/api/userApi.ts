@@ -1,4 +1,4 @@
-import { Client } from "../core/models/ClientModel";
+import { IUser } from "../core/models/user";
 import { apiClient } from "./apiClient";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -32,11 +32,11 @@ const mapRoleNameToRoleObject = (roleName: string | null | undefined) => {
   };
 };
 
-// Helper to transform backend client to frontend format
-const transformClient = (client: any): Client => ({
-  ...client,
-  role: mapRoleNameToRoleObject(client.roleName),
-  questionnaires: client.questionnaires || []
+// Helper to transform backend user to frontend format
+const transformUser = (user: any): IUser => ({
+  ...user,
+  role: mapRoleNameToRoleObject(user.roleName),
+  questionnaires: user.questionnaires || []
 });
 
 export async function getUserByEmail(email: string, token: string) {
@@ -45,45 +45,45 @@ export async function getUserByEmail(email: string, token: string) {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (!response.ok) {
-      // If endpoint doesn't exist (404), return empty client
+      // If endpoint doesn't exist (404), return empty user
       if (response.status === 404) {
-        return { legalName: '' } as Client;
+        return { legalName: '' } as IUser;
       }
       throw new Error('No se pudo obtener el usuario');
     }
-    const client = await response.json();
-    return transformClient(client);
+    const user = await response.json();
+    return transformUser(user);
   } catch (error) {
     console.error('Error in getUserByEmail, endpoint might not exist:', error);
-    // Return empty client object to prevent crashes
-    return { legalName: '' } as Client;
+    // Return empty user object to prevent crashes
+    return { legalName: '' } as IUser;
   }
 }
 
-export const getAllClients = async (): Promise<Client[]> => {
+export const getAllUsers = async (): Promise<IUser[]> => {
   try {
-    const response = await apiClient.get<Client[]>('/users');
+    const response = await apiClient.get<IUser[]>('/users');
     // Transform backend response to frontend format
-    return response.data.map(transformClient);
+    return response.data.map(transformUser);
   } catch (error) {
-    console.error('Error fetching all clients:', error);
-    throw new Error('Failed to fetch clients');
+    console.error('Error fetching all users:', error);
+    throw new Error('Failed to fetch users');
   }
 };
 
-export const getClientById = async (id: number): Promise<Client> => {
+export const getUserById = async (id: number): Promise<IUser> => {
   try {
-    const response = await apiClient.get<Client>(`/users/${id}`);
-    return transformClient(response.data);
+    const response = await apiClient.get<IUser>(`/users/${id}`);
+    return transformUser(response.data);
   } catch (error) {
     console.error('Error fetching user details:', error);
     throw new Error('Failed to fetch user details');
   }
 };
 
-export const deleteClientById = async (id: number): Promise<Client> => {
+export const deleteUserById = async (id: number): Promise<IUser> => {
   try {
-    const response = await apiClient.delete<Client>(`/users/${id}`);
+    const response = await apiClient.delete<IUser>(`/users/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error deleting user details:', error);
@@ -91,9 +91,9 @@ export const deleteClientById = async (id: number): Promise<Client> => {
   }
 };
 
-export const putClientById = async (id: number, client: Client): Promise<Client> => {
+export const putUserById = async (id: number, user: IUser): Promise<IUser> => {
   try {
-    const response = await apiClient.put<Client>(`/users/${id}`, { client });
+    const response = await apiClient.put<IUser>(`/users/${id}`, { user });
     return response.data;
   } catch (error) {
     console.error('Error updating user details:', error);

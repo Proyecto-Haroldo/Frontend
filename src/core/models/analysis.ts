@@ -1,4 +1,4 @@
-export interface Analysis {
+export interface IAnalysis {
     analysisId: number;
     asesorName: string;
     clientName: string;

@@ -1,4 +1,4 @@
-export interface Questionnaire {
+export interface IQuestionnaire {
     id: number;
     categoryName: string;
     creatorName: string;

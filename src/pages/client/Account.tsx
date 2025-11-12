@@ -2,10 +2,9 @@ import { useEffect, useState } from 'react';
 import { User, Mail, Phone, Building2, Shield, Bell, LogOut, Trash } from 'lucide-react';
 import { useAuth } from '../../shared/context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
-import { getClientById, deleteClientById } from '../../api/userApi';
-
-import { Client } from '../../core/models/ClientModel';
-import EditClientModal from '../../shared/ui/components/modals/EditClientModal';
+import { getUserById, deleteUserById } from '../../api/userApi';
+import { IUser } from '../../core/models/user';
+import EditUserModal from '../../shared/ui/components/modals/EditUserModal';
 import ConfirmDeleteCard from '../../shared/ui/components/cards/ConfirmDeleteCard';
 
 interface JwtPayload {
@@ -17,7 +16,7 @@ function Account() {
   const { token, logout } = useAuth();
   const [email, setEmail] = useState<string>('');
   const [name, setName] = useState<string>('');
-  const [clientData, setClientData] = useState<Client | null>(null);
+  const [userData, setUserData] = useState<IUser | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
   // Estado para confirmar eliminación
@@ -41,10 +40,10 @@ function Account() {
     const storedUserId = localStorage.getItem('userId');
     if (storedUserId) {
       const id = parseInt(storedUserId, 10);
-      getClientById(id)
-        .then(client => {
-          setClientData(client);
-          setName(client.legalName);
+      getUserById(id)
+        .then(user => {
+          setUserData(user);
+          setName(user.legalName);
         })
         .catch(err => console.error('Error al obtener cliente:', err));
     }
@@ -54,9 +53,9 @@ function Account() {
     logout();
   };
 
-  const handleUpdate = (updatedClient: Client) => {
-    setClientData(updatedClient);
-    setName(updatedClient.legalName);
+  const handleUpdate = (updatedUser: IUser) => {
+    setUserData(updatedUser);
+    setName(updatedUser.legalName);
   };
 
   // Eliminar cuenta
@@ -72,7 +71,7 @@ function Account() {
 
     try {
       setLoadingDelete(true);
-      await deleteClientById(id);
+      await deleteUserById(id);
       setLoadingDelete(false);
       setShowDeleteConfirm(false);
       logout();
@@ -201,9 +200,9 @@ function Account() {
       </div>
 
       {/* Modal de edición */}
-      {showEditModal && clientData && (
-        <EditClientModal
-          client={clientData}
+      {showEditModal && userData && (
+        <EditUserModal
+          user={userData}
           onClose={() => setShowEditModal(false)}
           onUpdate={handleUpdate}
         />

@@ -7,10 +7,10 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../shared/context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
-import { getClientById } from '../../api/userApi';
+import { getUserById } from '../../api/userApi';
 import { useNavigate } from 'react-router-dom';
-import { Client } from '../../core/models/ClientModel';
-import EditClientModal from '../../shared/ui/components/modals/EditClientModal';
+import { IUser } from '../../core/models/user';
+import EditUserModal from '../../shared/ui/components/modals/EditUserModal';
 
 interface JwtPayload {
   sub: string; // email
@@ -21,7 +21,7 @@ function AdminProfile() {
   const { token, logout } = useAuth();
   const [email, setEmail] = useState<string>('');
   const [name, setName] = useState<string>('');
-  const [clientData, setClientData] = useState<Client | null>(null);
+  const [userData, setUserData] = useState<IUser | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const navigate = useNavigate();
 
@@ -42,10 +42,10 @@ function AdminProfile() {
     const storedUserId = localStorage.getItem('userId');
     if (storedUserId) {
       const id = parseInt(storedUserId, 10);
-      getClientById(id)
-        .then(client => {
-          setClientData(client);
-          setName(client.legalName);
+      getUserById(id)
+        .then(user => {
+          setUserData(user);
+          setName(user.legalName);
         })
         .catch(err => console.error('Error al obtener cliente:', err));
     }
@@ -55,9 +55,9 @@ function AdminProfile() {
     logout();
   };
 
-  const handleUpdate = (updatedClient: Client) => {
-    setClientData(updatedClient);
-    setName(updatedClient.legalName);
+  const handleUpdate = (updatedUser: IUser) => {
+    setUserData(updatedUser);
+    setName(updatedUser.legalName);
   };
 
   return (
@@ -80,11 +80,11 @@ function AdminProfile() {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <SquareUserRound className="h-5 w-5 text-base-content/50" />
-              <span>{clientData?.cedulaOrNIT || 'No disponible'}</span>
+              <span>{userData?.cedulaOrNIT || 'No disponible'}</span>
             </div>
             <div className="flex items-center gap-3">
               <BriefcaseBusiness className="h-5 w-5 text-base-content/50" />
-              <span>{clientData?.clientType || 'No disponible'}</span>
+              <span>{userData?.clientType || 'No disponible'}</span>
             </div>
             <div className="flex items-center gap-3">
               <Mail className="h-5 w-5 text-base-content/50" />
@@ -92,11 +92,11 @@ function AdminProfile() {
             </div>
             <div className="flex items-center gap-3">
               <Phone className="h-5 w-5 text-base-content/50" />
-              <span>{clientData?.phone || '+57 000 0000000'}</span>
+              <span>{userData?.phone || '+57 000 0000000'}</span>
             </div>
             <div className="flex items-center gap-3">
               <Building2 className="h-5 w-5 text-base-content/50" />
-              <span>{clientData?.address || 'Medellín, Colombia'}</span>
+              <span>{userData?.address || 'Medellín, Colombia'}</span>
             </div>
           </div>
 
@@ -213,9 +213,9 @@ function AdminProfile() {
       </div>
 
       {/* Modal para editar perfil */}
-      {showEditModal && clientData && (
-        <EditClientModal
-          client={clientData}
+      {showEditModal && userData && (
+        <EditUserModal
+          user={userData}
           onClose={() => setShowEditModal(false)}
           onUpdate={handleUpdate}
         />
