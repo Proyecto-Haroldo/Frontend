@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { fetchQuestionsByCategory, submitQuestionnaireAnswers } from '../../api/questionnaireApi';
-import type { Question, QuestionnaireResult } from '../../types/questionnaire';
+import { fetchQuestionsByCategory, submitQuestionnaireAnswers } from '../../api/analysisApi';
+import type { QuestionnaireResult } from '../../shared/types/questionnaire';
 import {
   ArrowLeft,
   ArrowRight,
@@ -12,6 +12,7 @@ import {
   Loader2,
   FileText
 } from 'lucide-react';
+import { IQuestion } from '../../core/models/question';
 
 const pageVariants = {
   initial: {
@@ -22,7 +23,7 @@ const pageVariants = {
     x: 0,
     opacity: 1,
     transition: {
-      type: 'spring',
+      type: 'spring' as const,
       stiffness: 300,
       damping: 30
     }
@@ -95,7 +96,7 @@ const Questionnaire = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const [isComplete, setIsComplete] = useState(false);
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions, setQuestions] = useState<IQuestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -143,7 +144,10 @@ const Questionnaire = () => {
     const usedKeywords = new Set<string>();
 
     // Helper function to find keywords in text
-    const findKeywordsInText = (text: string) => {
+    const findKeywordsInText = (text: string | undefined | null) => {
+      if (!text?.trim()) {
+        return new Set<string>();
+      }
       const foundKeywords = new Set<string>();
       const words = text.split(/(\s+|[.,!?;:()"])/);
       
@@ -231,12 +235,12 @@ const Questionnaire = () => {
           answers: questions.map(question => ({
             questionId: question.id,
             questionTitle: question.title,
-            answer: question.type === 'open'
+            answer: question.questionType === 'open'
             ? answers[question.id] || []
             : (answers[question.id] || []).map(
                 id => question.options?.find(opt => opt.id === id)?.text || id
               ),
-            type: question.type
+            type: question.questionType
           }))
         };
 
@@ -271,7 +275,7 @@ const Questionnaire = () => {
   };
 
   const renderQuestionInput = () => {
-    switch (currentQuestion.type) {
+    switch (currentQuestion.questionType) {
       case 'open':
         return (
           <textarea
@@ -287,9 +291,13 @@ const Questionnaire = () => {
           <div className="space-y-1">
             {currentQuestion.options?.map(option => (
               <div key={option.id} className="form-control">
-                <label className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg">
+                <label
+                  htmlFor={option.id}
+                  className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg"
+                >
                   <input
                     type="radio"
+                    title={currentQuestion.id.toString()}
                     id={option.id}
                     name={currentQuestion.id.toString()}
                     checked={Array.isArray(answers[currentQuestion.id]) && answers[currentQuestion.id][0] === option.id}
@@ -314,7 +322,10 @@ const Questionnaire = () => {
           <div className="space-y-1">
             {currentQuestion.options?.map(option => (
               <div key={option.id} className="form-control">
-                <label className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg">
+                <label
+                  htmlFor={option.id}
+                  className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg"
+                >
                   <input
                     type="checkbox"
                     id={option.id}
@@ -359,7 +370,7 @@ const Questionnaire = () => {
             <h2 className="card-title text-2xl mb-4">¡Cuestionario Completado!</h2>
             <p className="mb-6">
               Gracias por completar el cuestionario. Nuestro equipo analizará sus respuestas y se
-              pondrá en contacto con usted pronto para proporcionarle un diagnóstico personalizado.
+              pondrá en contacto con usted pronto para proporcionarle un análisis personalizado.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <button onClick={() => navigate('/c')} className="btn btn-primary gap-2">
@@ -367,11 +378,11 @@ const Questionnaire = () => {
                 Volver al Inicio
               </button>
               <button
-                onClick={() => navigate('/c/diagnostic-review?id=1')}
+                onClick={() => navigate('/c/analysis-review?id=1')}
                 className="btn btn-outline gap-2"
               >
                 <FileText className="h-5 w-5" />
-                Ver Diagnóstico
+                Ver análisis
               </button>
             </div>
           </div>
@@ -396,9 +407,9 @@ const Questionnaire = () => {
               <div className="mb-6">
                 <Loader2 className="h-16 w-16 text-primary animate-spin mx-auto" />
               </div>
-              <h2 className="card-title text-2xl mb-4">Procesando respuestas</h2>
+              <h2 className="card-title text-2xl mb-4">Procesando respuestas.</h2>
               <p className="mb-6">
-                Estamos analizando sus respuestas y generando su diagnóstico.
+                Estamos analizando sus respuestas y generando su análisis.
               </p>
               <div className="text-sm text-gray-500">Esto puede tomar unos momentos...</div>
             </div>

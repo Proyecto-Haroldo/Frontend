@@ -1,20 +1,20 @@
 import React, { useState } from "react";
-import { Client } from "../../../../core/models/ClientModel";
-import { putClientById } from "../../../../api/userApi";
+import { IUser } from "../../../../core/models/user";
+import { putUserById } from "../../../../api/userApi";
 import ConfirmEditCard from "../cards/ConfirmEditCard";
 
-interface EditClientModalProps {
-    client: Client;
+interface EditUserModalProps {
+    user: IUser;
     onClose: () => void;
-    onUpdate: (updatedClient: Client) => void;
+    onUpdate: (updatedUser: IUser) => void;
 }
 
-const EditClientModal: React.FC<EditClientModalProps> = ({
-    client,
+const EditUserModal: React.FC<EditUserModalProps> = ({
+    user,
     onClose,
     onUpdate,
 }) => {
-    const [formData, setFormData] = useState<Client>(client);
+    const [formData, setFormData] = useState<IUser>(user);
     const [showConfirm, setShowConfirm] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -31,7 +31,7 @@ const EditClientModal: React.FC<EditClientModalProps> = ({
     const handleConfirmEdit = async () => {
         setLoading(true);
         try {
-            const updated = await putClientById(formData.clientId, formData);
+            const updated = await putUserById(formData.clientId, formData);
             onUpdate(updated);
             onClose();
         } catch (error) {
@@ -48,7 +48,7 @@ const EditClientModal: React.FC<EditClientModalProps> = ({
                 <div className="bg-base-100 rounded-lg p-4 md:p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-lg">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-lg md:text-xl font-semibold">
-                            Editar Cliente
+                            Editar Usuario
                         </h2>
                         <button onClick={onClose} className="btn btn-ghost btn-sm btn-circle">
                             ✕
@@ -166,7 +166,7 @@ const EditClientModal: React.FC<EditClientModalProps> = ({
 
             {showConfirm && (
                 <ConfirmEditCard
-                    message="¿Deseas guardar los cambios realizados en este cliente?"
+                    message="¿Deseas guardar los cambios realizados en este usuario?"
                     onConfirm={handleConfirmEdit}
                     onCancel={() => setShowConfirm(false)}
                     loading={loading}
@@ -176,4 +176,4 @@ const EditClientModal: React.FC<EditClientModalProps> = ({
     );
 };
 
-export default EditClientModal;
+export default EditUserModal;

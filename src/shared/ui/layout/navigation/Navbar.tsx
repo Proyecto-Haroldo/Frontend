@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import ITMLogo from '../../../../public/assets/ITMLogo';
+import ITMLogo from '../../../../../public/assets/ITMLogo';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import ThemeToggle from './ThemeToggle';
+import type { Variants } from 'motion/react';
+import ThemeToggle from '../theme/ThemeToggle';
 import {
   Home,
   Briefcase,
@@ -13,7 +14,7 @@ import {
   Menu,
   X,
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../../context/AuthContext';
 import { BarChart } from 'lucide-react';
 
 function Navbar() {
@@ -38,7 +39,7 @@ function Navbar() {
         { path: '/c', icon: Home, label: 'Inicio' },
         { path: '/c/services', icon: Briefcase, label: 'Servicios' },
         { path: '/c/schedule', icon: Calendar, label: 'Agendar' },
-        { path: '/c/analysis', icon: FileText, label: 'Diagnósticos' },
+        { path: '/c/analysis', icon: FileText, label: 'Análisis' },
         { path: '/c/account', icon: User, label: 'Cuenta' },
       ];
     } else if (role === 3) { // Adviser
@@ -58,17 +59,17 @@ function Navbar() {
   };
 
   // Animation variants
-  const overlayVariants = {
+  const overlayVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { duration: 0.3 } }
   };
 
-  const sidebarVariants = {
+  const sidebarVariants: Variants = {
     hidden: { x: "-100%" },
     visible: { 
       x: 0,
       transition: { 
-        type: "spring",
+        type: "spring" as const,
         stiffness: 400,
         damping: 30
       }
@@ -111,7 +112,7 @@ function Navbar() {
           <div className="h-12 w-12 flex items-center justify-center">
             <ITMLogo/>
           </div>
-          <span className="font-semibold text-xl">FinanceConsult</span>
+          <span className="font-semibold text-xl">Consultoría</span>
         </motion.div>
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
@@ -156,7 +157,7 @@ function Navbar() {
         animate={isOpen ? "visible" : "hidden"}
         style={{ display: isOpen ? "block" : "none" }}
         transition={{ 
-          type: "spring",
+          type: "spring" as const,
           stiffness: 400,
           damping: 40
         }}
@@ -170,7 +171,7 @@ function Navbar() {
           <div className="h-12 w-12 flex items-center justify-center">
             <ITMLogo/>
           </div>
-          <span className="font-semibold text-xl">FinanceConsult</span>
+          <span className="font-semibold text-xl">Consultoría</span>
         </motion.div>
 
         <div className="space-y-2">
@@ -246,7 +247,7 @@ function Navbar() {
           <div className="h-12 w-12 flex items-center justify-center">
             <ITMLogo className='h-15 w-15 text-primary'/>
           </div>
-          <span className="font-semibold text-xl">FinanceConsult</span>
+          <span className="font-semibold text-xl">Consultoría</span>
         </motion.div>
 
         <div className="space-y-2">

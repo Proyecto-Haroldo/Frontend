@@ -1,43 +1,49 @@
 import { useEffect, useState } from 'react';
-import { getAllQuestionnaires } from '../../api/analysisApi';
-import { getAllClients } from '../../api/userApi';
-import { Client } from '../../core/models/ClientModel';
-import { Questionnaire } from '../../core/models/QuestionnaireModel';
+import { getAllAnalysis, getAllQuestionnaires } from '../../api/analysisApi';
+import { getAllUsers } from '../../api/userApi';
+import { IUser } from '../../core/models/user';
+import { IQuestionnaire } from '../../core/models/questionnaire';
+import { IAnalysis } from '../../core/models/analysis';
 import { motion, AnimatePresence } from 'motion/react';
-import ClientSearchTable from '../../shared/ui/components/tables/ClientsSearchTable';
+import { Users, ClipboardList, ArrowLeft } from 'lucide-react';
+import UserSearchTable from '../../shared/ui/components/tables/UsersSearchTable';
+import AnalysisSearchTable from '../../shared/ui/components/tables/AnalysisSearchTable';
 import QuestionnairesSearchTable from '../../shared/ui/components/tables/QuestionnairesSearchTable';
 import HeaderStats from '../../shared/ui/components/headers/StatsHeader';
-import { Users, ClipboardList, ArrowLeft } from 'lucide-react';
 
 function AdminDashboard() {
-  const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
-  const [loadingClients, setLoadingClients] = useState(true);
-  const [errorClients, setErrorClients] = useState('');
+  const [analysis, setAnalysis] = useState<IAnalysis[]>([]);
+  const [questionnaires, setQuestionnaires] = useState<IQuestionnaire[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [errorUsers, setErrorUsers] = useState('');
+  const [loadingAnalysis, setLoadingAnalysis] = useState(true);
+  const [errorAnalysis, setErrorAnalysis] = useState('');
   const [loadingQuestionnaires, setLoadingQuestionnaires] = useState(true);
   const [errorQuestionnaires, setErrorQuestionnaires] = useState('');
-  const [view, setView] = useState<'selector' | 'clients' | 'questionnaires'>('selector');
+  const [view, setView] = useState<'selector' | 'metrics' | 'users' | 'questionnaires' | 'analysis'>('selector');
 
   useEffect(() => {
+    fetchAnalysis();
     fetchQuestionnaires();
-    fetchClients();
+    fetchUsers();
   }, []);
 
-  const fetchClients = async () => {
+  const fetchUsers = async () => {
     try {
-      setLoadingClients(true);
-      const data = await getAllClients();
-      setClients(data);
+      setLoadingUsers(true);
+      const data = await getAllUsers();
+      setUsers(data);
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error('Error fetching clients:', error.message);
-        setErrorClients(error.message);
+        console.error('Error fetching users:', error.message);
+        setErrorUsers(error.message);
       } else {
-        console.error('Unexpected error fetching clients:', error);
-        setErrorClients('Unexpected error occurred');
+        console.error('Unexpected error fetching users:', error);
+        setErrorUsers('Unexpected error occurred');
       }
     } finally {
-      setLoadingClients(false);
+      setLoadingUsers(false);
     }
   };
 
@@ -59,18 +65,36 @@ function AdminDashboard() {
     }
   };
 
+  const fetchAnalysis = async () => {
+    try {
+      setLoadingAnalysis(true);
+      const data = await getAllAnalysis();
+      setAnalysis(data);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Error fetching analysis:', error.message);
+        setErrorAnalysis(error.message);
+      } else {
+        console.error('Unexpected error fetching analysis:', error);
+        setErrorAnalysis('Unexpected error occurred');
+      }
+    } finally {
+      setLoadingAnalysis(false);
+    }
+  };
+
   const handleRefresh = () => {
     fetchQuestionnaires();
-    fetchClients();
+    fetchUsers();
   }
 
   const stats = {
-    total: questionnaires.length,
-    pending: questionnaires.filter(q => q.state === 'pending').length,
-    completed: questionnaires.filter(q => q.state === 'completed').length,
-    green: questionnaires.filter(q => q.colorSemaforo === 'verde').length,
-    yellow: questionnaires.filter(q => q.colorSemaforo === 'amarillo').length,
-    red: questionnaires.filter(q => q.colorSemaforo === 'rojo').length,
+    total: analysis.length,
+    pending: analysis.filter(q => q.status === 'pending').length,
+    completed: analysis.filter(q => q.status === 'completed').length,
+    green: analysis.filter(q => q.colorSemaforo === 'verde').length,
+    yellow: analysis.filter(q => q.colorSemaforo === 'amarillo').length,
+    red: analysis.filter(q => q.colorSemaforo === 'rojo').length,
   };
 
   // Animations for the selector cards
@@ -84,10 +108,10 @@ function AdminDashboard() {
     <div className="container mx-auto p-3 md:p-4 space-y-6 overflow-hidden">
       <HeaderStats
         onRefresh={handleRefresh}
-        loading={loadingQuestionnaires}
-        error={errorQuestionnaires}
+        loading={loadingAnalysis}
+        error={errorAnalysis}
         stats={stats}
-        questionnaires={questionnaires}
+        analysis={analysis}
       />
 
       <AnimatePresence mode="wait">
@@ -98,9 +122,9 @@ function AdminDashboard() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, x: -100 }}
             transition={{ duration: 0.4 }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6"
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6"
           >
-            {/* Card Clientes */}
+            {/* Card Usuarios */}
             <motion.div
               variants={cardVariants}
               initial="initial"
@@ -110,13 +134,13 @@ function AdminDashboard() {
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
               className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg"
-              onClick={() => setView('clients')}
+              onClick={() => setView('users')}
             >
               <div className="card-body flex flex-col items-center text-center space-y-3">
                 <Users className="h-10 w-10 text-primary" />
-                <h2 className="card-title text-lg md:text-xl">Clientes</h2>
+                <h2 className="card-title text-lg md:text-xl">Usuarios</h2>
                 <p className="text-sm text-base-content/70">
-                  Ver, filtrar y analizar los clientes registrados en el sistema.
+                  Ver, filtrar y analizar los usuarios registrados en el sistema.
                 </p>
               </div>
             </motion.div>
@@ -137,17 +161,38 @@ function AdminDashboard() {
                 <ClipboardList className="h-10 w-10 text-secondary" />
                 <h2 className="card-title text-lg md:text-xl">Cuestionarios</h2>
                 <p className="text-sm text-base-content/70">
-                  Gestiona los cuestionarios y analiza sus resultados.
+                  Gestiona los cuestionarios y sus categorías.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Card Análisis */}
+            <motion.div
+              variants={cardVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.4 }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
+              className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg"
+              onClick={() => setView('analysis')}
+            >
+              <div className="card-body flex flex-col items-center text-center space-y-3">
+                <ClipboardList className="h-10 w-10 text-secondary" />
+                <h2 className="card-title text-lg md:text-xl">Análisis</h2>
+                <p className="text-sm text-base-content/70">
+                  Gestiona los análisis y analiza sus resultados.
                 </p>
               </div>
             </motion.div>
           </motion.div>
         )}
 
-        {/* Vista Clientes */}
-        {view === 'clients' && (
+        {/* Vista Usuarios */}
+        {view === 'users' && (
           <motion.div
-            key="clients"
+            key="users"
             initial={{ x: 100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -100, opacity: 0 }}
@@ -163,10 +208,10 @@ function AdminDashboard() {
                 Volver
               </button>
             </div>
-            <ClientSearchTable
-              loading={loadingClients}
-              error={errorClients}
-              clients={clients}
+            <UserSearchTable
+              loading={loadingUsers}
+              error={errorUsers}
+              users={users}
             />
           </motion.div>
         )}
@@ -194,6 +239,33 @@ function AdminDashboard() {
               loading={loadingQuestionnaires}
               error={errorQuestionnaires}
               questionnaires={questionnaires}
+            />
+          </motion.div>
+        )}
+
+        {/* Vista Análisis */}
+        {view === 'analysis' && (
+          <motion.div
+            key="analysis"
+            initial={{ x: 100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -100, opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-4"
+          >
+            <div className="flex justify-between items-center">
+              <button
+                onClick={() => setView('selector')}
+                className="btn btn-outline btn-sm gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Volver
+              </button>
+            </div>
+            <AnalysisSearchTable
+              loading={loadingAnalysis}
+              error={errorAnalysis}
+              analysis={analysis}
             />
           </motion.div>
         )}

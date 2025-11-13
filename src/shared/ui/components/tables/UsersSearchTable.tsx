@@ -1,19 +1,19 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Filter, Search, Eye, Trash } from "lucide-react";
-import { Client } from "../../../../core/models/ClientModel.ts";
+import { IUser } from "../../../../core/models/user.ts";
 import { useThemeColors } from "../../../hooks/useThemeColors.ts";
 import { motion } from 'motion/react';
-import { deleteClientById } from "../../../../api/userApi.ts";
+import { deleteUserById } from "../../../../api/userApi.ts";
 import ConfirmDeleteCard from "../cards/ConfirmDeleteCard.tsx";
-import EditClientModal from "../modals/EditClientModal.tsx";
-import ClientMetricsCard from "../cards/ClientMetricsCard.tsx";
+import EditUserModal from "../modals/EditUserModal.tsx";
+import UserMetricsCard from "../cards/UserMetricsCard.tsx";
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
-interface ClientsSearchTableProps {
+interface UsersSearchTableProps {
     loading: boolean;
     error: string | null;
-    clients: Client[];
+    users: IUser[];
 }
 
 const SearchTableSkeleton: React.FC = () => {
@@ -94,67 +94,67 @@ const SearchTableSkeleton: React.FC = () => {
     );
 };
 
-const ClientsSearchTable: React.FC<ClientsSearchTableProps> = ({
+const UsersSearchTable: React.FC<UsersSearchTableProps> = ({
     loading,
     error,
-    clients,
+    users,
 }) => {
     const [filter, setFilter] = useState<"all" | "admin" | "client" | "adviser">("all");
     const [searchTerm, setSearchTerm] = useState("");
-    const [filteredClients, setFilteredClients] = useState<Client[]>([]);
-    const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+    const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
+    const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
-    const [confirmClientId, setConfirmClientId] = useState<number | null>(null);
+    const [confirmUserId, setConfirmUserId] = useState<number | null>(null);
     const [deleting, setDeleting] = useState<number | null>(null);
 
-    const filterClients = useCallback(() => {
-        let filtered = clients;
+    const filterUsers = useCallback(() => {
+        let filtered = users;
 
         if (filter === "admin") {
-            filtered = filtered.filter((c) => c.role.id === 1);
+            filtered = filtered.filter((u) => u.role.id === 1);
         } else if (filter === "client") {
-            filtered = filtered.filter((c) => c.role.id === 2);
+            filtered = filtered.filter((u) => u.role.id === 2);
         } else if (filter === "adviser") {
-            filtered = filtered.filter((c) => c.role.id === 3);
+            filtered = filtered.filter((u) => u.role.id === 3);
         }
 
         if (searchTerm) {
             filtered = filtered.filter(
-                (c) =>
-                    c.cedulaOrNIT.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    c.legalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    c.sector.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    c.clientType.toLowerCase().includes(searchTerm.toLowerCase())
+                (u) =>
+                    u.cedulaOrNIT.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    u.legalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    u.sector.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    u.clientType.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
 
-        setFilteredClients(filtered);
-    }, [clients, filter, searchTerm]);
+        setFilteredUsers(filtered);
+    }, [users, filter, searchTerm]);
 
     useEffect(() => {
-        filterClients();
-    }, [filterClients]);
+        filterUsers();
+    }, [filterUsers]);
 
 
-    const openEditModal = (client: Client) => {
-        setSelectedClient(client);
+    const openEditModal = (user: IUser) => {
+        setSelectedUser(user);
         setShowEditModal(true);
     };
 
     const closeEditModal = () => {
         setShowEditModal(false);
-        setSelectedClient(null);
+        setSelectedUser(null);
     };
 
-    const openDetailsModal = (client: Client) => {
-        setSelectedClient(client);
+    const openDetailsModal = (user: IUser) => {
+        setSelectedUser(user);
         setShowDetailsModal(true);
     };
 
     const closeDetailsModal = () => {
         setShowDetailsModal(false);
-        setSelectedClient(null);
+        setSelectedUser(null);
     };
 
     if (loading) return <SearchTableSkeleton />;
@@ -229,10 +229,10 @@ const ClientsSearchTable: React.FC<ClientsSearchTableProps> = ({
                 </div>
             </div>
 
-            {/* Tabla de clientes */}
+            {/* Tabla de usuarios */}
             <div className="card bg-base-100 shadow-sm border border-base-200">
                 <div className="card-body p-3 md:p-6">
-                    <h2 className="card-title mb-4 text-lg">Clientes</h2>
+                    <h2 className="card-title mb-4 text-lg">Usuarios</h2>
 
                     <div className="hidden lg:block overflow-x-auto">
                         <table className="table table-zebra">
@@ -247,33 +247,33 @@ const ClientsSearchTable: React.FC<ClientsSearchTableProps> = ({
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredClients.map((client) => (
-                                    <tr key={client.clientId}>
-                                        <td>{client.legalName}</td>
-                                        <td>{client.cedulaOrNIT}</td>
-                                        <td>{client.clientType}</td>
-                                        <td>{client.sector}</td>
+                                {filteredUsers.map((user) => (
+                                    <tr key={user.clientId}>
+                                        <td>{user.legalName}</td>
+                                        <td>{user.cedulaOrNIT}</td>
+                                        <td>{user.clientType}</td>
+                                        <td>{user.sector}</td>
                                         <td>
-                                            <span className="badge badge-outline text-xs">{client.role.name}</span>
+                                            <span className="badge badge-outline text-xs">{user.role.name}</span>
                                         </td>
                                         <td>
                                             <button
                                                 className="btn btn-error btn-xs gap-1 whitespace-nowrap"
-                                                onClick={() => setConfirmClientId(client.clientId)}
-                                                disabled={deleting === client.clientId}
+                                                onClick={() => setConfirmUserId(user.clientId)}
+                                                disabled={deleting === user.clientId}
                                             >
-                                                {deleting === client.clientId ? (
+                                                {deleting === user.clientId ? (
                                                     <span className="loading loading-spinner loading-xs" />
                                                 ) : (
                                                     <Trash className="h-3 w-3" />
                                                 )}
-                                                {deleting === client.clientId ? "Eliminando..." : "Eliminar"}
+                                                {deleting === user.clientId ? "Eliminando..." : "Eliminar"}
                                             </button>
                                         </td>
                                         <td>
                                             <button
                                                 className="btn btn-primary btn-xs gap-1 whitespace-nowrap"
-                                                onClick={() => openEditModal(client)}
+                                                onClick={() => openEditModal(user)}
                                             >
                                                 <Eye className="h-3 w-3" />
                                                 Editar
@@ -282,7 +282,7 @@ const ClientsSearchTable: React.FC<ClientsSearchTableProps> = ({
                                         <td>
                                             <button
                                                 className="btn btn-primary btn-xs gap-1 whitespace-nowrap"
-                                                onClick={() => openDetailsModal(client)}
+                                                onClick={() => openDetailsModal(user)}
                                             >
                                                 <Eye className="h-3 w-3" />
                                                 Ver detalles
@@ -296,21 +296,21 @@ const ClientsSearchTable: React.FC<ClientsSearchTableProps> = ({
 
                     {/* Vista móvil */}
                     <div className="lg:hidden space-y-3">
-                        {filteredClients.map((client) => (
-                            <div key={client.clientId} className="card bg-base-200 p-4 space-y-2">
+                        {filteredUsers.map((user) => (
+                            <div key={user.clientId} className="card bg-base-200 p-4 space-y-2">
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <h3 className="font-medium text-sm">{client.legalName}</h3>
-                                        <p className="text-xs text-base-content/60">{client.cedulaOrNIT}</p>
+                                        <h3 className="font-medium text-sm">{user.legalName}</h3>
+                                        <p className="text-xs text-base-content/60">{user.cedulaOrNIT}</p>
                                     </div>
-                                    <span className="badge badge-outline text-xs">{client.role.name}</span>
+                                    <span className="badge badge-outline text-xs">{user.role.name}</span>
                                 </div>
                                 <div className="text-xs text-base-content/70">
-                                    {client.clientType} - {client.sector}
+                                    {user.clientType} - {user.sector}
                                 </div>
                                 <button
                                     className="btn btn-primary btn-xs gap-1"
-                                    onClick={() => openDetailsModal(client)}
+                                    onClick={() => openDetailsModal(user)}
                                 >
                                     <Eye className="h-3 w-3" /> Ver
                                 </button>
@@ -318,20 +318,20 @@ const ClientsSearchTable: React.FC<ClientsSearchTableProps> = ({
                         ))}
                     </div>
 
-                    {filteredClients.length === 0 && (
+                    {filteredUsers.length === 0 && (
                         <div className="text-center py-8 text-base-content/50">
-                            No se encontraron clientes
+                            No se encontraron usuarios.
                         </div>
                     )}
                 </div>
             </div>
 
             {/* Modal de detalles */}
-            {showDetailsModal && selectedClient && (
+            {showDetailsModal && selectedUser && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <div className="bg-base-100 rounded-lg p-4 md:p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg md:text-xl font-semibold">Detalles del Cliente</h2>
+                            <h2 className="text-lg md:text-xl font-semibold">Detalles del Usuario</h2>
                             <button onClick={closeDetailsModal} className="btn btn-ghost btn-sm btn-circle">
                                 ✕
                             </button>
@@ -341,34 +341,34 @@ const ClientsSearchTable: React.FC<ClientsSearchTableProps> = ({
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-6">
                             <div>
                                 <label className="text-sm font-medium text-base-content/70">Nombre Legal</label>
-                                <p className="text-base-content">{selectedClient.legalName}</p>
+                                <p className="text-base-content">{selectedUser.legalName}</p>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-base-content/70">Cédula / NIT</label>
-                                <p className="text-base-content">{selectedClient.cedulaOrNIT}</p>
+                                <p className="text-base-content">{selectedUser.cedulaOrNIT}</p>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-base-content/70">Correo</label>
-                                <p className="text-base-content">{selectedClient.email}</p>
+                                <p className="text-base-content">{selectedUser.email}</p>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-base-content/70">Tipo de Cliente</label>
-                                <p className="text-base-content">{selectedClient.clientType}</p>
+                                <p className="text-base-content">{selectedUser.clientType}</p>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-base-content/70">Sector</label>
-                                <p className="text-base-content">{selectedClient.sector}</p>
+                                <p className="text-base-content">{selectedUser.sector}</p>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-base-content/70">Rol</label>
-                                <p className="text-base-content">{selectedClient.role.name}</p>
+                                <p className="text-base-content">{selectedUser.role.name}</p>
                             </div>
                         </div>
 
-                        {/* Métricas del client card con gráficos */}
+                        {/* Métricas del user card con gráficos */}
                         <h3 className="font-semibold mb-2">Métricas de Cuestionarios</h3>
-                        {selectedClient.questionnaires.length > 0 ? (
-                            <ClientMetricsCard client={selectedClient} />
+                        {selectedUser.questionnaires.length > 0 ? (
+                            <UserMetricsCard user={selectedUser} />
                         ) : (
                             <p className="text-sm text-base-content/70">
                                 Este cliente aún no ha completado cuestionarios.
@@ -383,41 +383,41 @@ const ClientsSearchTable: React.FC<ClientsSearchTableProps> = ({
                 </div>
             )}
 
-            {showEditModal && selectedClient && (
-                <EditClientModal
-                    client={selectedClient}
+            {showEditModal && selectedUser && (
+                <EditUserModal
+                    user={selectedUser}
                     onClose={closeEditModal}
-                    onUpdate={(updatedClient) => {
-                        setFilteredClients((prev) =>
-                            prev.map((c) =>
-                                c.clientId === updatedClient.clientId ? updatedClient : c
+                    onUpdate={(updatedUser) => {
+                        setFilteredUsers((prev) =>
+                            prev.map((u) =>
+                                u.clientId === updatedUser.clientId ? updatedUser : u
                             )
                         );
                     }}
                 />
             )}
 
-            {confirmClientId !== null && (
+            {confirmUserId !== null && (
                 <ConfirmDeleteCard
                     message="¿Estás seguro de que deseas eliminar este cliente? Esta acción no se puede deshacer."
                     onConfirm={async () => {
-                        setDeleting(confirmClientId);
+                        setDeleting(confirmUserId);
                         try {
-                            await deleteClientById(confirmClientId);
-                            setFilteredClients(prev => prev.filter(c => c.clientId !== confirmClientId));
+                            await deleteUserById(confirmUserId);
+                            setFilteredUsers(prev => prev.filter(u => u.clientId !== confirmUserId));
                         } catch (error) {
                             console.error("Error al eliminar cliente:", error);
                         } finally {
                             setDeleting(null);
-                            setConfirmClientId(null);
+                            setConfirmUserId(null);
                         }
                     }}
-                    onCancel={() => setConfirmClientId(null)}
-                    loading={deleting === confirmClientId}
+                    onCancel={() => setConfirmUserId(null)}
+                    loading={deleting === confirmUserId}
                 />
             )}
         </div>
     );
 };
 
-export default ClientsSearchTable;
+export default UsersSearchTable;

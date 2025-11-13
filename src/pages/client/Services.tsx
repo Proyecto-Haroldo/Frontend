@@ -20,12 +20,12 @@ import { Link } from 'react-router-dom';
 function Services() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState<'persona' | 'empresa' | null>(null);
-  const [currentView, setCurrentView] = useState<'categories' | 'clientType' | 'diagnosticForm'>('clientType');
+  const [currentView, setCurrentView] = useState<'categories' | 'clientType' | 'analysisForm'>('clientType');
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
   const [policyAccepted, setPolicyAccepted] = useState(false);
 
-  // Handle screen transitions - simplified with Framer Motion
-  const transition = (nextView: 'categories' | 'clientType' | 'diagnosticForm', moveDirection: 'forward' | 'backward' = 'forward') => {
+  // Handle screen transitions - simplified with Motion React
+  const transition = (nextView: 'categories' | 'clientType' | 'analysisForm', moveDirection: 'forward' | 'backward' = 'forward') => {
     setDirection(moveDirection);
     if (nextView === 'clientType') {
       setSelectedType(null);
@@ -87,7 +87,7 @@ function Services() {
 
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId);
-    setCurrentView('diagnosticForm');
+    setCurrentView('analysisForm');
     setDirection('forward');
   };
 
@@ -111,7 +111,7 @@ function Services() {
       x: 0,
       opacity: 1,
       transition: {
-        type: 'spring',
+        type: 'spring' as const,
         stiffness: 300,
         damping: 30
       }
@@ -255,7 +255,7 @@ function Services() {
     </div>
   );
   
-  const renderDiagnosticForm = () => (
+  const renderAnalysisForm = () => (
     <motion.div 
       className="card bg-base-100 shadow-sm"
       initial={{ opacity: 0, y: 20 }}
@@ -277,7 +277,7 @@ function Services() {
           {/* Header Section */}
           <div className="space-y-3">
             <h2 className="card-title text-xl">
-              {selectedType === 'persona' ? 'Diagnóstico Personal' : 'Diagnóstico Empresarial'}
+              {selectedType === 'persona' ? 'análisis Personal' : 'análisis Empresarial'}
             </h2>
   
             <p className="text-sm md:text-base text-base-content/70">
@@ -305,7 +305,7 @@ function Services() {
               className={`btn btn-primary gap-2 ${!policyAccepted ? 'btn-disabled' : ''}`}
               tabIndex={policyAccepted ? 0 : -1}
             >
-              Comenzar Diagnóstico
+              Comenzar análisis
               <ArrowRight className="h-5 w-5" />
             </Link>
           </motion.div>
@@ -328,7 +328,7 @@ function Services() {
           >
             {currentView === 'clientType' && renderTypeSelection()}
             {currentView === 'categories' && selectedType && renderCategories()}
-            {currentView === 'diagnosticForm' && selectedType && renderDiagnosticForm()}
+            {currentView === 'analysisForm' && selectedType && renderAnalysisForm()}
           </motion.div>
         </AnimatePresence>
       </div>

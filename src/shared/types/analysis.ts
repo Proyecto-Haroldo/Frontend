@@ -1,34 +1,13 @@
-export interface Analysis {
-  analysisId: number;
-  asesorName: string;
-  clientName: string;
-  status: string;
-  recomendacionInicial: string;
-  colorSemaforo: string;
-  contenidoRevision: string;
-  timeWhenSolved: string | null; 
-  timeWhenChecked: string | null;
-  conteo: number;
-  categoria: string;
-}
+import { QuestionType } from "../../core/models/question";
+import { ClientType } from "../../core/models/user";
 
-export interface Questionnaire {
-  id: number;
-  category: string;
-  creator: string;
-  questions: Question[];
-}
-
-export type ClientType = "persona" | "empresa";
-
-export type QuestionType = "open" | "single" | "multiple";
-
-export interface Question {
+export interface IQuestion {
   questionid: number;
   question: string;
   questionType: QuestionType;
   clientType?: ClientType;
-  questionnaire: Questionnaire;
+  questionnaireName: string;
+  questionnaireId: string;
   options: MultipleOptionQuestionAnswer[];
   answersInQuestionnaires: AnswersOfQuestionnaire[];
 }
@@ -47,7 +26,7 @@ export interface AnswersOfQuestionnaire {
 
 export type AnalysisStatus = 'completed' | 'in-progress' | 'pending';
 
-export type ColorSemaforo = Analysis['colorSemaforo'];
+export type ColorSemaforo = 'verde' | 'amarillo' | 'rojo';
 
 // Utility functions for analysis processing
 export const mapColorToStatus = (color: ColorSemaforo): AnalysisStatus => {
