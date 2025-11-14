@@ -9,6 +9,8 @@ import EditUserModal from "../modals/EditUserModal.tsx";
 import UserMetricsCard from "../cards/UserMetricsCard.tsx";
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import { IAnalysis } from "../../../../core/models/analysis.ts";
+import { getUserAnalysis } from "../../../../api/analysisApi.ts";
 
 interface UsersSearchTableProps {
     loading: boolean;
@@ -103,6 +105,7 @@ const UsersSearchTable: React.FC<UsersSearchTableProps> = ({
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
     const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+    const [selectedUserAnalysis, setSelectedUserAnalysis] = useState<IAnalysis[]>([]);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [confirmUserId, setConfirmUserId] = useState<number | null>(null);
@@ -132,8 +135,22 @@ const UsersSearchTable: React.FC<UsersSearchTableProps> = ({
         setFilteredUsers(filtered);
     }, [users, filter, searchTerm]);
 
+    const fetchUserAnalysis = async () => {
+        try {
+            const data = await getUserAnalysis(Number(selectedUser?.clientId));
+            setSelectedUserAnalysis(data);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                console.error('Error fetching analysis:', error.message);
+            } else {
+                console.error('Unexpected error fetching analysis:', error);
+            }
+        }
+    };
+
     useEffect(() => {
         filterUsers();
+        fetchUserAnalysis();
     }, [filterUsers]);
 
 
@@ -367,8 +384,8 @@ const UsersSearchTable: React.FC<UsersSearchTableProps> = ({
 
                         {/* Métricas del user card con gráficos */}
                         <h3 className="font-semibold mb-2">Métricas de Cuestionarios</h3>
-                        {selectedUser.questionnaires.length > 0 ? (
-                            <UserMetricsCard user={selectedUser} />
+                        {selectedUserAnalysis.length > 0 ? (
+                            <UserMetricsCard user={selectedUser} analysis={selectedUserAnalysis} />
                         ) : (
                             <p className="text-sm text-base-content/70">
                                 Este cliente aún no ha completado cuestionarios.
