@@ -1,17 +1,3 @@
-import { QuestionType } from "../../core/models/question";
-import { ClientType } from "../../core/models/user";
-
-export interface IQuestion {
-  questionid: number;
-  question: string;
-  questionType: QuestionType;
-  clientType?: ClientType;
-  questionnaireName: string;
-  questionnaireId: string;
-  options: MultipleOptionQuestionAnswer[];
-  answersInQuestionnaires: AnswersOfQuestionnaire[];
-}
-
 export interface MultipleOptionQuestionAnswer {
   optionanswerid: number;
   answertext: string;

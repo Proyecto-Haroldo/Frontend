@@ -127,10 +127,11 @@ const Questionnaire = () => {
 
   const currentQuestion = questions[currentQuestionIndex] || {
     id: 0,
-    title: '',
-    type: 'open' as const,
+    question: '',
+    questionType: 'open' as const,
     keywords: []
   };
+
 
   // Pre-calculate which keywords should be highlighted to ensure each appears only once
   const keywordAllocation = useMemo(() => {
@@ -167,12 +168,12 @@ const Questionnaire = () => {
       return foundKeywords;
     };
 
-    // First, allocate keywords found in the title
-    allocation.title = findKeywordsInText(currentQuestion.title);
+    // First, allocate keywords found in the question
+    allocation.title = findKeywordsInText(currentQuestion.question);
 
-    // Then, allocate keywords found in options (excluding those already used in title)
+    // Then, allocate keywords found in options (excluding those already used in question)
     currentQuestion.options?.forEach(option => {
-      allocation.options.set(option.id, findKeywordsInText(option.text));
+      allocation.options.set(String(option.id), findKeywordsInText(option.text));
     });
 
     return allocation;
@@ -234,13 +235,13 @@ const Questionnaire = () => {
           },
           answers: questions.map(question => ({
             questionId: question.id,
-            questionTitle: question.title,
+            questionTitle: question.question,
             answer: question.questionType === 'open'
             ? answers[question.id] || []
             : (answers[question.id] || []).map(
-                id => question.options?.find(opt => opt.id === id)?.text || id
+                id => question.options?.find(opt => String(opt.id) === String(id))?.text || String(id)
               ),
-            type: question.questionType
+            questionType: question.questionType
           }))
         };
 
@@ -267,7 +268,7 @@ const Questionnaire = () => {
   };
 
   const handleAnswerChange = (value: string | string[]) => {
-    const answerValue = Array.isArray(value) ? value : [String(value)];
+    const answerValue = Array.isArray(value) ? value : [value];
     setAnswers(prev => ({
       ...prev,
       [currentQuestion.id]: answerValue
@@ -292,23 +293,23 @@ const Questionnaire = () => {
             {currentQuestion.options?.map(option => (
               <div key={option.id} className="form-control">
                 <label
-                  htmlFor={option.id}
+                  htmlFor={String(option.id)}
                   className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg"
                 >
                   <input
                     type="radio"
                     title={currentQuestion.id.toString()}
-                    id={option.id}
+                    id={String(option.id)}
                     name={currentQuestion.id.toString()}
-                    checked={Array.isArray(answers[currentQuestion.id]) && answers[currentQuestion.id][0] === option.id}
-                    onChange={() => handleAnswerChange(option.id)}
+                    checked={Array.isArray(answers[currentQuestion.id]) && String(answers[currentQuestion.id][0]) === String(option.id)}
+                    onChange={() => handleAnswerChange(String(option.id))}
                     className="radio radio-primary"
                   />
                   <span className="label-text text-left">
                     <HighlightedText 
                       text={option.text} 
                       keywords={currentQuestion.keywords || []} 
-                      allowedKeywords={keywordAllocation.options.get(option.id) || new Set()}
+                      allowedKeywords={keywordAllocation.options.get(String(option.id)) || new Set()}
                     />
                   </span>
                 </label>
@@ -323,19 +324,19 @@ const Questionnaire = () => {
             {currentQuestion.options?.map(option => (
               <div key={option.id} className="form-control">
                 <label
-                  htmlFor={option.id}
+                  htmlFor={String(option.id)}
                   className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg"
                 >
                   <input
                     type="checkbox"
-                    id={option.id}
-                    checked={Array.isArray(answers[currentQuestion.id]) && answers[currentQuestion.id].includes(option.id)}
+                    id={String(option.id)}
+                    checked={Array.isArray(answers[currentQuestion.id]) && answers[currentQuestion.id].map(String).includes(String(option.id))}
                     onChange={(e) => {
                       const currentAnswers = new Set(answers[currentQuestion.id] || []);
                       if (e.target.checked) {
-                        currentAnswers.add(option.id);
+                        currentAnswers.add(String(option.id));
                       } else {
-                        currentAnswers.delete(option.id);
+                        currentAnswers.delete(String(option.id));
                       }
                       handleAnswerChange(Array.from(currentAnswers));
                     }}
@@ -345,7 +346,7 @@ const Questionnaire = () => {
                     <HighlightedText 
                       text={option.text} 
                       keywords={currentQuestion.keywords || []} 
-                      allowedKeywords={keywordAllocation.options.get(option.id) || new Set()}
+                      allowedKeywords={keywordAllocation.options.get(String(option.id)) || new Set()}
                     />
                   </span>
                 </label>
@@ -444,10 +445,10 @@ const Questionnaire = () => {
               Pregunta {currentQuestionIndex + 1} de {questions.length}
             </div>
 
-            {/* Question - Title is rendered first to establish keyword priority */}
+            {/* Question - Question text is rendered first to establish keyword priority */}
             <h2 className="card-title text-2xl mb-6">
               <HighlightedText
-                text={currentQuestion.title}
+                text={currentQuestion.question}
                 keywords={currentQuestion.keywords || []}
                 allowedKeywords={keywordAllocation.title}
               />

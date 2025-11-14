@@ -4,7 +4,7 @@ export interface Keyword {
 }
 
 export interface QuestionOption {
-    id: string;
+    id: number;
     text: string;
 }
 
@@ -12,8 +12,11 @@ export type QuestionType = 'open' | 'single' | 'multiple';
 
 export interface IQuestion {
     id: number;
-    title: string;
+    categoryId?: number;
+    categoryName?: string;
+    question: string;
     questionType: QuestionType;
+    questionnaireId?: number;
     options?: QuestionOption[];
     keywords: Keyword[];
 }
