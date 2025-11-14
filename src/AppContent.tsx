@@ -16,6 +16,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProfile from './pages/admin/AdminProfile';
 import AdviserDashboard from './pages/adviser/AdviserDashboard';
 import AdviserProfile from './pages/adviser/AdviserProfile';
+import QuestionsManagement from './pages/adviser/QuestionsManagement';
 
 // AnimatedRoutes component wraps the nested Routes with AnimatePresence
 function AnimatedRoutes() {
@@ -148,6 +149,7 @@ function AppContent() {
                             <Routes>
                                 <Route path="" element={<AdviserDashboard />} />
                                 <Route path="profile" element={<AdviserProfile />} />
+                                <Route path="questions" element={<QuestionsManagement />} />
                             </Routes>
                         </main>
                     </div>

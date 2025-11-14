@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Filter, Search, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useThemeColors } from "../../../hooks/useThemeColors";
 import { IQuestionnaire } from "../../../../core/models/questionnaire";
 import { motion } from "motion/react";
@@ -64,14 +65,12 @@ const QuestionnairesSearchTable: React.FC<QuestionnairesSearchTableProps> = ({
     loading,
     error,
 }) => {
+    const navigate = useNavigate();
     const [filter, setFilter] = useState<string>("all");
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredQuestionnaires, setFilteredQuestionnaires] = useState<
         IQuestionnaire[]
     >([]);
-    const [selectedQuestionnaire, setSelectedQuestionnaire] =
-        useState<IQuestionnaire | null>(null);
-    const [showDetailsModal, setShowDetailsModal] = useState(false);
 
     // Obtener categorías únicas para el filtro
     const categories = useMemo(() => {
@@ -105,13 +104,7 @@ const QuestionnairesSearchTable: React.FC<QuestionnairesSearchTableProps> = ({
     }, [filterQuestionnaires]);
 
     const handleViewDetails = (questionnaire: IQuestionnaire) => {
-        setSelectedQuestionnaire(questionnaire);
-        setShowDetailsModal(true);
-    };
-
-    const closeModal = () => {
-        setSelectedQuestionnaire(null);
-        setShowDetailsModal(false);
+        navigate(`/a/questions?id=${questionnaire.id}`);
     };
 
     // Errores o carga
@@ -246,61 +239,6 @@ const QuestionnairesSearchTable: React.FC<QuestionnairesSearchTableProps> = ({
                 </div>
             </div>
 
-            {/* Modal de Detalles */}
-            {showDetailsModal && selectedQuestionnaire && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-base-100 rounded-lg p-4 md:p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg md:text-xl font-semibold">
-                                Detalles del Cuestionario
-                            </h2>
-                            <button
-                                onClick={closeModal}
-                                className="btn btn-ghost btn-sm btn-circle"
-                            >
-                                ✕
-                            </button>
-                        </div>
-
-                        <div className="space-y-3 md:space-y-4">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                                <div>
-                                    <label className="text-sm font-medium text-base-content/70">
-                                        ID
-                                    </label>
-                                    <p className="text-base-content">{selectedQuestionnaire.id}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-base-content/70">
-                                        ID Categoría
-                                    </label>
-                                    <p className="text-base-content">
-                                        {selectedQuestionnaire.categoryId}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="text-sm font-medium text-base-content/70">
-                                    Creador
-                                </label>
-                                <p className="text-base-content">
-                                    {selectedQuestionnaire.creatorName}
-                                </p>
-                            </div>
-
-                            <div>
-                                <label className="text-sm font-medium text-base-content/70">
-                                    Categoría
-                                </label>
-                                <p className="text-base-content">
-                                    {selectedQuestionnaire.categoryName}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

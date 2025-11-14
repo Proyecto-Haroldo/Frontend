@@ -15,7 +15,7 @@ export interface QuestionnaireAnswer {
   questionId: number;
   questionTitle: string;
   answer: string[];
-  type: QuestionType;
+  questionType: QuestionType;
 }
 
 export interface QuestionnaireResult {

@@ -17,27 +17,30 @@ const normalizeQuestionType = (value?: string): QuestionType => {
     }
 };
 
-const mapQuestionFromDTO = (question: IQuestion): IQuestion => {
+const mapQuestionFromDTO = (question: any): IQuestion => {
     const options =
         question.options
-            ?.filter(option => option != null)
-            .map(option => ({
-                id: String(option.id),
+            ?.filter((option: any) => option != null)
+            .map((option: any) => ({
+                id: typeof option.id === 'string' ? Number(option.id) : (option.id || 0),
                 text: option.text ?? ''
             })) ?? [];
 
     const keywords =
         (question.keywords ?? [])
-            .map(keyword => ({
+            .map((keyword: any) => ({
                 title: keyword?.title ?? '',
                 description: keyword?.description ?? ''
             }))
-            .filter(keyword => keyword.title);
+            .filter((keyword: { title: string; description: string }) => keyword.title);
 
     return {
-        id: question.id,
-        title: question.title ?? question.title ?? '',
-        questionType: normalizeQuestionType(question.questionType ?? question.questionType),
+        id: question.id || 0,
+        categoryId: question.categoryId,
+        categoryName: question.categoryName,
+        question: question.question || question.title || '',
+        questionType: normalizeQuestionType(question.questionType),
+        questionnaireId: question.questionnaireId,
         options: options.length > 0 ? options : undefined,
         keywords
     };
@@ -231,20 +234,30 @@ export const fetchQuestionsByCategory = async (category: string): Promise<IQuest
     }
 };
 
-export const createQuestion = async (questionWebModel: IQuestion): Promise<IQuestion> => {
+export const fetchQuestionsByQuestionnaire = async (questionnaireId: number): Promise<IQuestion[]> => {
     try {
-        const response = await apiClient.post<IQuestion>('/preguntas', questionWebModel);
-        return response.data;
+        const response = await apiClient.get<any[]>(`/preguntas/questionnaire/${questionnaireId}`);
+        return response.data.map(mapQuestionFromDTO);
+    } catch (error) {
+        console.error('Error fetching questions by questionnaire:', error);
+        throw new Error('Error al obtener preguntas por cuestionario');
+    }
+};
+
+export const createQuestion = async (questionWebModel: any): Promise<IQuestion> => {
+    try {
+        const response = await apiClient.post<any>('/preguntas', questionWebModel);
+        return mapQuestionFromDTO(response.data);
     } catch (error) {
         console.error('Error creating question:', error);
         throw new Error('Error al crear la pregunta');
     }
 };
 
-export const updateQuestion = async (id: number, questionWebModel: IQuestion): Promise<IQuestion> => {
+export const updateQuestion = async (id: number, questionWebModel: any): Promise<IQuestion> => {
     try {
-        const response = await apiClient.put<IQuestion>(`/preguntas/${id}`, questionWebModel);
-        return response.data;
+        const response = await apiClient.put<any>(`/preguntas/${id}`, questionWebModel);
+        return mapQuestionFromDTO(response.data);
     } catch (error) {
         console.error('Error updating question:', error);
         throw new Error('Error al actualizar la pregunta');
