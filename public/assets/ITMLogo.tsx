@@ -8,8 +8,8 @@ interface ITMLogoProps {
 }
 
 const ITMLogo: React.FC<ITMLogoProps> = ({
-  className = '',
-  fill = 'currentColor',
+  className,
+  fill,
   width = 24,
   height = 24,
   ...props

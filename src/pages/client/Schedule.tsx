@@ -23,7 +23,7 @@ function Schedule() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4">
+    <div className="max-w-7xl mx-auto">
       <h1 className="text-2xl font-semibold mb-8">Agendar Consulta</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
