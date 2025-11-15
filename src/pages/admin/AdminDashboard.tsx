@@ -105,7 +105,7 @@ function AdminDashboard() {
   };
 
   return (
-    <div className="container mx-auto space-y-6 overflow-hidden">
+    <div className="container mx-auto space-y-6 px-4 md:px-6">
       <HeaderStats
         onRefresh={handleRefresh}
         loading={loadingAnalysis}
@@ -122,7 +122,7 @@ function AdminDashboard() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, x: -100 }}
             transition={{ duration: 0.4 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6"
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 py-2"
           >
             {/* Card Usuarios */}
             <motion.div
@@ -133,7 +133,7 @@ function AdminDashboard() {
               transition={{ duration: 0.4 }}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
-              className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg"
+              className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg overflow-visible"
               onClick={() => setView('users')}
             >
               <div className="card-body flex flex-col items-center text-center space-y-3">
@@ -154,7 +154,7 @@ function AdminDashboard() {
               transition={{ duration: 0.4 }}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
-              className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg"
+              className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg overflow-visible"
               onClick={() => setView('questionnaires')}
             >
               <div className="card-body flex flex-col items-center text-center space-y-3">
@@ -175,7 +175,7 @@ function AdminDashboard() {
               transition={{ duration: 0.4 }}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
-              className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg"
+              className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg overflow-visible"
               onClick={() => setView('analysis')}
             >
               <div className="card-body flex flex-col items-center text-center space-y-3">
