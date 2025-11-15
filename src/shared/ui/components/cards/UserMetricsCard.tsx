@@ -11,28 +11,22 @@ import {
     Legend,
 } from "chart.js";
 import { User, BarChart2 } from "lucide-react";
+import { IUser } from "../../../../core/models/user";
+import { IAnalysis } from "../../../../core/models/analysis";
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 interface UserMetricsCardProps {
-    user: {
-        legalName: string;
-        sector: string;
-        role: { name: string };
-        questionnaires: {
-            state: string;
-            conteo: number;
-            category: { category: string };
-        }[];
-    };
+    user: IUser;
+    analysis: IAnalysis[];
 }
 
-const UserMetricsCard: React.FC<UserMetricsCardProps> = ({ user }) => {
+const UserMetricsCard: React.FC<UserMetricsCardProps> = ({ user, analysis }) => {
     // Contar estados (pending, completed, etc.)
     const stateCounts = useMemo(() => {
         const counts: Record<string, number> = {};
-        user.questionnaires.forEach((q) => {
-            counts[q.state] = (counts[q.state] || 0) + 1;
+        analysis.forEach((q) => {
+            counts[q.status] = (counts[q.status] || 0) + 1;
         });
         return counts;
     }, [user]);
@@ -40,8 +34,8 @@ const UserMetricsCard: React.FC<UserMetricsCardProps> = ({ user }) => {
     // Agrupar por categoría
     const categoryData = useMemo(() => {
         const counts: Record<string, number> = {};
-        user.questionnaires.forEach((q) => {
-            const category = q.category?.category || "Sin categoría";
+        analysis.forEach((q) => {
+            const category = q.categoria || "Sin categoría";
             counts[category] = (counts[category] || 0) + (q.conteo || 0);
         });
         return counts;

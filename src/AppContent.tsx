@@ -16,6 +16,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProfile from './pages/admin/AdminProfile';
 import AdviserDashboard from './pages/adviser/AdviserDashboard';
 import AdviserProfile from './pages/adviser/AdviserProfile';
+import QuestionnairesManager from './pages/adviser/QuestionnairesManager';
 
 // AnimatedRoutes component wraps the nested Routes with AnimatePresence
 function AnimatedRoutes() {
@@ -103,7 +104,7 @@ function AppContent() {
             {/* Moderator area (Administrador) */}
             <Route path="/m/*" element={
                 <ProtectedRoute allowedRoles={[1]}>
-                    <div className="min-h-screen bg-base-200 flex flex-col md:flex-row font-geist">
+                    <div className="min-h-screen bg-base-200 flex flex-col md:flex-row font-family">
                         <Navbar />
                         <main className="flex-1 p-4 md:p-8 md:ml-64 pt-20 md:pt-8">
                             <Routes>
@@ -118,7 +119,7 @@ function AppContent() {
             {/* Client area (Clientes) */}
             <Route path="/c/*" element={
                 <ProtectedRoute allowedRoles={[2]}>
-                    <div className="min-h-screen bg-base-200 flex flex-col md:flex-row font-geist">
+                    <div className="min-h-screen bg-base-200 flex flex-col md:flex-row font-family">
                         <Navbar />
                         <main className="flex-1 p-4 md:p-8 md:ml-64 pt-20 md:pt-8">
                             {isFirstMount ? (
@@ -142,12 +143,13 @@ function AppContent() {
             {/* Adviser area (Asesores) */}
             <Route path="/a/*" element={
                 <ProtectedRoute allowedRoles={[3]}>
-                    <div className="min-h-screen bg-base-200 flex flex-col md:flex-row font-geist">
+                    <div className="min-h-screen bg-base-200 flex flex-col md:flex-row font-family">
                         <Navbar />
                         <main className="flex-1 p-4 md:p-8 md:ml-64 pt-20 md:pt-8">
                             <Routes>
                                 <Route path="" element={<AdviserDashboard />} />
                                 <Route path="profile" element={<AdviserProfile />} />
+                                <Route path="questionnaires" element={<QuestionnairesManager />} />
                             </Routes>
                         </main>
                     </div>

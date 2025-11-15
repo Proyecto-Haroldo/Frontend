@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, FileText, Clock, CheckCircle } from 'lucide-react';
+import { Users, FileText, Clock, CheckCircle, ChartColumnIncreasing } from 'lucide-react';
 import { useThemeColors } from "../../../hooks/useThemeColors";
 import { IAnalysis } from '../../../../core/models/analysis';
 import { motion } from 'motion/react';
@@ -23,9 +23,9 @@ interface StatsHeaderProps {
 
 const SkeletonCard: React.FC = () => (
     <div className="card bg-base-100 shadow-sm border border-base-200">
-        <div className="card-body space-y-2">
+        <div className="card-body">
             <Skeleton width="60%" height={14} />
-            <Skeleton width="80%" height={20} />
+            <Skeleton width="80%" height={18} />
         </div>
     </div>
 );
@@ -38,8 +38,11 @@ const StatsHeaderSkeleton: React.FC = () => {
             <div className="container mx-auto space-y-4 md:space-y-6">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <Skeleton width={200} height={28} />
-                    <Skeleton width={100} height={32} borderRadius={6} />
+                    <h1 className="text-2xl font-semibold">Panel Administrativo</h1>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-4">
+                        <Skeleton width={105} height={32} borderRadius={16} />
+                        <Skeleton width={105} height={32} borderRadius={16} />
+                    </div>
                 </div>
 
                 {/* Statistics Section */}
@@ -116,7 +119,7 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({
 
     if (error) {
         return (
-            <div className="container mx-auto p-3">
+            <div className="container mx-auto p-2">
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -136,10 +139,16 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <h1 className="text-2xl font-semibold">Panel Administrativo</h1>
-                <button onClick={onRefresh} className="btn btn-primary btn-sm gap-2">
-                    <Clock className="h-4 w-4" />
-                    Actualizar
-                </button>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-4">
+                    <button onClick={onRefresh} className="btn btn-accent btn-sm gap-2">
+                        <ChartColumnIncreasing className="h-4 w-4" />
+                        Ver Reportes
+                    </button>
+                    <button onClick={onRefresh} className="btn btn-primary btn-sm gap-2">
+                        <Clock className="h-4 w-4" />
+                        Actualizar
+                    </button>
+                </div>
             </div>
 
             {/* Statistics Section */}

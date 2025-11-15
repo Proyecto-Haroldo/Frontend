@@ -73,7 +73,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-base-200 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-base-200 relative overflow-hidden font-family">
       {/* Animated background elements */}
       <motion.div
         initial={{ opacity: 0 }}
