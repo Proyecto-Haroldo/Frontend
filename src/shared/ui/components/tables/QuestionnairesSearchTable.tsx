@@ -104,7 +104,7 @@ const QuestionnairesSearchTable: React.FC<QuestionnairesSearchTableProps> = ({
     }, [filterQuestionnaires]);
 
     const handleViewDetails = (questionnaire: IQuestionnaire) => {
-        navigate(`/a/questions?id=${questionnaire.id}`);
+        navigate(`/a/questionnaires?id=${questionnaire.id}`);
     };
 
     // Errores o carga
