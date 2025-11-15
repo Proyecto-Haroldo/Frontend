@@ -45,6 +45,7 @@ function Navbar() {
     } else if (role === 3) { // Adviser
       return [
         { path: '/a', icon: Home, label: 'Inicio' },
+        { path: '/a/questionnaires', icon: FileText, label: 'Cuestionarios' },
         { path: '/a/profile', icon: User, label: 'Perfil' },
       ];
     }
@@ -66,9 +67,9 @@ function Navbar() {
 
   const sidebarVariants: Variants = {
     hidden: { x: "-100%" },
-    visible: { 
+    visible: {
       x: 0,
-      transition: { 
+      transition: {
         type: "spring" as const,
         stiffness: 400,
         damping: 30
@@ -103,16 +104,16 @@ function Navbar() {
     <>
       {/* Mobile Header */}
       <div className="fixed top-0 left-0 right-0 h-16 bg-base-100 rounded-b-2xl flex items-center justify-between px-4 md:hidden z-50">
-        <motion.div 
+        <motion.div
           className="flex items-center gap-3"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
           <div className="h-12 w-12 flex items-center justify-center">
-            <ITMLogo/>
+            <ITMLogo fill='#FFFFFFD0' />
           </div>
-          <span className="font-semibold text-xl">Consultoría</span>
+          <span className="font-normal text-sm text-white/80 tracking-[4px]">CONSULTORÍA</span>
         </motion.div>
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
@@ -150,28 +151,28 @@ function Navbar() {
       </AnimatePresence>
 
       {/* Sidebar */}
-      <motion.nav 
+      <motion.nav
         className="fixed md:fixed w-64 h-screen bg-base-100 rounded-r-2xl p-6 z-50 md:translate-x-0"
         variants={sidebarVariants}
         initial="hidden"
         animate={isOpen ? "visible" : "hidden"}
         style={{ display: isOpen ? "block" : "none" }}
-        transition={{ 
+        transition={{
           type: "spring" as const,
           stiffness: 400,
           damping: 40
         }}
       >
-        <motion.div 
-          className="hidden md:flex items-center gap-3 mb-8"
+        <motion.div
+          className="hidden md:flex items-center gap-3 mb-6"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
           <div className="h-12 w-12 flex items-center justify-center">
-            <ITMLogo/>
+            <ITMLogo fill='#FFFFFFD0' />
           </div>
-          <span className="font-semibold text-xl">Consultoría</span>
+          <span className="font-normal text-sm text-white/80 tracking-[4px]">CONSULTORÍA</span>
         </motion.div>
 
         <div className="space-y-2">
@@ -187,11 +188,10 @@ function Navbar() {
               <Link
                 to={item.path}
                 onClick={() => setIsOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  isActive(item.path)
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-base-content hover:bg-base-200'
-                }`}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive(item.path)
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-base-content hover:bg-base-200'
+                  }`}
               >
                 <item.icon className="h-5 w-5" />
                 <span>{item.label}</span>
@@ -211,7 +211,7 @@ function Navbar() {
           {/* Use the ThemeToggle component */}
           <ThemeToggle />
 
-          <motion.button 
+          <motion.button
             className="flex items-center gap-3 w-full px-4 py-3 text-base-content hover:bg-base-200 rounded-lg transition-colors cursor-pointer"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -227,27 +227,27 @@ function Navbar() {
       </motion.nav>
 
       {/* Desktop Sidebar */}
-      <motion.nav 
+      <motion.nav
         className="fixed hidden md:block w-64 h-screen bg-base-100 rounded-r-2xl p-6 z-50"
         initial={{ x: -280 }}
         animate={{ x: 0 }}
-        transition={{ 
+        transition={{
           type: "spring",
           stiffness: 300,
           damping: 30,
           delay: 0.2
         }}
       >
-        <motion.div 
-          className="flex items-center gap-3 mb-8"
+        <motion.div
+          className="flex items-center gap-3 mb-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
           <div className="h-12 w-12 flex items-center justify-center">
-            <ITMLogo className='h-15 w-15 text-primary'/>
+            <ITMLogo fill='#FFFFFFD0' className='h-15 w-15 text-primary' />
           </div>
-          <span className="font-semibold text-xl">Consultoría</span>
+          <span className="font-normal text-sm text-white/80 tracking-[4px]">CONSULTORÍA</span>
         </motion.div>
 
         <div className="space-y-2">
@@ -261,11 +261,10 @@ function Navbar() {
             >
               <Link
                 to={item.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors relative ${
-                  isActive(item.path)
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-base-content hover:bg-base-200'
-                }`}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors relative ${isActive(item.path)
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-base-content hover:bg-base-200'
+                  }`}
               >
                 <item.icon className="h-5 w-5" />
                 <span>{item.label}</span>
@@ -285,7 +284,7 @@ function Navbar() {
           {/* Use the ThemeToggle component */}
           <ThemeToggle />
 
-          <motion.button 
+          <motion.button
             className="flex items-center gap-3 w-full px-4 py-3 text-base-content hover:bg-base-200 rounded-lg transition-colors cursor-pointer"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

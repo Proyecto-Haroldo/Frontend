@@ -79,7 +79,7 @@ function AdviserDashboard() {
   };
 
   return (
-    <div className="container mx-auto p-3 md:p-4 space-y-6 overflow-hidden">
+    <div className="container mx-auto space-y-6 overflow-hidden">
       <HeaderStats
         onRefresh={handleRefresh}
         loading={loadingAnalysis}

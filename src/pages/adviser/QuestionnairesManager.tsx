@@ -1,27 +1,27 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { 
-  ArrowLeft, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Save, 
+import {
+  ArrowLeft,
+  Plus,
+  Edit,
+  Trash2,
+  Save,
   X,
   Loader2,
   Search
 } from 'lucide-react';
-import { 
-  fetchQuestionsByQuestionnaire, 
-  createQuestion, 
-  updateQuestion, 
+import {
+  fetchQuestionsByQuestionnaire,
+  createQuestion,
+  updateQuestion,
   deleteQuestion,
   getQuestionnaireById
 } from '../../api/analysisApi';
 import { IQuestion, QuestionType } from '../../core/models/question';
 import { IQuestionnaire } from '../../core/models/questionnaire';
 
-function QuestionsManagement() {
+function QuestionnairesManager() {
   const navigate = useNavigate();
   const location = useLocation();
   const [questions, setQuestions] = useState<IQuestion[]>([]);
@@ -48,7 +48,7 @@ function QuestionsManagement() {
   useEffect(() => {
     const fetchQuestionnaire = async () => {
       if (!questionnaireId) return;
-      
+
       try {
         const data = await getQuestionnaireById(questionnaireId);
         setQuestionnaire(data);
@@ -69,7 +69,7 @@ function QuestionsManagement() {
 
   const fetchQuestions = async () => {
     if (!questionnaireId) return;
-    
+
     try {
       setLoading(true);
       setError(null);
@@ -106,7 +106,7 @@ function QuestionsManagement() {
       setError('No se encontró información del cuestionario');
       return;
     }
-    
+
     setIsCreating(true);
     setEditingQuestion({
       id: 0,
@@ -147,8 +147,8 @@ function QuestionsManagement() {
       return;
     }
 
-    if ((editingQuestion.questionType === 'single' || editingQuestion.questionType === 'multiple') 
-        && (!editingQuestion.options || editingQuestion.options.length < 2)) {
+    if ((editingQuestion.questionType === 'single' || editingQuestion.questionType === 'multiple')
+      && (!editingQuestion.options || editingQuestion.options.length < 2)) {
       setError('Las preguntas de opción múltiple deben tener al menos 2 opciones');
       return;
     }
@@ -158,7 +158,7 @@ function QuestionsManagement() {
       setError(null);
 
       // Map to backend format
-      const questionData: any = {
+      const questionData: Omit<IQuestion, "id" | "keywords"> = {
         question: editingQuestion.question,
         questionType: editingQuestion.questionType,
         categoryName: questionnaire.categoryName,
@@ -193,7 +193,7 @@ function QuestionsManagement() {
 
   const handleAddOption = () => {
     if (!editingQuestion) return;
-    
+
     const newOptions = [...(editingQuestion.options || [])];
     newOptions.push({
       id: Date.now(),
@@ -204,7 +204,7 @@ function QuestionsManagement() {
 
   const handleRemoveOption = (index: number) => {
     if (!editingQuestion) return;
-    
+
     const newOptions = [...(editingQuestion.options || [])];
     newOptions.splice(index, 1);
     setEditingQuestion({ ...editingQuestion, options: newOptions });
@@ -212,7 +212,7 @@ function QuestionsManagement() {
 
   const handleOptionChange = (index: number, text: string) => {
     if (!editingQuestion) return;
-    
+
     const newOptions = [...(editingQuestion.options || [])];
     newOptions[index] = { ...newOptions[index], text };
     setEditingQuestion({ ...editingQuestion, options: newOptions });
@@ -220,7 +220,7 @@ function QuestionsManagement() {
 
   if (loading && !questions.length) {
     return (
-      <div className="container mx-auto p-3 md:p-4 space-y-6 overflow-hidden">
+      <div className="container mx-auto space-y-6 overflow-hidden">
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="card w-full max-w-2xl bg-base-100 shadow-sm border border-base-200">
             <div className="card-body items-center text-center">
@@ -235,7 +235,7 @@ function QuestionsManagement() {
 
   if (!questionnaireId) {
     return (
-      <div className="container mx-auto p-3 md:p-4 space-y-6 overflow-hidden">
+      <div className="container mx-auto space-y-6 overflow-hidden">
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="card w-full max-w-2xl bg-base-100 shadow-sm border border-base-200">
             <div className="card-body items-center text-center">
@@ -251,7 +251,7 @@ function QuestionsManagement() {
   }
 
   return (
-    <div className="container mx-auto p-3 md:p-4 space-y-6 overflow-hidden">
+    <div className="container mx-auto space-y-6 overflow-hidden">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 flex-wrap">
         <div className="w-full sm:w-auto">
@@ -311,11 +311,12 @@ function QuestionsManagement() {
             <div className="space-y-4">
               {/* Question Text */}
               <div className="form-control">
-                <label className="label">
+                <label className="label" htmlFor='question'>
                   <span className="label-text">Pregunta</span>
                 </label>
                 <input
                   type="text"
+                  title='question'
                   className="input input-bordered w-full"
                   value={editingQuestion.question}
                   onChange={(e) =>
@@ -327,11 +328,12 @@ function QuestionsManagement() {
 
               {/* Question Type */}
               <div className="form-control">
-                <label className="label">
+                <label className="label" htmlFor='question-type'>
                   <span className="label-text">Tipo de Pregunta</span>
                 </label>
                 <select
                   className="select select-bordered w-full"
+                  title='question-type'
                   value={editingQuestion.questionType}
                   onChange={(e) =>
                     setEditingQuestion({
@@ -350,42 +352,43 @@ function QuestionsManagement() {
               {/* Options for single/multiple */}
               {(editingQuestion.questionType === 'single' ||
                 editingQuestion.questionType === 'multiple') && (
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Opciones</span>
-                  </label>
-                  <div className="space-y-2">
-                    {editingQuestion.options?.map((option, index) => (
-                      <div key={option.id || index} className="flex gap-2">
-                        <input
-                          type="text"
-                          className="input input-bordered flex-1"
-                          value={option.text}
-                          onChange={(e) => handleOptionChange(index, e.target.value)}
-                          placeholder={`Opción ${index + 1}`}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveOption(index)}
-                          className="btn btn-ghost btn-sm flex-shrink-0"
-                          disabled={editingQuestion.options?.length === 2}
-                          title="Eliminar opción"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={handleAddOption}
-                      className="btn btn-outline btn-sm w-full sm:w-auto"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Agregar Opción
-                    </button>
+                  <div className="form-control">
+                    <label className="label" htmlFor='options'>
+                      <span className="label-text">Opciones</span>
+                    </label>
+                    <div className="space-y-2">
+                      {editingQuestion.options?.map((option, index) => (
+                        <div key={option.id || index} className="flex gap-2">
+                          <input
+                            type="text"
+                            title='options'
+                            className="input input-bordered flex-1"
+                            value={option.text}
+                            onChange={(e) => handleOptionChange(index, e.target.value)}
+                            placeholder={`Opción ${index + 1}`}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveOption(index)}
+                            className="btn btn-ghost btn-sm flex-shrink-0"
+                            disabled={editingQuestion.options?.length === 2}
+                            title="Eliminar opción"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={handleAddOption}
+                        className="btn btn-outline btn-sm w-full sm:w-auto"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Agregar Opción
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-2 justify-end">
@@ -427,7 +430,7 @@ function QuestionsManagement() {
               <h2 className="card-title text-lg sm:text-xl flex-shrink-0">
                 Preguntas ({filteredQuestions.length}{searchTitle && ` de ${questions.length}`})
               </h2>
-              
+
               {/* Search/Filter by Title */}
               <div className="form-control w-full sm:w-auto sm:min-w-[16rem]">
                 <div className="relative">
@@ -575,4 +578,4 @@ function QuestionsManagement() {
   );
 }
 
-export default QuestionsManagement;
+export default QuestionnairesManager;
