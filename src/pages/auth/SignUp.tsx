@@ -172,7 +172,7 @@ const SignUp: React.FC = () => {
   const isPasswordValid = passwordStrength >= 80;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-base-200 relative overflow-hidden py-8">
+    <div className="min-h-screen flex items-center justify-center bg-base-200 relative overflow-hidden py-8 font-family">
       {/* Animated background elements */}
       <motion.div
         initial={{ opacity: 0 }}
