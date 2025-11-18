@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  ChevronDown, 
+import {
+  ChevronDown,
   Clock,
   ArrowLeft,
   CheckCircle,
@@ -10,7 +10,7 @@ import {
   XCircle,
   AlertCircle
 } from 'lucide-react';
-import { 
+import {
   ColorSemaforo,
   getRiskLevel,
   getRiskDescription,
@@ -19,9 +19,9 @@ import {
 import { IAnalysis } from '../../core/models/analysis';
 
 function AnalysisReview() {
-  const [showAnswers, setShowAnswers] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const [showAnswers, setShowAnswers] = useState(false);
   const [searchParams] = useSearchParams();
 
   // Get analysis data from navigation state
@@ -34,13 +34,13 @@ function AnalysisReview() {
   const aiRecommendationFromLS = localStorage.getItem('aiRecommendation');
   const questionnaireDataFromLS = localStorage.getItem('questionnaireData');
 
-  let analysisData: { 
-    id: string; 
+  let analysisData: {
+    id: string;
     conteo: number;
-    timestamp: string; 
+    timestamp: string;
     categoria: string;
-    recomendacionUsuario: string; 
-    colorSemaforo: ColorSemaforo 
+    recomendacionUsuario: string;
+    colorSemaforo: ColorSemaforo
   } | null = null;
 
   if (analysis) {
@@ -51,7 +51,7 @@ function AnalysisReview() {
     if (rawColor === 'rojo' || rawColor === 'red') colorSemaforo = 'rojo';
     else if (rawColor === 'amarillo' || rawColor === 'yellow') colorSemaforo = 'amarillo';
     else if (rawColor === 'verde' || rawColor === 'green') colorSemaforo = 'verde';
-    
+
     analysisData = {
       id: analysis.analysisId.toString(),
       conteo: analysis.conteo,
@@ -64,7 +64,7 @@ function AnalysisReview() {
     // Fallback for direct URL navigation with localStorage data
     let resumenUsuario = 'Basado en sus respuestas, hemos identificado áreas clave para mejorar su salud financiera...';
     let colorSemaforo: ColorSemaforo = 'amarillo';
-    
+
     try {
       const parsed = JSON.parse(aiRecommendationFromLS);
       if (parsed && typeof parsed === 'object' && 'resumenUsuario' in parsed && 'colorSemaforo' in parsed) {
@@ -82,7 +82,7 @@ function AnalysisReview() {
     }
 
     const parsedQuestionnaireData = questionnaireDataFromLS ? JSON.parse(questionnaireDataFromLS) : null;
-    
+
     analysisData = {
       id: analysisIdFromUrl,
       conteo: 1, // Default to 1 for legacy localStorage data
@@ -109,7 +109,7 @@ function AnalysisReview() {
       borderColor: 'border-success/20'
     },
     amarillo: {
-      icon: AlertTriangle, 
+      icon: AlertTriangle,
       title: 'Requiere Atención',
       color: 'text-warning',
       bgColor: 'bg-warning/5',
@@ -118,7 +118,7 @@ function AnalysisReview() {
     rojo: {
       icon: XCircle,
       title: 'Acción Necesaria',
-      color: 'text-error', 
+      color: 'text-error',
       bgColor: 'bg-error/5',
       borderColor: 'border-error/20'
     }
@@ -143,7 +143,7 @@ function AnalysisReview() {
             </div>
             <h2 className="card-title text-xl mb-4">Análisis no encontrado.</h2>
             <p className="text-base-content/70 mb-6">
-              No se encontró información del análisis solicitado. 
+              No se encontró información del análisis solicitado.
               Por favor, intente seleccionar un análisis desde la lista.
             </p>
             <div className="card-actions">
@@ -239,7 +239,7 @@ function AnalysisReview() {
 
   // Modern minimalist stoplight with Motion animations
   const stoplight = (
-    <motion.div 
+    <motion.div
       className="grid lg:grid-cols-2 gap-8 items-center min-h-[500px]"
       variants={containerVariants}
       initial="hidden"
@@ -249,7 +249,7 @@ function AnalysisReview() {
       <motion.div className="flex flex-col items-center justify-center space-y-6 h-full" variants={itemVariants}>
         {/* Status Header */}
         <motion.div className="text-center space-y-4" variants={itemVariants}>
-          <motion.div 
+          <motion.div
             className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-base-200"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
@@ -258,7 +258,7 @@ function AnalysisReview() {
           </motion.div>
           <motion.div variants={itemVariants}>
             <h2 className="text-2xl font-bold mb-2">Estado del análisis</h2>
-            <motion.div 
+            <motion.div
               className={`inline-block px-4 py-2 rounded-full text-sm font-medium border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
@@ -267,37 +267,36 @@ function AnalysisReview() {
             </motion.div>
           </motion.div>
         </motion.div>
-  
+
         {/* Realistic Stoplight */}
-        <motion.div 
-          className="flex justify-center" 
+        <motion.div
+          className="flex justify-center"
           variants={itemVariants}
         >
           <div className="relative">
             {/* Stoplight Housing */}
-            <motion.div 
+            <motion.div
               className="bg-neutral rounded-3xl p-6 shadow-2xl border-4 border-neutral-focus"
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
               <div className="flex flex-col space-y-5">
-                
+
                 {/* Green Light (TOP) */}
                 <div className="relative flex justify-center">
-                  <div className={`w-20 h-20 rounded-full border-4 border-neutral-content/20 transition-all duration-700 ${
-                    analysisData.colorSemaforo === 'verde' 
-                      ? 'bg-green-500 shadow-xl shadow-green-500/60' 
-                      : 'bg-neutral-content/10 shadow-inner'
-                  }`}>
+                  <div className={`w-20 h-20 rounded-full border-4 border-neutral-content/20 transition-all duration-700 ${analysisData.colorSemaforo === 'verde'
+                    ? 'bg-green-500 shadow-xl shadow-green-500/60'
+                    : 'bg-neutral-content/10 shadow-inner'
+                    }`}>
                     {analysisData.colorSemaforo === 'verde' && (
                       <>
-                        <motion.div 
+                        <motion.div
                           className="absolute inset-2 bg-green-400 rounded-full"
                           variants={pingVariants}
                           initial="initial"
                           animate="animate"
                         />
-                        <motion.div 
+                        <motion.div
                           className="absolute inset-3 bg-gradient-to-br from-green-300 via-green-500 to-green-700 rounded-full"
                           variants={pulseVariants}
                           initial="initial"
@@ -308,23 +307,22 @@ function AnalysisReview() {
                     )}
                   </div>
                 </div>
-                
+
                 {/* Yellow Light (MIDDLE) */}
                 <div className="relative flex justify-center">
-                  <div className={`w-20 h-20 rounded-full border-4 border-neutral-content/20 transition-all duration-700 ${
-                    analysisData.colorSemaforo === 'amarillo' 
-                      ? 'bg-yellow-400 shadow-xl shadow-yellow-400/60' 
-                      : 'bg-neutral-content/10 shadow-inner'
-                  }`}>
+                  <div className={`w-20 h-20 rounded-full border-4 border-neutral-content/20 transition-all duration-700 ${analysisData.colorSemaforo === 'amarillo'
+                    ? 'bg-yellow-400 shadow-xl shadow-yellow-400/60'
+                    : 'bg-neutral-content/10 shadow-inner'
+                    }`}>
                     {analysisData.colorSemaforo === 'amarillo' && (
                       <>
-                        <motion.div 
+                        <motion.div
                           className="absolute inset-2 bg-yellow-300 rounded-full"
                           variants={pingVariants}
                           initial="initial"
                           animate="animate"
                         />
-                        <motion.div 
+                        <motion.div
                           className="absolute inset-3 bg-gradient-to-br from-yellow-200 via-yellow-400 to-yellow-600 rounded-full"
                           variants={pulseVariants}
                           initial="initial"
@@ -335,23 +333,22 @@ function AnalysisReview() {
                     )}
                   </div>
                 </div>
-                
+
                 {/* Red Light (BOTTOM) */}
                 <div className="relative flex justify-center">
-                  <div className={`w-20 h-20 rounded-full border-4 border-neutral-content/20 transition-all duration-700 ${
-                    analysisData.colorSemaforo === 'rojo' 
-                      ? 'bg-red-500 shadow-xl shadow-red-500/60' 
-                      : 'bg-neutral-content/10 shadow-inner'
-                  }`}>
+                  <div className={`w-20 h-20 rounded-full border-4 border-neutral-content/20 transition-all duration-700 ${analysisData.colorSemaforo === 'rojo'
+                    ? 'bg-red-500 shadow-xl shadow-red-500/60'
+                    : 'bg-neutral-content/10 shadow-inner'
+                    }`}>
                     {analysisData.colorSemaforo === 'rojo' && (
                       <>
-                        <motion.div 
+                        <motion.div
                           className="absolute inset-2 bg-red-400 rounded-full"
                           variants={pingVariants}
                           initial="initial"
                           animate="animate"
                         />
-                        <motion.div 
+                        <motion.div
                           className="absolute inset-3 bg-gradient-to-br from-red-300 via-red-500 to-red-700 rounded-full"
                           variants={pulseVariants}
                           initial="initial"
@@ -364,24 +361,24 @@ function AnalysisReview() {
                 </div>
               </div>
             </motion.div>
-            
+
             {/* Subtle Glow Effect */}
             {analysisData.colorSemaforo === 'rojo' && (
-              <motion.div 
+              <motion.div
                 className="absolute inset-0 bg-red-500/10 rounded-3xl blur-xl -z-10"
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               />
             )}
             {analysisData.colorSemaforo === 'amarillo' && (
-              <motion.div 
+              <motion.div
                 className="absolute inset-0 bg-yellow-400/10 rounded-3xl blur-xl -z-10"
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               />
             )}
             {analysisData.colorSemaforo === 'verde' && (
-              <motion.div 
+              <motion.div
                 className="absolute inset-0 bg-green-500/10 rounded-3xl blur-xl -z-10"
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
@@ -390,20 +387,20 @@ function AnalysisReview() {
           </div>
         </motion.div>
       </motion.div>
-  
+
       {/* Right side - Summary */}
-      <motion.div 
+      <motion.div
         className="flex items-center justify-center h-full"
         variants={itemVariants}
       >
-        <motion.div 
+        <motion.div
           className={`rounded-xl p-8 border ${currentStatus.bgColor} ${currentStatus.borderColor} w-full max-w-md`}
           variants={itemVariants}
           whileHover={{ scale: 1.01 }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
         >
           <h3 className="text-xl font-semibold mb-4 text-center">Resumen del Análisis</h3>
-          <p className="text-base-content/80 leading-relaxed text-center">
+          <p className="text-base-content/80 leading-relaxed text-justify">
             {analysisData.recomendacionUsuario}
           </p>
         </motion.div>
@@ -412,7 +409,7 @@ function AnalysisReview() {
   );
 
   return (
-    <motion.div 
+    <motion.div
       className="min-h-screen"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -422,13 +419,13 @@ function AnalysisReview() {
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             {/* Header */}
-            <motion.div 
+            <motion.div
               className="flex items-center justify-between py-4"
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
             >
-              <motion.button 
+              <motion.button
                 onClick={() => navigate(-1)}
                 className="btn btn-ghost btn-sm gap-2"
                 whileHover={{ scale: 1.05 }}
@@ -449,15 +446,15 @@ function AnalysisReview() {
             </motion.div>
 
             {/* Main Content */}
-            <motion.div 
+            <motion.div
               className="space-y-8"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
             >
-              
+
               {/* Title */}
-              <motion.div 
+              <motion.div
                 className="text-center"
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -472,7 +469,7 @@ function AnalysisReview() {
               </motion.div>
 
               {/* Stoplight Section */}
-              <motion.div 
+              <motion.div
                 className="card bg-base-200/50 backdrop-blur-sm"
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -484,7 +481,7 @@ function AnalysisReview() {
               </motion.div>
 
               {/* Risk Assessment Card */}
-              <motion.div 
+              <motion.div
                 className="card bg-base-200/50"
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -494,10 +491,9 @@ function AnalysisReview() {
                 <div className="card-body">
                   <h3 className="card-title text-lg mb-4">Nivel de Riesgo</h3>
                   <div className="flex items-center gap-4">
-                    <div className={`badge badge-lg px-4 py-3 transition-all duration-300 ${
-                      analysisData.colorSemaforo === 'verde' ? 'badge-success' :
+                    <div className={`badge badge-lg px-4 py-3 transition-all duration-300 ${analysisData.colorSemaforo === 'verde' ? 'badge-success' :
                       analysisData.colorSemaforo === 'amarillo' ? 'badge-warning' : 'badge-error'
-                    }`}>
+                      }`}>
                       {getRiskLevel(analysisData.colorSemaforo)}
                     </div>
                     <span className="text-base-content/80">
@@ -508,7 +504,7 @@ function AnalysisReview() {
               </motion.div>
 
               {/* Answers Section - Optional placeholder */}
-              <motion.div 
+              <motion.div
                 className="card bg-base-200/50"
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -517,20 +513,20 @@ function AnalysisReview() {
                 <div className="card-body">
                   <div className="collapse">
                     <label htmlFor='checkbox' title='checkbox' hidden>Answers</label>
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       name='checkbox'
                       title='checkbox'
                       checked={showAnswers}
                       onChange={(e) => setShowAnswers(e.target.checked)}
                     />
-                    <motion.div 
+                    <motion.div
                       className="collapse-title flex items-center justify-center gap-2 cursor-pointer hover:bg-base-300/50 rounded-lg transition-all duration-300"
                       onClick={() => setShowAnswers(!showAnswers)}
                       whileHover={{ scale: 1.01 }}
                       whileTap={{ scale: 0.99 }}
                     >
-                      <motion.div 
+                      <motion.div
                         className="transition-transform duration-300"
                         animate={{ rotate: showAnswers ? 180 : 0 }}
                       >
@@ -540,10 +536,10 @@ function AnalysisReview() {
                         {showAnswers ? 'Ocultar' : 'Ver'} Respuestas del Cuestionario
                       </span>
                     </motion.div>
-                    
+
                     <AnimatePresence>
                       {showAnswers && (
-                        <motion.div 
+                        <motion.div
                           className="collapse-content pt-4"
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
@@ -551,7 +547,7 @@ function AnalysisReview() {
                           transition={{ duration: 0.3, ease: "easeInOut" }}
                         >
                           <div className="text-center py-8 text-base-content/60">
-                            <motion.div 
+                            <motion.div
                               className="w-16 h-16 bg-base-300 rounded-full flex items-center justify-center mx-auto mb-4"
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
@@ -566,7 +562,7 @@ function AnalysisReview() {
                             >
                               Esta sección mostrará todas sus respuestas al cuestionario.
                             </motion.p>
-                            <motion.div 
+                            <motion.div
                               className="badge badge-outline mt-2"
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}

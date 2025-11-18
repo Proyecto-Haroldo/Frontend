@@ -7,16 +7,17 @@ import Home from './pages/client/Home';
 import Services from './pages/client/Services';
 import Schedule from './pages/client/Schedule';
 import Analysis from './pages/client/Analysis';
-import Account from './pages/client/Account';
+import Profile from './pages/client/Profile';
 import Questionnaire from './pages/client/Questionnaire';
 import AnalysisReview from './pages/client/AnalysisReview';
 import Login from './pages/auth/Login';
 import SignUp from './pages/auth/SignUp';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProfile from './pages/admin/AdminProfile';
+import AdminReports from './pages/admin/AdminReports';
 import AdviserDashboard from './pages/adviser/AdviserDashboard';
 import AdviserProfile from './pages/adviser/AdviserProfile';
-import QuestionnairesManager from './pages/adviser/QuestionnairesManager';
+import AdviserReports from './pages/adviser/AdviserReports';
 
 // AnimatedRoutes component wraps the nested Routes with AnimatePresence
 function AnimatedRoutes() {
@@ -47,7 +48,7 @@ function AnimatedRoutes() {
                     <Route path="services" element={<Services />} />
                     <Route path="schedule" element={<Schedule />} />
                     <Route path="analysis" element={<Analysis />} />
-                    <Route path="account" element={<Account />} />
+                    <Route path="account" element={<Profile />} />
                     <Route path="questionnaire" element={<Questionnaire />} />
                     <Route path="analysis-review" element={<AnalysisReview />} />
                 </Routes>
@@ -109,6 +110,12 @@ function AppContent() {
                         <main className="flex-1 p-4 md:p-8 md:ml-64 pt-20 md:pt-8">
                             <Routes>
                                 <Route path="" element={<AdminDashboard />} />
+                                <Route path="users" element={<AdminDashboard view="users" />} />
+                                <Route path="questionnaires" element={<AdminDashboard view="questionnaires" />} />
+                                <Route path="questionnaires/:id" element={<AdminDashboard view="questionnaireOverview" />} />
+                                <Route path="analysis" element={<AdminDashboard view="analysis" />} />
+                                <Route path="analysis/:id" element={<AdminDashboard view="analysisOverview" />} />
+                                <Route path="reports" element={<AdminReports />} />
                                 <Route path="profile" element={<AdminProfile />} />
                             </Routes>
                         </main>
@@ -128,7 +135,7 @@ function AppContent() {
                                     <Route path="services" element={<Services />} />
                                     <Route path="schedule" element={<Schedule />} />
                                     <Route path="analysis" element={<Analysis />} />
-                                    <Route path="account" element={<Account />} />
+                                    <Route path="profile" element={<Profile />} />
                                     <Route path="questionnaire" element={<Questionnaire />} />
                                     <Route path="analysis-review" element={<AnalysisReview />} />
                                 </Routes>
@@ -141,20 +148,27 @@ function AppContent() {
             } />
 
             {/* Adviser area (Asesores) */}
-            <Route path="/a/*" element={
-                <ProtectedRoute allowedRoles={[3]}>
-                    <div className="min-h-screen bg-base-200 flex flex-col md:flex-row font-family">
-                        <Navbar />
-                        <main className="flex-1 p-4 md:p-8 md:ml-64 pt-20 md:pt-8">
-                            <Routes>
-                                <Route path="" element={<AdviserDashboard />} />
-                                <Route path="profile" element={<AdviserProfile />} />
-                                <Route path="questionnaires" element={<QuestionnairesManager />} />
-                            </Routes>
-                        </main>
-                    </div>
-                </ProtectedRoute>
-            } />
+            <Route
+                path="/a/*"
+                element={
+                    <ProtectedRoute allowedRoles={[3]}>
+                        <div className="min-h-screen bg-base-200 flex flex-col md:flex-row font-family">
+                            <Navbar />
+                            <main className="flex-1 p-4 md:p-8 md:ml-64 pt-20 md:pt-8">
+                                <Routes>
+                                    <Route path="" element={<AdviserDashboard />} />
+                                    <Route path="questionnaires" element={<AdviserDashboard view="questionnaires" />} />
+                                    <Route path="questionnaires/:id" element={<AdviserDashboard view="questionnaireManager" />} />
+                                    <Route path="analysis" element={<AdviserDashboard view="analysis" />} />
+                                    <Route path="analysis/:id" element={<AdviserDashboard view="analysisManager" />} />
+                                    <Route path="reports" element={<AdviserReports />} />
+                                    <Route path="profile" element={<AdviserProfile />} />
+                                </Routes>
+                            </main>
+                        </div>
+                    </ProtectedRoute>
+                }
+            />
         </Routes>
     );
 }
