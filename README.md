@@ -1,9 +1,7 @@
-<div style="display: flex; align-items: center; gap: 16px" align="center">
-    <img style="margin: 0" src="./public/img/hf-icon.png" alt="Haroldo-Finanzas-Isotype" width="32" height="32" />
-    <h1 align="start" style="margin-top: 28px">Haroldo Finanzas</h1>
-</div>
+# Haroldo Finanzas
 
-Aplicativo web moderno diseñado para gestionar, analizar y fortalecer la educación financiera de los usuarios mediante herramientas interactivas, reportes inteligentes, seguimiento personalizado, y un microservicio de IA para recomendaciones financieras basadas en Gemini.  
+
+¡Bienvenid@! __Haroldo Finanazas__ aplicativo web moderno diseñado para gestionar, analizar y fortalecer la educación financiera de los usuarios mediante herramientas interactivas, reportes inteligentes, seguimiento personalizado, y un microservicio de IA para recomendaciones financieras basadas en Gemini.  
 
 Este proyecto surge como una propuesta para el cumplimiento del requisito de Trabajo de Grado 2025-2, bajo la modalidad Producto obtenido en Laboratorio o Semillero de investigación de la __Institución Universitaria ITM__. En convenio con la __Facultad de Ingenierías__ y la __Facultad de Ciencias Económicas y Administrativas__, y bajo la asesoría del __Semillero de Investigación Data Urban: Innovación y ciencia de datos (LowCode)__.
 
@@ -133,19 +131,20 @@ Seguimiento y Reportes
 --------------------------------------------------------------------------------------------------------
 
 ## Desarrollo
+
 A continuación se describen los estudiantes involucrados en la investigación, planeación, desarrollo y presentación del proyecto __Haroldo Finanzas__ como opción de Trabajo de Grado 2025-2 en la __Institución Universitaria ITM__, miembros de los programas TECNOLOGÍA EN DESARROLLO DE SOFTWARE y TECNOLOGÍA EN DESARROLLO DE APLICACIONES PARA DISPOSITIVOS MÓVILES.
 
 - `franccoina` David Francisco Blandón Mena
-    - `davidblandon1113449@correo.itm.edu.co`
+  - `davidblandon1113449@correo.itm.edu.co`
 
 - `Sonistwo` Samuel Canabal Tapias
-    - `samuelcanabal1116210@correo.itm.edu.co`
+  - `samuelcanabal1116210@correo.itm.edu.co`
 
 - `Kevinrestrepoh` Kevin Restrepo Hernández
-    - `kevinrestrepo1114718@correo.itm.edu.co`
+  - `kevinrestrepo1114718@correo.itm.edu.co`
 
 - `JohannRH` Johann Restrepo Hernández
-    - `johannrestrepo1114715@correo.itm.edu.co`
+  - `johannrestrepo1114715@correo.itm.edu.co`
 
 ## Asesores
 
