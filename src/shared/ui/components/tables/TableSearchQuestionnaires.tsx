@@ -4,13 +4,15 @@ import { useNavigate } from "react-router-dom";
 import { useThemeColors } from "../../../hooks/useThemeColors";
 import { IQuestionnaire } from "../../../../core/models/questionnaire";
 import { motion } from "motion/react";
+
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-interface QuestionnairesSearchTableProps {
+interface TableSearchQuestionnairesProps {
     questionnaires: IQuestionnaire[];
     loading: boolean;
     error: string | null;
+    role: number | null;
 }
 
 // Skeleton Loader
@@ -60,10 +62,11 @@ const SearchTableSkeleton: React.FC = () => {
 };
 
 // Main Component
-const QuestionnairesSearchTable: React.FC<QuestionnairesSearchTableProps> = ({
+const TableSearchQuestionnaires: React.FC<TableSearchQuestionnairesProps> = ({
     questionnaires,
     loading,
     error,
+    role,
 }) => {
     const navigate = useNavigate();
     const [filter, setFilter] = useState<string>("all");
@@ -104,11 +107,16 @@ const QuestionnairesSearchTable: React.FC<QuestionnairesSearchTableProps> = ({
     }, [filterQuestionnaires]);
 
     const handleViewDetails = (questionnaire: IQuestionnaire) => {
-        navigate(`/a/questionnaires?id=${questionnaire.id}`);
+        if (role === 3) {
+            navigate(`/a/questionnaires/${questionnaire.id}`);
+        } else if (role === 1) {
+            navigate(`/m/questionnaires/${questionnaire.id}`);
+        }
     };
 
     // Errores o carga
     if (loading) return <SearchTableSkeleton />;
+
     if (error)
         return (
             <div className="container mx-auto p-3">
@@ -129,7 +137,7 @@ const QuestionnairesSearchTable: React.FC<QuestionnairesSearchTableProps> = ({
                 <div className="card-body p-3 md:p-6 space-y-3">
                     {/* Search Input */}
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-base-content/50" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-base-content/50 z-10" />
                         <input
                             type="text"
                             placeholder="Buscar por creador o categoría..."
@@ -144,7 +152,7 @@ const QuestionnairesSearchTable: React.FC<QuestionnairesSearchTableProps> = ({
                         <div
                             tabIndex={0}
                             role="button"
-                            className="btn btn-outline btn-sm gap-2"
+                            className="btn btn-outline btn-sm gap-2 text-base-content/50"
                         >
                             <Filter className="h-4 w-4" />
                             <span>{filter === "all" ? "Todas las categorías" : filter}</span>
@@ -238,9 +246,8 @@ const QuestionnairesSearchTable: React.FC<QuestionnairesSearchTableProps> = ({
                     )}
                 </div>
             </div>
-
         </div>
     );
 };
 
-export default QuestionnairesSearchTable;
+export default TableSearchQuestionnaires;
