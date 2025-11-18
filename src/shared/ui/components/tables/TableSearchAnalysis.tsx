@@ -294,7 +294,7 @@ const TableSearchAnalysis: React.FC<TableSearchAnalysisProps> = ({
                                         {filteredAnalysis.map((a) => (
                                             <tr key={a.analysisId}>
                                                 <td>{a.clientName}</td>
-                                                <td>{a.asesorName}</td>
+                                                <td>{a.asesorName || 'Sin Asignar'}</td>
                                                 <td>{a.categoria}</td>
                                                 <td>{getStateBadge(a.status)}</td>
                                                 <td>{getColorBadge(a.colorSemaforo)}</td>
@@ -307,7 +307,7 @@ const TableSearchAnalysis: React.FC<TableSearchAnalysisProps> = ({
                                                         onClick={() => handleViewDetails(a)}
                                                     >
                                                         <Eye className="h-3 w-3" />
-                                                        Ver
+                                                        Ver detalles
                                                     </button>
                                                 </td>
                                             </tr>
