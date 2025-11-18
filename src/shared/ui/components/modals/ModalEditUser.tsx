@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { IUser } from "../../../../core/models/user";
 import { putUserById } from "../../../../api/userApi";
-import ConfirmEditCard from "../cards/ConfirmEditCard";
+import CardConfirmEdit from "../cards/CardConfirmEdit";
 
-interface EditUserModalProps {
+interface ModalEditUserProps {
     user: IUser;
     onClose: () => void;
     onUpdate: (updatedUser: IUser) => void;
 }
 
-const EditUserModal: React.FC<EditUserModalProps> = ({
+const ModalEditUser: React.FC<ModalEditUserProps> = ({
     user,
     onClose,
     onUpdate,
@@ -31,7 +31,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
     const handleConfirmEdit = async () => {
         setLoading(true);
         try {
-            const updated = await putUserById(formData.clientId, formData);
+            const updated = await putUserById(formData.userId, formData);
             onUpdate(updated);
             onClose();
         } catch (error) {
@@ -165,7 +165,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
             </div>
 
             {showConfirm && (
-                <ConfirmEditCard
+                <CardConfirmEdit
                     message="¿Deseas guardar los cambios realizados en este usuario?"
                     onConfirm={handleConfirmEdit}
                     onCancel={() => setShowConfirm(false)}
@@ -176,4 +176,4 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
     );
 };
 
-export default EditUserModal;
+export default ModalEditUser;
