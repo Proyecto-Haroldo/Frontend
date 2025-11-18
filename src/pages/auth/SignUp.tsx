@@ -14,7 +14,7 @@ import {
   Building2,
 } from "lucide-react";
 import { register } from "../../api/authApi";
-import PasswordStrength from "../../shared/ui/security/PasswordStrength";
+import PasswordStrength from "../../shared/ui/validator/PasswordStrength";
 import { useAuth } from "../../shared/context/AuthContext";
 import HFIsotype from '../../../public/assets/HFIsotype';
 
