@@ -3,10 +3,13 @@ import { Users, FileText, Clock, CheckCircle, ChartColumnIncreasing } from 'luci
 import { useThemeColors } from "../../../hooks/useThemeColors";
 import { IAnalysis } from '../../../../core/models/analysis';
 import { motion } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
+
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
-interface StatsHeaderProps {
+interface HeaderStatsProps {
+    role: number | null;
     stats: {
         total: number;
         pending: number;
@@ -30,7 +33,7 @@ const SkeletonCard: React.FC = () => (
     </div>
 );
 
-const StatsHeaderSkeleton: React.FC = () => {
+const HeaderStatsSkeleton: React.FC = () => {
     const { base, highlight } = useThemeColors();
 
     return (
@@ -102,18 +105,20 @@ const RiskCard: React.FC<{
     </div>
 );
 
-const StatsHeader: React.FC<StatsHeaderProps> = ({
+const HeaderStats: React.FC<HeaderStatsProps> = ({
+    role,
     loading,
     error,
     stats,
     analysis,
     onRefresh,
 }) => {
+    const navigate = useNavigate();
     const uniqueClients = new Set(analysis.map((q) => q.clientName)).size;
 
     if (loading) {
         return (
-            <StatsHeaderSkeleton />
+            <HeaderStatsSkeleton />
         );
     }
 
@@ -140,7 +145,16 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <h1 className="text-2xl font-semibold">Panel Administrativo</h1>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-4">
-                    <button onClick={onRefresh} className="btn btn-accent btn-sm gap-2">
+                    <button onClick={() => {
+                        if (role === 3) {
+                            navigate("/a/reports");
+                        } else if (role === 2) {
+                            navigate("/c/analysis");
+                        } else if (role === 1) {
+                            navigate("/m/reports");
+                        }
+                    }}
+                        className="btn btn-outline btn-sm gap-2 text-base-content/50">
                         <ChartColumnIncreasing className="h-4 w-4" />
                         Ver Reportes
                     </button>
@@ -180,8 +194,8 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({
                 <RiskCard label="Riesgo Amarillo" value={stats.yellow} colorClass="text-warning" />
                 <RiskCard label="Riesgo Rojo" value={stats.red} colorClass="text-error" />
             </div>
-        </div>
+        </div >
     );
 };
 
-export default StatsHeader;
+export default HeaderStats;
