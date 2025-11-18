@@ -1,16 +1,19 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
-import { Clock, CheckCircle, Filter, Search, Eye, User } from "lucide-react";
+import { Clock, CheckCircle, Filter, Search, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { IAnalysis } from "../../../../core/models/analysis";
 import { useThemeColors } from "../../../hooks/useThemeColors";
 import { motion } from "motion/react";
+
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-interface AnalysisSearchTableProps {
+interface TableSearchAnalysisProps {
     analysis: IAnalysis[];
     loading: boolean;
     error: string | null;
+    role: number | null;
 }
 
 const SearchTableSkeleton: React.FC = () => {
@@ -87,18 +90,16 @@ const SearchTableSkeleton: React.FC = () => {
     );
 };
 
-const AnalysisSearchTable: React.FC<AnalysisSearchTableProps> = ({
+const TableSearchAnalysis: React.FC<TableSearchAnalysisProps> = ({
     loading,
     error,
     analysis,
+    role,
 }) => {
     const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredAnalysis, setFilteredAnalysis] = useState<IAnalysis[]>([]);
-    const [selectedAnalysis, setSelectedAnalysis] = useState<IAnalysis | null>(
-        null
-    );
-    const [showDetailsModal, setShowDetailsModal] = useState(false);
+    const navigate = useNavigate();
 
     const filterAnalysis = useCallback(() => {
         let filtered = analysis;
@@ -176,13 +177,11 @@ const AnalysisSearchTable: React.FC<AnalysisSearchTableProps> = ({
     };
 
     const handleViewDetails = (analysis: IAnalysis) => {
-        setSelectedAnalysis(analysis);
-        setShowDetailsModal(true);
-    };
-
-    const closeModal = () => {
-        setShowDetailsModal(false);
-        setSelectedAnalysis(null);
+        if (role === 3) {
+            navigate(`/a/analysis/${analysis.analysisId}`);
+        } else if (role === 1) {
+            navigate(`/m/analysis/${analysis.analysisId}`);
+        }
     };
 
     if (loading) return <SearchTableSkeleton />;
@@ -220,7 +219,7 @@ const AnalysisSearchTable: React.FC<AnalysisSearchTableProps> = ({
                 <div className="card-body p-3 md:p-6">
                     <div className="flex flex-col gap-3">
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-base-content/50" />
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-base-content/50 z-10" />
                             <input
                                 type="text"
                                 placeholder="Buscar por cliente, asesor o categoría..."
@@ -235,7 +234,7 @@ const AnalysisSearchTable: React.FC<AnalysisSearchTableProps> = ({
                                 <div
                                     tabIndex={0}
                                     role="button"
-                                    className="btn btn-outline btn-sm gap-2"
+                                    className="btn btn-outline btn-sm gap-2 text-base-content/50"
                                 >
                                     <Filter className="h-4 w-4" />
                                     <span className="hidden sm:inline">
@@ -363,126 +362,8 @@ const AnalysisSearchTable: React.FC<AnalysisSearchTableProps> = ({
                     )}
                 </div>
             </div>
-
-            {/* Modal de detalles */}
-            {showDetailsModal && selectedAnalysis && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-base-100 rounded-lg p-4 md:p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg md:text-xl font-semibold">
-                                Detalles del Análisis
-                            </h2>
-                            <button
-                                onClick={closeModal}
-                                className="btn btn-ghost btn-sm btn-circle"
-                            >
-                                ✕
-                            </button>
-                        </div>
-
-                        <div className="space-y-3 md:space-y-4">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                                <div>
-                                    <label className="text-sm font-medium text-base-content/70">
-                                        ID
-                                    </label>
-                                    <p className="text-base-content">
-                                        {selectedAnalysis.analysisId}
-                                    </p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-base-content/70">
-                                        Estado
-                                    </label>
-                                    <p>{getStateBadge(selectedAnalysis.status)}</p>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="text-sm font-medium text-base-content/70">
-                                    Cliente
-                                </label>
-                                <p className="text-base-content">
-                                    {selectedAnalysis.clientName}
-                                </p>
-                            </div>
-
-                            <div>
-                                <label className="text-sm font-medium text-base-content/70">
-                                    Asesor
-                                </label>
-                                <p className="text-base-content flex items-center gap-2">
-                                    <User className="h-4 w-4 text-base-content/60" />
-                                    {selectedAnalysis.asesorName}
-                                </p>
-                            </div>
-
-                            <div>
-                                <label className="text-sm font-medium text-base-content/70">
-                                    Categoría
-                                </label>
-                                <p className="text-base-content">{selectedAnalysis.categoria}</p>
-                            </div>
-
-                            <div>
-                                <label className="text-sm font-medium text-base-content/70">
-                                    Fecha de Resolución
-                                </label>
-                                <p className="text-sm md:text-base text-base-content">
-                                    {new Date(
-                                        selectedAnalysis.timeWhenSolved
-                                    ).toLocaleString()}
-                                </p>
-                            </div>
-
-                            <div>
-                                <label className="text-sm font-medium text-base-content/70">
-                                    Nivel de Riesgo
-                                </label>
-                                <p>{getColorBadge(selectedAnalysis.colorSemaforo)}</p>
-                            </div>
-
-                            <div>
-                                <label className="text-sm font-medium text-base-content/70">
-                                    Recomendación Inicial
-                                </label>
-                                <p className="text-sm md:text-base text-base-content bg-base-200 p-3 rounded">
-                                    {selectedAnalysis.recomendacionInicial || "No disponible"}
-                                </p>
-                            </div>
-
-                            <div>
-                                <label className="text-sm font-medium text-base-content/70">
-                                    Revisión del Asesor
-                                </label>
-                                <p className="text-sm md:text-base text-base-content bg-base-200 p-3 rounded">
-                                    {selectedAnalysis.contenidoRevision || "No disponible"}
-                                </p>
-                            </div>
-
-                            <div>
-                                <label className="text-sm font-medium text-base-content/70">
-                                    Conteo
-                                </label>
-                                <p className="text-base-content">{selectedAnalysis.conteo}</p>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row justify-end gap-2 mt-6">
-                            <button onClick={closeModal} className="btn btn-outline">
-                                Cerrar
-                            </button>
-                            {selectedAnalysis.status === "pending" && (
-                                <button className="btn btn-primary">
-                                    Marcar como Completado
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
 
-export default AnalysisSearchTable;
+export default TableSearchAnalysis;
