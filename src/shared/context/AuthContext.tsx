@@ -4,8 +4,8 @@ import { setApiToken } from '../../api/apiClient';
 interface AuthContextType {
   token: string | null;
   role: number | null;
-  userId: string | null;
-  setAuth: (token: string | null, role: number | null, userId: string | null) => void;
+  userId: number | null;
+  setAuth: (token: string | null, role: number | null, userId: number | null) => void;
   logout: () => void;
 }
 
@@ -17,14 +17,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const storedRole = localStorage.getItem('role');
     return storedRole ? parseInt(storedRole, 10) : null;
   });
-  const [userId, setUserIdState] = useState<string | null>(() => localStorage.getItem('userId'));
+  const [userId, setUserIdState] = useState<number | null>(() => {
+    const storedUserId = localStorage.getItem('userId');
+    return storedUserId ? parseInt(storedUserId, 10) : null;
+  });
 
   // Update API client token whenever token changes
   useEffect(() => {
     setApiToken(token);
   }, [token]);
 
-  const setAuth = (newToken: string | null, newRole: number | null, newUserId: string | null) => {
+  const setAuth = (newToken: string | null, newRole: number | null, newUserId: number | null) => {
     setTokenState(newToken);
     setRoleState(newRole);
     setUserIdState(newUserId);
@@ -42,7 +45,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     if (newUserId) {
-      localStorage.setItem('userId', newUserId);
+      localStorage.setItem('userId', newUserId.toString());
     } else {
       localStorage.removeItem('userId');
     }
