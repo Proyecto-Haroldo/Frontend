@@ -48,7 +48,7 @@ function AnimatedRoutes() {
                     <Route path="services" element={<Services />} />
                     <Route path="schedule" element={<Schedule />} />
                     <Route path="analysis" element={<Analysis />} />
-                    <Route path="account" element={<Profile />} />
+                    <Route path="profile" element={<Profile />} />
                     <Route path="questionnaire" element={<Questionnaire />} />
                     <Route path="analysis-review" element={<AnalysisReview />} />
                 </Routes>

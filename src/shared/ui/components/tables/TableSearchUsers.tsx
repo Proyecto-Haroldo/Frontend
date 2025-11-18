@@ -412,7 +412,7 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium text-base-content/70">Sector</label>
-                                    <p className="text-base-content">{selectedUser.sector}</p>
+                                    <p className="text-base-content">{selectedUser.sector || "N/A"}</p>
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium text-base-content/70">Rol</label>
@@ -423,7 +423,7 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                             {/* Métricas */}
                             <h3 className="font-semibold mb-2">Métricas de Cuestionarios</h3>
                             {selectedUserAnalysis.length > 0 ? (
-                                <CardUserMetrics user={selectedUser} analysis={selectedUserAnalysis} />
+                                <CardUserMetrics loading={loading} error={error} user={selectedUser} analysis={selectedUserAnalysis} />
                             ) : (
                                 <p className="text-sm text-base-content/70">
                                     Este cliente aún no ha completado cuestionarios.

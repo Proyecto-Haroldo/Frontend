@@ -10,7 +10,7 @@ import {
     Tooltip,
     Legend,
 } from "chart.js";
-import { User, BarChart2 } from "lucide-react";
+import { User, BarChart2, XCircle, Loader2 } from "lucide-react";
 import { IUser } from "../../../../core/models/user";
 import { IAnalysis } from "../../../../core/models/analysis";
 
@@ -18,10 +18,12 @@ ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Le
 
 interface CardUserMetricsProps {
     user: IUser;
+    loading: boolean;
+    error: string | null;
     analysis: IAnalysis[];
 }
 
-const CardUserMetrics: React.FC<CardUserMetricsProps> = ({ user, analysis }) => {
+const CardUserMetrics: React.FC<CardUserMetricsProps> = ({ user, analysis, error, loading }) => {
     // Contar estados (pending, completed, etc.)
     const stateCounts = useMemo(() => {
         const counts: Record<string, number> = {};
@@ -70,6 +72,35 @@ const CardUserMetrics: React.FC<CardUserMetricsProps> = ({ user, analysis }) => 
         responsive: false,
         maintainAspectRatio: false,
     };
+
+    if (loading) {
+        return (
+            <div className="container mx-auto space-y-6 overflow-hidden">
+                <div className="flex items-center justify-center min-h-screen">
+                    <Loader2 className="h-10 w-10 text-primary animate-spin" />
+                    <p className="ml-2">Cargando métricas...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-base-200 p-4">
+                <div className="card w-full max-w-lg bg-base-100 shadow-xl text-center">
+                    <div className="card-body">
+                        <div className="w-16 h-16 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <XCircle className="h-8 w-8 text-error" />
+                        </div>
+                        <h2 className="text-xl font-bold mb-2">{error ? 'Ups, ha ocurrido un error!' : 'Análisis no encontrado.'}</h2>
+                        <p className="text-base-content/70">
+                            {error || 'No se encontró información del análisis solicitado. Por favor, intente seleccionar un análisis desde la lista.'}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <motion.div
