@@ -70,6 +70,9 @@ Make sure to set the following environment variables:
 - `VITE_API_URL`: Backend API URL (default: http://localhost:8080/api)
 - `VITE_AI_API_URL`: AI microservice URL (default: http://localhost:8081)
 
+For production, you may use this value:
+- `VITE_API_URL`: Backend API URL (default: https://backend-oaij.onrender.com/api)
+
 ## Testing
 1. Login to the application
 2. Complete a questionnaire
