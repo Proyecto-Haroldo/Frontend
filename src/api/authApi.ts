@@ -18,14 +18,14 @@ export interface RegisterRequest {
 export interface LoginResponse {
   token: string;
   role: { id: number, name: string };
-  id: string;
+  id: number;
   message?: string;
 }
 
 export interface RegisterResponse {
   token: string;
   role: { id: number, name: string };
-  id: string;
+  id: number;
   message?: string;
 }
 
