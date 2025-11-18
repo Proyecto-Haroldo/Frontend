@@ -57,6 +57,16 @@ export const getAllAnalysis = async (): Promise<IAnalysis[]> => {
     }
 };
 
+export const getAnalysisById = async (id: number): Promise<IAnalysis> => {
+    try {
+        const response = await apiClient.get<IAnalysis>(`/analysis/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching analysis by id:', error);
+        throw new Error('Error al obtener el análisis por id');
+    }
+};
+
 export const getPendingAnalysis = async (): Promise<IAnalysis[]> => {
     try {
         const response = await apiClient.get<IAnalysis[]>('/analysis/pending');

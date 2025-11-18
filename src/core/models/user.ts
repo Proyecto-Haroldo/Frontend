@@ -6,7 +6,7 @@ interface IRole {
 }
 
 export interface IUser {
-  clientId: number;
+  userId: number;
   cedulaOrNIT: string;
   legalName: string;
   clientType: string; // 'persona' o 'empresa'
