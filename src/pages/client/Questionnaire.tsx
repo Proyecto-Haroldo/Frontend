@@ -13,6 +13,7 @@ import {
   FileText
 } from 'lucide-react';
 import { IQuestion } from '../../core/models/question';
+import { useAuth } from '../../shared/context/AuthContext';
 
 const pageVariants = {
   initial: {
@@ -59,7 +60,7 @@ const HighlightedText = ({
 
   // Split text into words while preserving spaces and punctuation
   const words = text.split(/(\s+|[.,!?;:()"])/);
-  
+
   return (
     <span className="inline">
       {words.map((word, index) => {
@@ -100,6 +101,7 @@ const Questionnaire = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { userId } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -151,11 +153,11 @@ const Questionnaire = () => {
       }
       const foundKeywords = new Set<string>();
       const words = text.split(/(\s+|[.,!?;:()"])/);
-      
+
       words.forEach(word => {
         if (!word || /^\s+$/.test(word)) return;
         const cleanWord = word.toLowerCase().replace(/[.,!?;:()"]/g, '');
-        
+
         currentQuestion.keywords?.forEach(keyword => {
           const keywordLower = keyword.title.toLowerCase();
           if (cleanWord === keywordLower && !usedKeywords.has(keywordLower)) {
@@ -164,7 +166,7 @@ const Questionnaire = () => {
           }
         });
       });
-      
+
       return foundKeywords;
     };
 
@@ -237,8 +239,8 @@ const Questionnaire = () => {
             questionId: question.id,
             questionTitle: question.question,
             answer: question.questionType === 'open'
-            ? answers[question.id] || []
-            : (answers[question.id] || []).map(
+              ? answers[question.id] || []
+              : (answers[question.id] || []).map(
                 id => question.options?.find(opt => String(opt.id) === String(id))?.text || String(id)
               ),
             questionType: question.questionType
@@ -247,7 +249,12 @@ const Questionnaire = () => {
 
         console.log('Submitting questionnaire data:', questionnaireData);
 
-        const aiRecommendation = await submitQuestionnaireAnswers(questionnaireData);
+        if (userId == null) {
+          setError('Usuario no autenticado. Por favor inicie sesión.');
+          return;
+        }
+
+        const aiRecommendation = await submitQuestionnaireAnswers(questionnaireData, userId);
 
         // Store the full JSON returned by backend: { resumenUsuario, colorSemaforo }
         localStorage.setItem('aiRecommendation', JSON.stringify(aiRecommendation));
@@ -306,9 +313,9 @@ const Questionnaire = () => {
                     className="radio radio-primary"
                   />
                   <span className="label-text text-left">
-                    <HighlightedText 
-                      text={option.text} 
-                      keywords={currentQuestion.keywords || []} 
+                    <HighlightedText
+                      text={option.text}
+                      keywords={currentQuestion.keywords || []}
                       allowedKeywords={keywordAllocation.options.get(String(option.id)) || new Set()}
                     />
                   </span>
@@ -343,9 +350,9 @@ const Questionnaire = () => {
                     className="checkbox checkbox-primary"
                   />
                   <span className="label-text text-left">
-                    <HighlightedText 
-                      text={option.text} 
-                      keywords={currentQuestion.keywords || []} 
+                    <HighlightedText
+                      text={option.text}
+                      keywords={currentQuestion.keywords || []}
                       allowedKeywords={keywordAllocation.options.get(String(option.id)) || new Set()}
                     />
                   </span>

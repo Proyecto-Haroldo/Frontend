@@ -1,8 +1,9 @@
 import { apiClient } from './apiClient';
-import type { QuestionnaireResult } from '../shared/types/questionnaire';
 import { IAnalysis } from '../core/models/analysis';
 import { IQuestionnaire } from '../core/models/questionnaire';
 import { IQuestion, QuestionType } from '../core/models/question';
+import { AIRecommendationResult, WebAnswersDTO } from '../core/models/answers';
+import type { QuestionnaireResult } from '../shared/types/questionnaire';
 
 const normalizeQuestionType = (value?: string): QuestionType => {
     switch (value?.toLowerCase()) {
@@ -208,14 +209,19 @@ export const deleteQuestionnaire = async (id: number): Promise<void> => {
 };
 
 // ---------------------- WEB ANSWERS ----------------------
-export interface AIRecommendationResult {
-    resumenUsuario: string;
-    colorSemaforo: string; // 'verde' | 'amarillo' | 'rojo'
-}
 
-export const submitQuestionnaireAnswers = async (questionnaireData: QuestionnaireResult): Promise<AIRecommendationResult> => {
+export const submitQuestionnaireAnswers = async (
+    questionnaireData: QuestionnaireResult,
+    userId: number
+): Promise<AIRecommendationResult> => {
+
+    const payload: WebAnswersDTO = {
+        questionnaireData,
+        userId,
+    };
+
     try {
-        const response = await apiClient.post<AIRecommendationResult>('/respuestas', questionnaireData);
+        const response = await apiClient.post<AIRecommendationResult>('/respuestas', payload);
         return response.data;
     } catch (error) {
         console.error('Error submitting questionnaire answers:', error);
