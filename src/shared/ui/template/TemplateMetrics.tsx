@@ -19,11 +19,11 @@ import {
     Title,
 } from 'chart.js';
 import { Bar, Pie, Line } from 'react-chartjs-2';
+import { useThemeColors } from '../../hooks/useThemeColors';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-import { useThemeColors } from '../../hooks/useThemeColors';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 // Registrar elementos de Chart.js
 ChartJS.register(
@@ -145,7 +145,7 @@ function MetricCardShell({
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35 }}
-            className="bg-base-200 w-[80vw] shadow-[0_6px_18px_rgba(16,24,40,0.06)] rounded-[18px] p-[18px] box-border flex flex-col gap-3 md:w-[30vw] max-w-[500px] md:p-4"
+            className="bg-base-200 w-[80vw] shadow-[0_6px_18px_rgba(16,24,40,0.06)] rounded-[18px] p-[18px] box-border flex flex-col gap-3 md:w-[30vw] max-w-[544px] md:p-4"
         >
             <div className="h-[180px] w-full rounded-xl overflow-hidden flex items-center justify-center md:h-[200px]">
                 {chart}
@@ -382,13 +382,31 @@ export default function TemplateMetrics({
 
             // 3) Por sector (top 6)
             const sectorMap: Record<string, number> = {};
-            users.forEach((u) => (sectorMap[u.sector] = (sectorMap[u.sector] || 0) + 1));
-            const topSectors = Object.entries(sectorMap).sort((a, b) => b[1] - a[1]).slice(0, 6);
+            users.forEach((u) => {
+                const sector = u.sector ?? "N/A"; // si es null o undefined → "N/A"
+                sectorMap[sector] = (sectorMap[sector] || 0) + 1;
+            });
+            const topSectors = Object.entries(sectorMap)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 6);
             arr.push({
-                id: 'u-sectors',
-                title: 'Sectores Principales',
-                description: 'Sectores de usuarios más comunes.',
-                chart: <Bar data={{ labels: topSectors.map((t) => t[0]), datasets: [{ data: topSectors.map((t) => t[1]), backgroundColor: MAIN_COLORS }] }} options={baseChartOptions} />,
+                id: "u-sectors",
+                title: "Sectores Principales",
+                description: "Sectores de usuarios más comunes.",
+                chart: (
+                    <Bar
+                        data={{
+                            labels: topSectors.map(([sector]) => sector),
+                            datasets: [
+                                {
+                                    data: topSectors.map(([, count]) => count),
+                                    backgroundColor: MAIN_COLORS,
+                                },
+                            ],
+                        }}
+                        options={baseChartOptions}
+                    />
+                ),
             });
 
             // 4) Completitud de contacto (teléfono presente vs ausente)
