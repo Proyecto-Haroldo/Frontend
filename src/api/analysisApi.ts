@@ -4,6 +4,7 @@ import { IQuestionnaire } from '../core/models/questionnaire';
 import { IQuestion, QuestionType } from '../core/models/question';
 import { AIRecommendationResult, WebAnswersDTO } from '../core/models/answers';
 import type { QuestionnaireResult } from '../shared/types/questionnaire';
+import type { QuestionAnswerDTO, GradeRequest } from '../shared/types/analysis';
 
 const normalizeQuestionType = (value?: string): QuestionType => {
     switch (value?.toLowerCase()) {
@@ -135,6 +136,26 @@ export const setCheckedAnalysis = async (id: number): Promise<IAnalysis> => {
     } catch (error) {
         console.error('Error setting analysis as checked:', error);
         throw new Error('Error al marcar el análisis como revisado');
+    }
+};
+
+export const getAnalysisAnswers = async (analysisId: number): Promise<QuestionAnswerDTO[]> => {
+    try {
+        const response = await apiClient.get<QuestionAnswerDTO[]>(`/analysis/${analysisId}/answers`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching analysis answers:', error);
+        throw new Error('Error al obtener las respuestas del cuestionario');
+    }
+};
+
+export const gradeAnalysis = async (analysisId: number, request: GradeRequest): Promise<IAnalysis> => {
+    try {
+        const response = await apiClient.put<IAnalysis>(`/analysis/${analysisId}/grade`, request);
+        return response.data;
+    } catch (error) {
+        console.error('Error grading analysis:', error);
+        throw new Error('Error al enviar la revisión del cuestionario');
     }
 };
 

@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   ChevronDown,
   Clock,
-  ArrowLeft,
   CheckCircle,
   AlertTriangle,
   XCircle,
   User,
-  Loader2
+  Loader2,
+  MessageSquare,
+  Send,
+  FileText
 } from 'lucide-react';
 import { IAnalysis } from '../../../core/models/analysis';
-import { getAnalysisById } from '../../../api/analysisApi';
+import { getAnalysisById, getAnalysisAnswers, gradeAnalysis } from '../../../api/analysisApi';
+import type { QuestionAnswerDTO } from '../../../shared/types/analysis';
 import {
   ColorSemaforo,
   getRiskLevel,
@@ -19,11 +21,15 @@ import {
 } from '../../../shared/types/analysis';
 
 function AnalysisOverview({ analysisId }: { analysisId?: number }) {
-  const [showAnswers, setShowAnswers] = useState(false);
+  const [showAnswers, setShowAnswers] = useState(true);
   const [analysis, setAnalysis] = useState<IAnalysis | null>(null);
+  const [answers, setAnswers] = useState<QuestionAnswerDTO[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const navigate = useNavigate();
+  const [gradingComment, setGradingComment] = useState('');
+  const [gradingColor, setGradingColor] = useState<string>('');
+  const [isGrading, setIsGrading] = useState(false);
+  const [gradeError, setGradeError] = useState<string | null>(null);
 
   // Fetch analysis
   useEffect(() => {
@@ -43,6 +49,14 @@ function AnalysisOverview({ analysisId }: { analysisId?: number }) {
     };
     fetchAnalysis();
   }, [analysisId]);
+
+  // Fetch questionnaire answers when analysis is loaded
+  useEffect(() => {
+    if (!analysisId || !analysis) return;
+    getAnalysisAnswers(analysisId)
+      .then(setAnswers)
+      .catch(() => setAnswers([]));
+  }, [analysisId, analysis]);
 
   if (loading) {
     return (
@@ -143,13 +157,6 @@ function AnalysisOverview({ analysisId }: { analysisId?: number }) {
 
         {/* Header */}
         <div className="flex items-center justify-between py-4">
-          <button
-            onClick={() => navigate(-1)}
-            className="btn btn-ghost btn-sm gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Volver
-          </button>
           <div className="flex items-center gap-4 text-base-content/60 text-sm">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4" />
@@ -252,8 +259,13 @@ function AnalysisOverview({ analysisId }: { analysisId?: number }) {
               <p className="bg-base-200 p-2 rounded">{analysis.recomendacionInicial || 'No disponible'}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-base-content/70">Revisión del Asesor</label>
+              <label className="text-sm font-medium text-base-content/70">
+                {analysis.status === 'checked' ? 'Revisión del asesor' : 'Análisis inicial (IA)'}
+              </label>
               <p className="bg-base-200 p-2 rounded">{analysis.contenidoRevision || 'No disponible'}</p>
+              {analysis.status === 'pending' && analysis.contenidoRevision && (
+                <p className="text-xs text-base-content/50 mt-1">Generado por IA hasta que un asesor revise.</p>
+              )}
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Conteo</label>
@@ -262,18 +274,128 @@ function AnalysisOverview({ analysisId }: { analysisId?: number }) {
           </div>
         </div>
 
-        {/* Sección de respuestas opcional */}
+        {/* Respuestas del cuestionario */}
         <div className="card bg-base-200 p-4">
           <label className="flex items-center justify-between cursor-pointer" onClick={() => setShowAnswers(!showAnswers)}>
-            <span className="font-medium">Respuestas del Cuestionario</span>
+            <span className="font-medium flex items-center gap-2">
+              <FileText className="w-5 h-5" />
+              Respuestas del Cuestionario ({answers.length})
+            </span>
             <ChevronDown className={`w-5 h-5 transition-transform ${showAnswers ? 'rotate-180' : 'rotate-0'}`} />
           </label>
           {showAnswers && (
-            <div className="mt-4 text-base-content/70">
-              <p>Esta sección mostrará todas sus respuestas al cuestionario. Implementación pendiente.</p>
+            <div className="mt-4 space-y-4">
+              {answers.length === 0 ? (
+                <p className="text-base-content/60 text-sm">No hay respuestas guardadas para este análisis.</p>
+              ) : (
+                <ul className="space-y-3">
+                  {answers.map((a, idx) => (
+                    <li key={a.questionId} className="bg-base-100 rounded-lg p-4 border border-base-300">
+                      <p className="text-sm font-medium text-base-content/80 mb-1">Pregunta {idx + 1}</p>
+                      <p className="text-base-content/90 mb-2">{a.questionText}</p>
+                      <p className="text-sm text-primary font-medium">Respuesta:</p>
+                      <p className="text-base-content/80 whitespace-pre-wrap">{a.answerText}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           )}
         </div>
+
+        {/* Formulario de calificación (solo si está pendiente) */}
+        {analysis.status === 'pending' && (
+          <div className="card bg-base-100 shadow-md border border-primary/20 p-6">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-primary" />
+              Calificar cuestionario
+            </h3>
+            <p className="text-sm text-base-content/70 mb-4">
+              Escriba su comentario para el cliente y opcionalmente ajuste el semáforo. Al enviar, el análisis quedará marcado como revisado.
+            </p>
+            {gradeError && (
+              <div className="alert alert-error mb-4">
+                <XCircle className="h-5 w-5" />
+                <span>{gradeError}</span>
+              </div>
+            )}
+            <div className="space-y-4">
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Comentario del asesor (obligatorio)</span>
+                </label>
+                <textarea
+                  className="textarea textarea-bordered w-full min-h-[120px]"
+                  placeholder="Ej.: Todo correcto. / Revise la sección 2 y proporcione más detalle..."
+                  value={gradingComment}
+                  onChange={(e) => setGradingComment(e.target.value)}
+                  disabled={isGrading}
+                />
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Semáforo (opcional)</span>
+                </label>
+                <select
+                  className="select select-bordered w-full max-w-xs"
+                  value={gradingColor}
+                  onChange={(e) => setGradingColor(e.target.value)}
+                  disabled={isGrading}
+                >
+                  <option value="">Mantener actual ({analysis.colorSemaforo})</option>
+                  <option value="verde">Verde</option>
+                  <option value="amarillo">Amarillo</option>
+                  <option value="rojo">Rojo</option>
+                </select>
+              </div>
+              <div className="flex justify-end">
+                <button
+                  className="btn btn-primary gap-2"
+                  disabled={!gradingComment.trim() || isGrading}
+                  onClick={async () => {
+                    setGradeError(null);
+                    setIsGrading(true);
+                    try {
+                      const updated = await gradeAnalysis(analysis.analysisId, {
+                        contenidoRevision: gradingComment.trim(),
+                        colorSemaforo: gradingColor.trim() || undefined
+                      });
+                      setAnalysis(updated);
+                      setGradingComment('');
+                      setGradingColor('');
+                    } catch (e) {
+                      setGradeError(e instanceof Error ? e.message : 'Error al enviar la revisión.');
+                    } finally {
+                      setIsGrading(false);
+                    }
+                  }}
+                >
+                  {isGrading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Enviando...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5" />
+                      Enviar revisión
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {analysis.status === 'checked' && analysis.contenidoRevision && (
+          <div className="card bg-base-100 shadow-md p-6 border border-base-200">
+            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-base-content/70" />
+              Comentario enviado al cliente
+            </h3>
+            <p className="text-base-content/80 whitespace-pre-wrap">{analysis.contenidoRevision}</p>
+          </div>
+        )}
 
       </div>
     </div>

@@ -105,7 +105,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
   const stats = {
     total: analysis.length,
     pending: analysis.filter((q) => q.status === "pending").length,
-    completed: analysis.filter((q) => q.status === "completed").length,
+    completed: analysis.filter((q) => q.status === "checked").length,
     green: analysis.filter((q) => q.colorSemaforo === "verde").length,
     yellow: analysis.filter((q) => q.colorSemaforo === "amarillo").length,
     red: analysis.filter((q) => q.colorSemaforo === "rojo").length,
@@ -129,18 +129,18 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
         role={role}
       />
 
+      <hr className="text-accent/20 mx-4"></hr>
       <AnimatePresence mode="wait">
-        <hr className="text-accent/20 mx-4"></hr>
-        {/* --------------------- SELECTOR ---------------------- */}
+        <motion.div
+          key={view}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.25 }}
+          className="w-full"
+        >
         {view === "selector" && (
-          <motion.div
-            key="selector"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            transition={{ duration: 0.4 }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2"
-          >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
             {/* Card Cuestionarios */}
             <motion.div
               variants={cardVariants}
@@ -188,19 +188,12 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
                 </p>
               </div>
             </motion.div>
-          </motion.div>
+          </div>
         )}
 
         {/* ------------------ VISTA CUESTIONARIOS --------------------- */}
         {view === "questionnaires" && (
-          <motion.div
-            key="questionnaires"
-            initial={{ x: 100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -100, opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-4"
-          >
+          <div className="space-y-4">
             <div className="flex justify-between items-center">
               <button
                 onClick={() => {
@@ -221,19 +214,12 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
               questionnaires={questionnaires}
               role={role}
             />
-          </motion.div>
+          </div>
         )}
 
         {/* ------------------ VISTA ANÁLISIS (RUTA /a/analysis) --------------------- */}
         {view === "analysis" && (
-          <motion.div
-            key="analysis"
-            initial={{ x: 100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -100, opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-4"
-          >
+          <div className="space-y-4">
             <div className="flex justify-between items-center">
               <button
                 onClick={() => {
@@ -253,19 +239,12 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
               analysis={analysis}
               role={role}
             />
-          </motion.div>
+          </div>
         )}
 
         {/* ------------------ VISTA GESTOR DE CUESTIONARIOS (RUTA /a/questionnaire/:id) --------------------- */}
         {view === "questionnaireManager" && (
-          <motion.div
-            key="questionnaireManager"
-            initial={{ x: 40, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -40, opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="space-y-4"
-          >
+          <div className="space-y-4">
             <button
               onClick={() => {
                 navigate("/a/questionnaires");
@@ -276,21 +255,13 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
               <ArrowLeft className="h-4 w-4" />
               Volver
             </button>
-
             <Questionnaire questionnaireId={Number(id)} />
-          </motion.div>
+          </div>
         )}
 
         {/* ------------------ VISTA GESTOR DE ANÁLISIS (RUTA /a/analysis/:id) --------------------- */}
         {view === "analysisManager" && (
-          <motion.div
-            key="analysisManager"
-            initial={{ x: 40, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -40, opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="space-y-4"
-          >
+          <div className="space-y-4">
             <button
               onClick={() => {
                 navigate("/a/analysis");
@@ -301,10 +272,10 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
               <ArrowLeft className="h-4 w-4" />
               Volver
             </button>
-
             <Analysis analysisId={Number(id)} />
-          </motion.div>
+          </div>
         )}
+        </motion.div>
       </AnimatePresence>
     </div>
   );

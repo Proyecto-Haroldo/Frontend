@@ -104,11 +104,11 @@ const TableSearchAnalysis: React.FC<TableSearchAnalysisProps> = ({
     const filterAnalysis = useCallback(() => {
         let filtered = analysis;
 
-        // Filtro por estado
+        // Filtro por estado (backend uses "pending" / "checked")
         if (filter === "pending") {
             filtered = filtered.filter((a) => a.status === "pending");
         } else if (filter === "completed") {
-            filtered = filtered.filter((a) => a.status === "completed");
+            filtered = filtered.filter((a) => a.status === "checked");
         }
 
         // Filtro por búsqueda
@@ -138,6 +138,7 @@ const TableSearchAnalysis: React.FC<TableSearchAnalysisProps> = ({
                         <span className="sm:hidden">Pend.</span>
                     </span>
                 );
+            case "checked":
             case "completed":
                 return (
                     <span className="badge badge-success badge-sm gap-1 text-xs">
