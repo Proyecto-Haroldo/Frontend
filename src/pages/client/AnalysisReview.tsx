@@ -8,7 +8,8 @@ import {
   CheckCircle,
   AlertTriangle,
   XCircle,
-  AlertCircle
+  AlertCircle,
+  MessageSquare
 } from 'lucide-react';
 import {
   ColorSemaforo,
@@ -502,6 +503,26 @@ function AnalysisReview() {
                   </div>
                 </div>
               </motion.div>
+
+              {/* Adviser comment (only after adviser has graded; pending analyses show AI text, not adviser) */}
+              {analysis?.contenidoRevision && analysis?.status === 'checked' && (
+                <motion.div
+                  className="card bg-primary/5 border border-primary/20"
+                  initial={{ y: 30, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.7, delay: 0.65, ease: "easeOut" }}
+                >
+                  <div className="card-body">
+                    <h3 className="card-title text-lg mb-2 flex items-center gap-2">
+                      <MessageSquare className="w-5 h-5 text-primary" />
+                      Comentario del asesor
+                    </h3>
+                    <p className="text-base-content/80 whitespace-pre-wrap">
+                      {analysis.contenidoRevision}
+                    </p>
+                  </div>
+                </motion.div>
+              )}
 
               {/* Answers Section - Optional placeholder */}
               <motion.div

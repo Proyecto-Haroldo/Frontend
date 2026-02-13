@@ -56,3 +56,15 @@ export const calculateTotalProgress = (
 
     return analysisProgress;
 };
+
+// API types for analysis answers and grading
+export interface QuestionAnswerDTO {
+    questionId: number;
+    questionText: string;
+    answerText: string;
+}
+
+export interface GradeRequest {
+    contenidoRevision: string;
+    colorSemaforo?: string;
+}
