@@ -20,7 +20,13 @@ import {
   getRiskDescription,
 } from '../../../shared/types/analysis';
 
-function AnalysisOverview({ analysisId }: { analysisId?: number }) {
+function AnalysisOverview({
+  analysisId,
+  onAnalysisUpdated,
+}: {
+  analysisId?: number;
+  onAnalysisUpdated?: (analysis: IAnalysis) => void;
+}) {
   const [showAnswers, setShowAnswers] = useState(true);
   const [analysis, setAnalysis] = useState<IAnalysis | null>(null);
   const [answers, setAnswers] = useState<QuestionAnswerDTO[]>([]);
@@ -361,6 +367,7 @@ function AnalysisOverview({ analysisId }: { analysisId?: number }) {
                         colorSemaforo: gradingColor.trim() || undefined
                       });
                       setAnalysis(updated);
+                      onAnalysisUpdated?.(updated);
                       setGradingComment('');
                       setGradingColor('');
                     } catch (e) {

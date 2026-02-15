@@ -272,7 +272,14 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
               <ArrowLeft className="h-4 w-4" />
               Volver
             </button>
-            <Analysis analysisId={Number(id)} />
+            <Analysis
+              analysisId={Number(id)}
+              onAnalysisUpdated={(updated) => {
+                setAnalysis((prev) =>
+                  prev.map((a) => (a.analysisId === updated.analysisId ? updated : a))
+                );
+              }}
+            />
           </div>
         )}
         </motion.div>
