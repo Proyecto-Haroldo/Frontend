@@ -11,7 +11,7 @@ Este proyecto surge como una propuesta para el cumplimiento del requisito de Tra
 
 En un mundo donde las decisiones financieras son esenciales para la estabilidad y el crecimiento personal, contar con una herramienta que permita evaluar conocimientos, recibir retroalimentación inteligente y mejorar hábitos financieros resulta indispensable. __Haroldo Finanzas__ responde a esos retos combinando educación financiera, análisis de datos y automatización con IA.
 
-## Objectivo
+## Objetivo
 
 Desarrollar una plataforma web inteligente de diagnóstico financiero que permita a personas naturales y jurídicas evaluar su situación económica mediante cuestionarios dinámicos y análisis automatizados con inteligencia artificial, generando informes personalizados y recomendaciones prácticas que fortalezcan la toma de decisiones, la planeación financiera y la gestión eficiente de los recursos.
 
@@ -70,7 +70,7 @@ Seguimiento y Reportes
     <img src="https://img.shields.io/badge/*-React-purple?logo=react&logoColor=white" />
     <img src="https://img.shields.io/badge/*-DaisyUI-darkred?logo=daisyui&logoColor=white" >
     <img src="https://img.shields.io/badge/*-Docker-red?logo=docker&logoColor=white" />
-    <img src="https://badgen.net/badge/icon/Java?icon=java&label=*&color=orange"/>
+    <img src="https://badgen.net/badge/icon/Java?icon=java&label=*&color=orange" />
     <img src="https://img.shields.io/badge/*-TailwindCSS-yellow?logo=tailwindcss&logoColor=white" />
 </p>
 
@@ -249,7 +249,7 @@ _P.S: Estas credenciales solo deben usarse para motivos de demo/testeo. No utili
 
 --------------------------------------------------------------------------------------------------------
 
-## Installation
+## Instalación
 
 1. Clona los repositorios:
 
@@ -330,13 +330,13 @@ docker compose run --service-ports Frontend npm run dev
 
 _P.S: Utilizar como base el archvio `.env.example`._
 
-4. Luego, escribe el valor de la variable de entorno como exactamente como se muestra a continuación:
+5. Luego, escribe el valor de la variable de entorno como exactamente como se muestra a continuación:
 
 ```bash
 NEXT_PUBLIC_GITHUB_API_URL=https://backend-oaij.onrender.com/api
 ```
 
-7. Finalmente, abre [http://localhost:5173](http://localhost:3000) en tu navegador y disfruta de nuestro proyecto.
+6. Finalmente, abre [http://localhost:5173](http://localhost:3000) en tu navegador y disfruta de nuestro proyecto.
 
 _P.S: El backend lo encontrarás en_ [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) _y el microservicio de IA en_ [http://localhost:8081](http://localhost:8081).
 
