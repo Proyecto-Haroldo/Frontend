@@ -1,9 +1,9 @@
 # Haroldo Finanzas
 
 
-¡Bienvenidos! __Haroldo Finanzas__ es un aplicativo web moderno diseñado para gestionar, analizar y fortalecer la educación financiera de los usuarios mediante herramientas interactivas, reportes inteligentes, seguimiento personalizado, y un microservicio de IA para recomendaciones financieras basadas en Gemini.  
+¡Bienvenidos! __Haroldo Finanzas__ es un aplicativo web moderno diseñado para gestionar, analizar y fortalecer la educación financiera de los usuarios mediante herramientas interactivas, reportes inteligentes, seguimiento personalizado, y un microservicio de IA para recomendaciones financieras basadas en __Gemini__.  
 
-Este proyecto surge como una propuesta para el cumplimiento del requisito de Trabajo de Grado, bajo la modalidad Producto obtenido en Laboratorio o Semillero de investigación de la __Institución Universitaria ITM__. En convenio con la __Facultad de Ingenierías__ y la __Facultad de Ciencias Económicas y Administrativas__, y bajo la asesoría del __Semillero de Investigación Data Urban: Innovación y ciencia de datos (LowCode)__.
+Este proyecto surge como una propuesta para el cumplimiento del requisito de Trabajo de Grado, bajo la modalidad Producto obtenido en Laboratorio o Semillero de investigación de la __Institución Universitaria ITM__. En convenio con la __Facultad de Ingenierías__ y la __Facultad de Ciencias Económicas y Administrativas__, y bajo la asesoría del __Semillero de Investigación Data Urban: Innovación y Ciencia de Datos (LowCode)__.
 
 --------------------------------------------------------------------------------------------------------
 
@@ -90,6 +90,8 @@ Seguimiento y Reportes
 
 - `Axios`
 
+- `DaisyUI`
+
 - `TailwindCSS`
 
 - `Librerias React-based`
@@ -114,7 +116,7 @@ Seguimiento y Reportes
 
 <h1 align="center">Trabajo de Grado</h1>
 <p align="center">
-      <a href="https://github.com/franccoina" target="_blank"><img src="https://img.shields.io/badge/-franccoina-777777?style=flat&logo=github&logoColor=white" alt="social-media-logo"/></a>
+      <a href="https://github.com/franccoina" target="_blank"><img src="https://img.shields.io/badge/-Franccoina-777777?style=flat&logo=github&logoColor=white" alt="social-media-logo"/></a>
    <a href="https://github.com/Sonistwo" target="_blank"><img src="https://img.shields.io/badge/-Sonistwo-5CCB5F?style=flate&logo=github&logoColor=white" alt="social-media-logo"/></a>
    <a href="https://github.com/Kevinrestrepoh" target="_blank"><img src="https://img.shields.io/badge/-Kevinrestrepoh-318A80?style=flat&logo=github&logoColor=white" alt="social-media-logo"/></a>
    <a href="https://github.com/JohannRH" target="_blank"><img src="https://img.shields.io/badge/-JohannRH-327FE3?style=flat&logo=github&logoColor=white" alt="social-media-logo"/></a>
@@ -136,7 +138,7 @@ Seguimiento y Reportes
 
 A continuación se describen los estudiantes involucrados en la investigación, planeación, desarrollo y presentación del proyecto __Haroldo Finanzas__ como opción de Trabajo de Grado en la __Institución Universitaria ITM__, miembros de los programas TECNOLOGÍA EN DESARROLLO DE SOFTWARE y TECNOLOGÍA EN DESARROLLO DE APLICACIONES PARA DISPOSITIVOS MÓVILES.
 
-- `franccoina` David Francisco Blandón Mena
+- `Franccoina` David Francisco Blandón Mena
   - `davidblandon1113449@correo.itm.edu.co`
 
 - `Sonistwo` Samuel Canabal Tapias
