@@ -132,7 +132,7 @@ Seguimiento y Reportes
 
 ## Desarrollo
 
-A continuación se describen los estudiantes involucrados en la investigación, planeación, desarrollo y presentación del proyecto __Haroldo Finanzas__ como opción de Trabajo de Grado 2025-2 en la __Institución Universitaria ITM__, miembros de los programas TECNOLOGÍA EN DESARROLLO DE SOFTWARE y TECNOLOGÍA EN DESARROLLO DE APLICACIONES PARA DISPOSITIVOS MÓVILES.
+A continuación se describen los estudiantes involucrados en la investigación, planeación, desarrollo y presentación del proyecto __Haroldo Finanzas__ como opción de Trabajo de Grado en la __Institución Universitaria ITM__, miembros de los programas TECNOLOGÍA EN DESARROLLO DE SOFTWARE y TECNOLOGÍA EN DESARROLLO DE APLICACIONES PARA DISPOSITIVOS MÓVILES.
 
 - `franccoina` David Francisco Blandón Mena
   - `davidblandon1113449@correo.itm.edu.co`
