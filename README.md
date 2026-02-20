@@ -90,6 +90,8 @@ Seguimiento y Reportes
 
 - `Axios`
 
+- `TailwindCSS`
+
 - `Librerias React-based`
 
 ## Backend
