@@ -174,7 +174,7 @@ A continuación se describen los estudiantes involucrados en la investigación, 
 4. En este link, podrás explorar nuestra organización de GitHub, donde encontrarás los repositorios de desarrollo de nuestro proyecto:
     - [Ir a GitHub](https://github.com/Proyecto-Haroldo)
 
-_P.S: En caso de que solicites comunicarte con neustor equipo de desarrollo, puedes enviar un correo a_ __davidblandon1113449@correo.itm.edu.co__.
+_P.S: En caso de que solicites comunicarte con nuestro equipo de desarrollo, puedes enviar un correo a_ __davidblandon1113449@correo.itm.edu.co__.
 
 --------------------------------------------------------------------------------------------------------
 
