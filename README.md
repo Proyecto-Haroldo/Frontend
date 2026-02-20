@@ -1,9 +1,9 @@
 # Haroldo Finanzas
 
 
-¡Bienvenid@! __Haroldo Finanazas__ es un aplicativo web moderno diseñado para gestionar, analizar y fortalecer la educación financiera de los usuarios mediante herramientas interactivas, reportes inteligentes, seguimiento personalizado, y un microservicio de IA para recomendaciones financieras basadas en Gemini.  
+¡Bienvenidos! __Haroldo Finanzas__ es un aplicativo web moderno diseñado para gestionar, analizar y fortalecer la educación financiera de los usuarios mediante herramientas interactivas, reportes inteligentes, seguimiento personalizado, y un microservicio de IA para recomendaciones financieras basadas en Gemini.  
 
-Este proyecto surge como una propuesta para el cumplimiento del requisito de Trabajo de Grado 2025-2, bajo la modalidad Producto obtenido en Laboratorio o Semillero de investigación de la __Institución Universitaria ITM__. En convenio con la __Facultad de Ingenierías__ y la __Facultad de Ciencias Económicas y Administrativas__, y bajo la asesoría del __Semillero de Investigación Data Urban: Innovación y ciencia de datos (LowCode)__.
+Este proyecto surge como una propuesta para el cumplimiento del requisito de Trabajo de Grado, bajo la modalidad Producto obtenido en Laboratorio o Semillero de investigación de la __Institución Universitaria ITM__. En convenio con la __Facultad de Ingenierías__ y la __Facultad de Ciencias Económicas y Administrativas__, y bajo la asesoría del __Semillero de Investigación Data Urban: Innovación y ciencia de datos (LowCode)__.
 
 --------------------------------------------------------------------------------------------------------
 
@@ -59,18 +59,18 @@ Seguimiento y Reportes
 
 <h1 align="center">Herramientas</h1>
 <p align="center">
-    <img src="https://img.shields.io/badge/*-Vercel-black?logo=vercel&logoColor=white" />
+    <img src="https://img.shields.io/badge/*-Vercel-slategrey?logo=vercel&logoColor=white" />
     <img src="https://img.shields.io/badge/*-Axios-lightgray?logo=axios&logoColor=white" />
     <img src="https://img.shields.io/badge/*-Swagger-green?logo=swagger&logoColor=white" />
     <img src="https://img.shields.io/badge/*-Gemini AI-default?logo=googlegemini&logoColor=white" />
     <img src="https://img.shields.io/badge/*-SpringBoot-darkgreen?logo=springboot&logoColor=white" >
-    <img src="https://img.shields.io/badge/*-Render-navy?logo=render&logoColor=white" />
+    <img src="https://img.shields.io/badge/*-Render-teal?logo=render&logoColor=white" />
     <img src="https://img.shields.io/badge/*-PostgreSQL-blue?logo=postgresql&logoColor=white" />
     <img src="https://img.shields.io/badge/*-Vite-violet?logo=vite&logoColor=white" />
     <img src="https://img.shields.io/badge/*-React-purple?logo=react&logoColor=white" />
     <img src="https://img.shields.io/badge/*-DaisyUI-darkred?logo=daisyui&logoColor=white" >
     <img src="https://img.shields.io/badge/*-Docker-red?logo=docker&logoColor=white" />
-    <img src="https://img.shields.io/badge/*-Java-orange?logo=openjdk&logoColor=white" />
+    <img src="https://badgen.net/badge/icon/Java?icon=java&label=*&color=orange"/>
     <img src="https://img.shields.io/badge/*-TailwindCSS-yellow?logo=tailwindcss&logoColor=white" />
 </p>
 
