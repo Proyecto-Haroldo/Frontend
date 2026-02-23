@@ -13,6 +13,7 @@ export interface RegisterRequest {
   legalName: string;
   clientType: string;
   role: { id: number };
+  sector: string;
 }
 
 export interface LoginResponse {

@@ -25,6 +25,7 @@ const SignUp: React.FC = () => {
     confirmPassword: "",
     cedulaOrNIT: "",
     legalName: "",
+    sector: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -38,6 +39,7 @@ const SignUp: React.FC = () => {
     confirmPassword?: string;
     cedulaOrNIT?: string;
     legalName?: string;
+    sector?: string;
   }>({});
   const [touched, setTouched] = useState({
     email: false,
@@ -45,6 +47,7 @@ const SignUp: React.FC = () => {
     confirmPassword: false,
     cedulaOrNIT: false,
     legalName: false,
+    sector: false,
   });
 
   const passwordInputRef = useRef<HTMLInputElement>(null);
@@ -142,6 +145,7 @@ const SignUp: React.FC = () => {
         legalName: form.legalName,
         clientType: "persona",
         role: { id: 2 },
+        sector: form.sector,
       });
 
       setAuth(res.token, res.role.id, res.id);
@@ -502,6 +506,36 @@ const SignUp: React.FC = () => {
               <label className="label">
                 <span className="label-text-alt text-error">
                   {validationErrors.legalName}
+                </span>
+              </label>
+            )}
+          </div>
+
+          <div className="form-control">
+            <label htmlFor="sector" className="label">
+              <span className="label-text text-base-content/70">
+                Sector
+              </span>
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Building2 className="h-5 w-5 text-base-content/50" />
+              </div>
+              <input
+                type="text"
+                title="sector"
+                name="sector"
+                value={form.sector}
+                onChange={handleChange}
+                className={`input input-bordered w-full pl-10 ${(touched.sector && !form.sector) || validationErrors.sector ? "input-error" : ""}`}
+                disabled={loading}
+                required
+              />
+            </div>
+            {validationErrors.sector && (
+              <label className="label">
+                <span className="label-text-alt text-error">
+                  {validationErrors.sector}
                 </span>
               </label>
             )}
