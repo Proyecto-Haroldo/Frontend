@@ -29,14 +29,32 @@ export interface RegisterResponse {
   message?: string;
 }
 
+function getMessageFromResponse(response: { status: number; data?: unknown }): string | null {
+  if (typeof response.data === 'string' && response.data.trim()) {
+    return response.data.trim();
+  }
+  return null;
+}
+
 export async function login(data: LoginRequest): Promise<LoginResponse> {
   try {
     const response = await apiClient.post<LoginResponse>('/auth/login', data);
-    console.log(response);
     return response.data;
   } catch (error: unknown) {
-    if (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'status' in error.response && error.response.status === 401) {
-      throw new Error('Credenciales inválidas. Por favor verifica tu correo y contraseña.');
+    const axiosError = error && typeof error === 'object' && 'response' in error ? (error as { response?: { status: number; data?: unknown } }).response : undefined;
+    if (axiosError && typeof axiosError === 'object' && 'status' in axiosError) {
+      const serverMessage = getMessageFromResponse(axiosError);
+      if (serverMessage) {
+        throw new Error(serverMessage);
+      }
+      switch (axiosError.status) {
+        case 404:
+          throw new Error('El correo electrónico no está registrado');
+        case 401:
+          throw new Error('Las credenciales ingresadas son incorrectas');
+        default:
+          break;
+      }
     }
     throw new Error('Error al iniciar sesión. Por favor intenta nuevamente.');
   }
