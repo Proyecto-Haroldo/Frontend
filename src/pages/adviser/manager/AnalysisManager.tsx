@@ -30,6 +30,8 @@ function AnalysisOverview({
   const [showAnswers, setShowAnswers] = useState(true);
   const [analysis, setAnalysis] = useState<IAnalysis | null>(null);
   const [answers, setAnswers] = useState<QuestionAnswerDTO[]>([]);
+  const [answersLoading, setAnswersLoading] = useState(false);
+  const [answersError, setAnswersError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [gradingComment, setGradingComment] = useState('');
@@ -59,9 +61,23 @@ function AnalysisOverview({
   // Fetch questionnaire answers when analysis is loaded
   useEffect(() => {
     if (!analysisId || !analysis) return;
+    let cancelled = false;
+    setAnswersLoading(true);
+    setAnswersError(null);
     getAnalysisAnswers(analysisId)
-      .then(setAnswers)
-      .catch(() => setAnswers([]));
+      .then((data) => {
+        if (!cancelled) setAnswers(data);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setAnswers([]);
+          setAnswersError('No se pudieron cargar las respuestas del cuestionario.');
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setAnswersLoading(false);
+      });
+    return () => { cancelled = true; };
   }, [analysisId, analysis]);
 
   if (loading) {
@@ -285,22 +301,29 @@ function AnalysisOverview({
           <label className="flex items-center justify-between cursor-pointer" onClick={() => setShowAnswers(!showAnswers)}>
             <span className="font-medium flex items-center gap-2">
               <FileText className="w-5 h-5" />
-              Respuestas del Cuestionario ({answers.length})
+              Respuestas del Cuestionario ({answersLoading ? '...' : answers.length})
             </span>
             <ChevronDown className={`w-5 h-5 transition-transform ${showAnswers ? 'rotate-180' : 'rotate-0'}`} />
           </label>
           {showAnswers && (
             <div className="mt-4 space-y-4">
-              {answers.length === 0 ? (
+              {answersLoading ? (
+                <div className="flex items-center gap-2 text-base-content/60">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span className="text-sm">Cargando respuestas...</span>
+                </div>
+              ) : answersError ? (
+                <p className="text-error text-sm">{answersError}</p>
+              ) : answers.length === 0 ? (
                 <p className="text-base-content/60 text-sm">No hay respuestas guardadas para este análisis.</p>
               ) : (
                 <ul className="space-y-3">
                   {answers.map((a, idx) => (
-                    <li key={a.questionId} className="bg-base-100 rounded-lg p-4 border border-base-300">
+                    <li key={a.questionId != null ? `q-${a.questionId}-${idx}` : idx} className="bg-base-100 rounded-lg p-4 border border-base-300">
                       <p className="text-sm font-medium text-base-content/80 mb-1">Pregunta {idx + 1}</p>
-                      <p className="text-base-content/90 mb-2">{a.questionText}</p>
+                      <p className="text-base-content/90 mb-2">{a.questionText ?? ''}</p>
                       <p className="text-sm text-primary font-medium">Respuesta:</p>
-                      <p className="text-base-content/80 whitespace-pre-wrap">{a.answerText}</p>
+                      <p className="text-base-content/80 whitespace-pre-wrap">{a.answerText ?? ''}</p>
                     </li>
                   ))}
                 </ul>
