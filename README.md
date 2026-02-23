@@ -1,9 +1,9 @@
 # Haroldo Finanzas
 
 
-¡Bienvenid@! __Haroldo Finanazas__ aplicativo web moderno diseñado para gestionar, analizar y fortalecer la educación financiera de los usuarios mediante herramientas interactivas, reportes inteligentes, seguimiento personalizado, y un microservicio de IA para recomendaciones financieras basadas en Gemini.  
+¡Bienvenidos! __Haroldo Finanzas__ es un aplicativo web moderno diseñado para gestionar, analizar y fortalecer la educación financiera de los usuarios mediante herramientas interactivas, reportes inteligentes, seguimiento personalizado, y un microservicio de IA para recomendaciones financieras basadas en __Gemini__.  
 
-Este proyecto surge como una propuesta para el cumplimiento del requisito de Trabajo de Grado 2025-2, bajo la modalidad Producto obtenido en Laboratorio o Semillero de investigación de la __Institución Universitaria ITM__. En convenio con la __Facultad de Ingenierías__ y la __Facultad de Ciencias Económicas y Administrativas__, y bajo la asesoría del __Semillero de Investigación Data Urban: Innovación y ciencia de datos (LowCode)__.
+Este proyecto surge como una propuesta para el cumplimiento del requisito de Trabajo de Grado, bajo la modalidad Producto obtenido en Laboratorio o Semillero de investigación de la __Institución Universitaria ITM__. En convenio con la __Facultad de Ingenierías__ y la __Facultad de Ciencias Económicas y Administrativas__, y bajo la asesoría del __Semillero de Investigación Data Urban: Innovación y Ciencia de Datos (LowCode)__.
 
 --------------------------------------------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ Este proyecto surge como una propuesta para el cumplimiento del requisito de Tra
 
 En un mundo donde las decisiones financieras son esenciales para la estabilidad y el crecimiento personal, contar con una herramienta que permita evaluar conocimientos, recibir retroalimentación inteligente y mejorar hábitos financieros resulta indispensable. __Haroldo Finanzas__ responde a esos retos combinando educación financiera, análisis de datos y automatización con IA.
 
-## Objectivo
+## Objetivo
 
 Desarrollar una plataforma web inteligente de diagnóstico financiero que permita a personas naturales y jurídicas evaluar su situación económica mediante cuestionarios dinámicos y análisis automatizados con inteligencia artificial, generando informes personalizados y recomendaciones prácticas que fortalezcan la toma de decisiones, la planeación financiera y la gestión eficiente de los recursos.
 
@@ -59,18 +59,18 @@ Seguimiento y Reportes
 
 <h1 align="center">Herramientas</h1>
 <p align="center">
-    <img src="https://img.shields.io/badge/*-Vercel-black?logo=vercel&logoColor=white" />
+    <img src="https://img.shields.io/badge/*-Vercel-slategrey?logo=vercel&logoColor=white" />
     <img src="https://img.shields.io/badge/*-Axios-lightgray?logo=axios&logoColor=white" />
     <img src="https://img.shields.io/badge/*-Swagger-green?logo=swagger&logoColor=white" />
     <img src="https://img.shields.io/badge/*-Gemini AI-default?logo=googlegemini&logoColor=white" />
     <img src="https://img.shields.io/badge/*-SpringBoot-darkgreen?logo=springboot&logoColor=white" >
-    <img src="https://img.shields.io/badge/*-Render-navy?logo=render&logoColor=white" />
+    <img src="https://img.shields.io/badge/*-Render-teal?logo=render&logoColor=white" />
     <img src="https://img.shields.io/badge/*-PostgreSQL-blue?logo=postgresql&logoColor=white" />
     <img src="https://img.shields.io/badge/*-Vite-violet?logo=vite&logoColor=white" />
     <img src="https://img.shields.io/badge/*-React-purple?logo=react&logoColor=white" />
     <img src="https://img.shields.io/badge/*-DaisyUI-darkred?logo=daisyui&logoColor=white" >
     <img src="https://img.shields.io/badge/*-Docker-red?logo=docker&logoColor=white" />
-    <img src="https://img.shields.io/badge/*-Java-orange?logo=openjdk&logoColor=white" />
+    <img src="https://badgen.net/badge/icon/Java?icon=java&label=*&color=orange" />
     <img src="https://img.shields.io/badge/*-TailwindCSS-yellow?logo=tailwindcss&logoColor=white" />
 </p>
 
@@ -89,6 +89,10 @@ Seguimiento y Reportes
 - `Vercel`
 
 - `Axios`
+
+- `DaisyUI`
+
+- `TailwindCSS`
 
 - `Librerias React-based`
 
@@ -112,7 +116,7 @@ Seguimiento y Reportes
 
 <h1 align="center">Trabajo de Grado</h1>
 <p align="center">
-      <a href="https://github.com/franccoina" target="_blank"><img src="https://img.shields.io/badge/-franccoina-777777?style=flat&logo=github&logoColor=white" alt="social-media-logo"/></a>
+      <a href="https://github.com/franccoina" target="_blank"><img src="https://img.shields.io/badge/-Franccoina-777777?style=flat&logo=github&logoColor=white" alt="social-media-logo"/></a>
    <a href="https://github.com/Sonistwo" target="_blank"><img src="https://img.shields.io/badge/-Sonistwo-5CCB5F?style=flate&logo=github&logoColor=white" alt="social-media-logo"/></a>
    <a href="https://github.com/Kevinrestrepoh" target="_blank"><img src="https://img.shields.io/badge/-Kevinrestrepoh-318A80?style=flat&logo=github&logoColor=white" alt="social-media-logo"/></a>
    <a href="https://github.com/JohannRH" target="_blank"><img src="https://img.shields.io/badge/-JohannRH-327FE3?style=flat&logo=github&logoColor=white" alt="social-media-logo"/></a>
@@ -132,9 +136,9 @@ Seguimiento y Reportes
 
 ## Desarrollo
 
-A continuación se describen los estudiantes involucrados en la investigación, planeación, desarrollo y presentación del proyecto __Haroldo Finanzas__ como opción de Trabajo de Grado 2025-2 en la __Institución Universitaria ITM__, miembros de los programas TECNOLOGÍA EN DESARROLLO DE SOFTWARE y TECNOLOGÍA EN DESARROLLO DE APLICACIONES PARA DISPOSITIVOS MÓVILES.
+A continuación se describen los estudiantes involucrados en la investigación, planeación, desarrollo y presentación del proyecto __Haroldo Finanzas__ como opción de Trabajo de Grado en la __Institución Universitaria ITM__, miembros de los programas TECNOLOGÍA EN DESARROLLO DE SOFTWARE y TECNOLOGÍA EN DESARROLLO DE APLICACIONES PARA DISPOSITIVOS MÓVILES.
 
-- `franccoina` David Francisco Blandón Mena
+- `Franccoina` David Francisco Blandón Mena
   - `davidblandon1113449@correo.itm.edu.co`
 
 - `Sonistwo` Samuel Canabal Tapias
@@ -170,7 +174,7 @@ A continuación se describen los estudiantes involucrados en la investigación, 
 4. En este link, podrás explorar nuestra organización de GitHub, donde encontrarás los repositorios de desarrollo de nuestro proyecto:
     - [Ir a GitHub](https://github.com/Proyecto-Haroldo)
 
-_P.S: En caso de que solicites comunicarte con neustor equipo de desarrollo, puedes enviar un correo a_ __davidblandon1113449@correo.itm.edu.co__.
+_P.S: En caso de que solicites comunicarte con nuestro equipo de desarrollo, puedes enviar un correo a_ __davidblandon1113449@correo.itm.edu.co__.
 
 --------------------------------------------------------------------------------------------------------
 
@@ -249,7 +253,7 @@ _P.S: Estas credenciales solo deben usarse para motivos de demo/testeo. No utili
 
 --------------------------------------------------------------------------------------------------------
 
-## Installation
+## Instalación
 
 1. Clona los repositorios:
 
@@ -330,13 +334,13 @@ docker compose run --service-ports Frontend npm run dev
 
 _P.S: Utilizar como base el archvio `.env.example`._
 
-4. Luego, escribe el valor de la variable de entorno como exactamente como se muestra a continuación:
+5. Luego, escribe el valor de la variable de entorno como exactamente como se muestra a continuación:
 
 ```bash
 NEXT_PUBLIC_GITHUB_API_URL=https://backend-oaij.onrender.com/api
 ```
 
-7. Finalmente, abre [http://localhost:5173](http://localhost:3000) en tu navegador y disfruta de nuestro proyecto.
+6. Finalmente, abre [http://localhost:5173](http://localhost:3000) en tu navegador y disfruta de nuestro proyecto.
 
 _P.S: El backend lo encontrarás en_ [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) _y el microservicio de IA en_ [http://localhost:8081](http://localhost:8081).
 
