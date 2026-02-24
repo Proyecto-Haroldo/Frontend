@@ -172,7 +172,7 @@ A continuación se describen los estudiantes involucrados en la investigación, 
     - [Ir a Haroldo Finanzas](https://haroldo-finanzas.vercel.app)
   
 4. En este link, podrás observar nuestra API del proyecto desplegada en Render:
-    - [Ir a Haroldo Finanzas API](https://backend-j6bh.onrender.com)
+    - [Ir a Haroldo Finanzas API](https://backend-j6bh.onrender.com/swagger-ui/index.html)
 
 5. En este link, podrás explorar nuestra organización de GitHub, donde encontrarás los repositorios de desarrollo de nuestro proyecto:
     - [Ir a GitHub](https://github.com/Proyecto-Haroldo)
@@ -337,19 +337,19 @@ docker compose run --service-ports Frontend npm run dev
 
 _P.S: Utilizar como base el archvio `.env.example`._
 
-5. Luego, escribe el valor de la variable de entorno para el backend. Si presentas problemas, puedes usar la versión desplegada en [https://backend-j6bh.onrender.com/api](https://backend-j6bh.onrender.com/api) como se muestra a continuación:
+5. Luego, escribe el valor de la variable de entorno para el backend. Si presentas problemas, puedes usar la versión desplegada como se muestra a continuación:
 
 ```bash
 # Local version
-NEXT_PUBLIC_GITHUB_API_URL=http://localhost:8080/swagger-ui/index.html
+NEXT_PUBLIC_GITHUB_API_URL=http://localhost:8080/api
 
 # Deploy version
 NEXT_PUBLIC_GITHUB_API_URL=https://backend-j6bh.onrender.com/api
 ```
 
-_P.S: El backend local lo encontrarás en_ [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) _y el microservicio de IA en_ [http://localhost:8081](http://localhost:8081).
+_P.S: El backend local lo encontrarás en_ [http://localhost:8080/api](http://localhost:8080/api), _el swagger local con cada endpoint en_ [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) _y el microservicio de IA local en_ [http://localhost:8081](http://localhost:8081).
 
-6. Finalmente, abre [http://localhost:5173](http://localhost:5173) en tu navegador y disfruta de nuestro proyecto localmente. Si presentas problemas, puedes usar la versión desplegada en [https://haroldo-finanzas.vercel.app](https://haroldo-finanzas.vercel.app).
+6. Finalmente, abre [http://localhost:5173](http://localhost:5173) en tu navegador y disfruta de nuestro proyecto localmente. Si presentas problemas, puedes usar la versión desplegada.
 
 --------------------------------------------------------------------------------------------------------
 
