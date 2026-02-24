@@ -16,6 +16,7 @@
     "axios": "^1.9.0",
     "chart.js": "^4.5.1",
     "daisyui": "^5.0.35",
+    "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.23.24",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.488.0",

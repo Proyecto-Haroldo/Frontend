@@ -64,9 +64,9 @@ const Login: React.FC = () => {
       } else {
         setError("Rol no reconocido.");
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('Ocurrió un error. Por favor intenta nuevamente.');
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err instanceof Error ? err.message : 'Ocurrió un error. Por favor intenta nuevamente.');
     } finally {
       setLoading(false);
     }

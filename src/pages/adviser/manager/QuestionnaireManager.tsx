@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
 import {
-  ArrowLeft,
   Plus,
   Edit,
   Trash2,
@@ -17,13 +15,11 @@ import {
   updateQuestion,
   deleteQuestion,
   getQuestionnaireById
-} from '../../api/analysisApi';
-import { IQuestion, QuestionType } from '../../core/models/question';
-import { IQuestionnaire } from '../../core/models/questionnaire';
+} from '../../../api/analysisApi';
+import { IQuestion, QuestionType } from '../../../core/models/question';
+import { IQuestionnaire } from '../../../core/models/questionnaire';
 
-function QuestionnairesManager() {
-  const navigate = useNavigate();
-  const location = useLocation();
+function QuestionnaireManager({ questionnaireId }: { questionnaireId?: number }) {
   const [questions, setQuestions] = useState<IQuestion[]>([]);
   const [filteredQuestions, setFilteredQuestions] = useState<IQuestion[]>([]);
   const [searchTitle, setSearchTitle] = useState<string>('');
@@ -32,19 +28,9 @@ function QuestionnairesManager() {
   const [editingQuestion, setEditingQuestion] = useState<IQuestion | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [questionnaireId, setQuestionnaireId] = useState<number | null>(null);
   const [questionnaire, setQuestionnaire] = useState<IQuestionnaire | null>(null);
 
-  // Get questionnaire ID from URL params
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const id = params.get('id');
-    if (id) {
-      setQuestionnaireId(Number(id));
-    }
-  }, [location]);
-
-  // Fetch questionnaire to get category info
+  // Fetch questionnaire
   useEffect(() => {
     const fetchQuestionnaire = async () => {
       if (!questionnaireId) return;
@@ -221,8 +207,8 @@ function QuestionnairesManager() {
   if (loading && !questions.length) {
     return (
       <div className="container mx-auto space-y-6 overflow-hidden">
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="card w-full max-w-2xl bg-base-100 shadow-sm border border-base-200">
+        <div className="flex items-center justify-center">
+          <div className="card w-full bg-base-100 shadow-sm border border-base-200">
             <div className="card-body items-center text-center">
               <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
               <p className="mt-4">Cargando preguntas...</p>
@@ -240,9 +226,6 @@ function QuestionnairesManager() {
           <div className="card w-full max-w-2xl bg-base-100 shadow-sm border border-base-200">
             <div className="card-body items-center text-center">
               <p className="mb-4">ID de cuestionario no proporcionado</p>
-              <button onClick={() => navigate('/a')} className="btn btn-primary">
-                Volver al Dashboard
-              </button>
             </div>
           </div>
         </div>
@@ -254,33 +237,28 @@ function QuestionnairesManager() {
     <div className="container mx-auto space-y-6 overflow-hidden">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 flex-wrap">
-        <div className="w-full sm:w-auto">
-          <button
-            onClick={() => navigate('/a')}
-            className="btn btn-ghost btn-sm gap-2 mb-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Volver
-          </button>
-          <h1 className="text-xl sm:text-2xl font-bold">
-            Gestión de Preguntas
-            {questionnaire && (
-              <span className="block sm:inline text-base sm:text-lg font-normal text-base-content/70 sm:ml-2">
-                - {questionnaire.categoryName}
-              </span>
+        <div className="w-full">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <h1 className="text-xl sm:text-2xl font-bold">
+              Gestión de Preguntas
+              {questionnaire && (
+                <span className="block capitalize sm:inline text-base sm:text-lg font-normal text-base-content/70 sm:ml-2">
+                  <span className="hidden sm:inline">- </span>{questionnaire.categoryName}
+                </span>
+              )}
+            </h1>
+            {!editingQuestion && (
+              <button
+                onClick={handleCreate}
+                className="btn btn-primary btn-sm gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                <span className="hidden sm:inline">Nueva Pregunta</span>
+                <span className="sm:hidden">Nueva</span>
+              </button>
             )}
-          </h1>
+          </div>
         </div>
-        {!editingQuestion && (
-          <button
-            onClick={handleCreate}
-            className="btn btn-primary btn-sm sm:btn-md gap-2 w-full sm:w-auto"
-          >
-            <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">Nueva Pregunta</span>
-            <span className="sm:hidden">Nueva</span>
-          </button>
-        )}
       </div>
 
       {/* Error Message */}
@@ -339,7 +317,7 @@ function QuestionnairesManager() {
                     setEditingQuestion({
                       ...editingQuestion,
                       questionType: e.target.value as QuestionType,
-                      options: e.target.value === 'open' ? undefined : editingQuestion.options || []
+                      options: editingQuestion.options || []
                     })
                   }
                 >
@@ -434,7 +412,7 @@ function QuestionnairesManager() {
               {/* Search/Filter by Title */}
               <div className="form-control w-full sm:w-auto sm:min-w-[16rem]">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-base-content/50" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-base-content/50 z-10" />
                   <input
                     type="text"
                     className="input input-bordered input-sm sm:input-md pl-10 w-full"
@@ -578,4 +556,4 @@ function QuestionnairesManager() {
   );
 }
 
-export default QuestionnairesManager;
+export default QuestionnaireManager;
