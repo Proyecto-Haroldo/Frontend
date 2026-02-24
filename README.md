@@ -170,8 +170,11 @@ A continuación se describen los estudiantes involucrados en la investigación, 
 
 3. En este link, podrás observar nuestro proyecto desplegado en Vercel:
     - [Ir a Haroldo Finanzas](https://haroldo-finanzas.vercel.app)
+  
+4. En este link, podrás observar nuestra API del proyecto desplegada en Render:
+    - [Ir a Haroldo Finanzas API](https://backend-j6bh.onrender.com)
 
-4. En este link, podrás explorar nuestra organización de GitHub, donde encontrarás los repositorios de desarrollo de nuestro proyecto:
+5. En este link, podrás explorar nuestra organización de GitHub, donde encontrarás los repositorios de desarrollo de nuestro proyecto:
     - [Ir a GitHub](https://github.com/Proyecto-Haroldo)
 
 _P.S: En caso de que solicites comunicarte con nuestro equipo de desarrollo, puedes enviar un correo a_ __davidblandon1113449@correo.itm.edu.co__.
@@ -334,15 +337,19 @@ docker compose run --service-ports Frontend npm run dev
 
 _P.S: Utilizar como base el archvio `.env.example`._
 
-5. Luego, escribe el valor de la variable de entorno como exactamente como se muestra a continuación:
+5. Luego, escribe el valor de la variable de entorno para el backend. Si presentas problemas, puedes usar la versión desplegada en [https://backend-j6bh.onrender.com/api](https://backend-j6bh.onrender.com/api) como se muestra a continuación:
 
 ```bash
-NEXT_PUBLIC_GITHUB_API_URL=https://backend-oaij.onrender.com/api
+# Local version
+NEXT_PUBLIC_GITHUB_API_URL=http://localhost:8080/swagger-ui/index.html
+
+# Deploy version
+NEXT_PUBLIC_GITHUB_API_URL=https://backend-j6bh.onrender.com/api
 ```
 
-6. Finalmente, abre [http://localhost:5173](http://localhost:3000) en tu navegador y disfruta de nuestro proyecto.
+_P.S: El backend local lo encontrarás en_ [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) _y el microservicio de IA en_ [http://localhost:8081](http://localhost:8081).
 
-_P.S: El backend lo encontrarás en_ [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) _y el microservicio de IA en_ [http://localhost:8081](http://localhost:8081).
+6. Finalmente, abre [http://localhost:5173](http://localhost:5173) en tu navegador y disfruta de nuestro proyecto localmente. Si presentas problemas, puedes usar la versión desplegada en [https://haroldo-finanzas.vercel.app](https://haroldo-finanzas.vercel.app).
 
 --------------------------------------------------------------------------------------------------------
 
