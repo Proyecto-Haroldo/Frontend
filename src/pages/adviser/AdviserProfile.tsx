@@ -9,7 +9,7 @@ import { jwtDecode } from 'jwt-decode';
 import { getUserById } from '../../api/userApi';
 import { useNavigate } from 'react-router-dom';
 import { IUser } from '../../core/models/user';
-import EditUserModal from '../../shared/ui/components/modals/EditUserModal';
+import ModalEditUser from '../../shared/ui/components/modals/ModalEditUser';
 
 interface JwtPayload {
   sub: string; // email
@@ -17,7 +17,7 @@ interface JwtPayload {
 }
 
 function AdviserProfile() {
-  const { token, logout } = useAuth();
+  const { token, logout, userId } = useAuth();
   const [email, setEmail] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [userData, setUserData] = useState<IUser | null>(null);
@@ -36,19 +36,17 @@ function AdviserProfile() {
     }
   }, [token]);
 
-  // --- Obtener clientId desde localStorage ---
+  // Obtener userId desde AuthContext y cargar datos del usuario
   useEffect(() => {
-    const storedUserId = localStorage.getItem('userId');
-    if (storedUserId) {
-      const id = parseInt(storedUserId, 10);
-      getUserById(id)
-        .then(client => {
-          setUserData(client);
-          setName(client.legalName);
-        })
-        .catch(err => console.error('Error al obtener cliente:', err));
-    }
-  }, []);
+    if (userId == null) return;
+
+    getUserById(userId)
+      .then(user => {
+        setUserData(user);
+        setName(user.legalName);
+      })
+      .catch(err => console.error('Error al obtener cliente:', err));
+  }, [userId]);
 
   const handleLogout = () => {
     logout();
@@ -75,10 +73,10 @@ function AdviserProfile() {
               <p className="text-sm text-base-content/70">Asesor</p>
             </div>
           </div>
-            <div className="flex items-center gap-3">
-              <BriefcaseBusiness className="h-5 w-5 text-base-content/50" />
-              <span>{userData?.clientType || 'No disponible'}</span>
-            </div>
+          <div className="flex items-center gap-3">
+            <BriefcaseBusiness className="h-5 w-5 text-base-content/50" />
+            <span>{userData?.clientType || 'No disponible'}</span>
+          </div>
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <SquareUserRound className="h-5 w-5 text-base-content/50" />
@@ -175,7 +173,7 @@ function AdviserProfile() {
 
       {/* Modal para editar perfil */}
       {showEditModal && userData && (
-        <EditUserModal
+        <ModalEditUser
           user={userData}
           onClose={() => setShowEditModal(false)}
           onUpdate={handleUpdate}

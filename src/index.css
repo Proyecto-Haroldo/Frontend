@@ -17,6 +17,7 @@
   --color-secondary-content: oklch(98% 0 0);
   --color-light-purple: #8761b8;
   --color-dark-purple: #61428a;
+  --color-navigator: #f5f4f7;
   --color-accent: oklch(21% 0.006 285.885);
   --color-accent-content: oklch(100% 0 0);
   --color-neutral: oklch(21% 0.006 56.043);
@@ -56,6 +57,7 @@
   --color-accent-content: oklch(38% 0.189 293.745);
   --color-light-purple: #a97be6;
   --color-dark-purple: #7b5db0;
+  --color-navigator: #a97be6;
   --color-neutral: oklch(14% 0.005 285.823);
   --color-neutral-content: oklch(92% 0.004 286.32);
   --color-info: oklch(81% 0.111 293.571);
@@ -79,4 +81,12 @@
 @theme {
   --font-family: "Onest", "sans-serif";
   --color-warm-white: #f5f4f7;
+}
+
+html,
+body,
+main {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }

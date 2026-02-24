@@ -4,31 +4,46 @@ import { apiClient } from "./apiClient";
 const API_URL = import.meta.env.VITE_API_URL;
 
 // Helper function to map role name to role object
-const mapRoleNameToRoleObject = (roleName: string | null | undefined) => {
+const mapRoleNameToRoleObject = (roleName: string) => {
+
+  // Normalizar a minúsculas
+  let normalized = roleName.toLowerCase().trim();
+
+  // --- user → client, usuario → cliente ---
+  if (normalized.includes("usuario")) {
+    normalized = normalized.replace("usuario", "cliente");
+  }
+
+  if (normalized.includes("user")) {
+    normalized = normalized.replace("user", "client");
+  }
+
+  // Mantener guion bajo
+  const key = normalized.replace(/[^a-z0-9_]/g, '');
+
+  // Mapa final
   const nameToIdMap: Record<string, number> = {
     'admin': 1,
     'administrador': 1,
+    'role_administrador': 1,
     'role_admin': 1,
+
     'client': 2,
     'cliente': 2,
+    'role_cliente': 2,
     'role_client': 2,
+
     'adviser': 3,
     'asesor': 3,
     'role_adviser': 3,
     'role_asesor': 3,
   };
-  
-  if (!roleName) {
-    return { id: 0, name: 'Unknown' };
-  }
-  
-  // Normalize role name by removing special characters and extra whitespace
-  const roleNameLower = roleName.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
-  const roleId = nameToIdMap[roleNameLower] || 0;
-  
+
+  const roleId = nameToIdMap[key] || 0;
+
   return {
     id: roleId,
-    name: roleName
+    name: key.toUpperCase()
   };
 };
 
