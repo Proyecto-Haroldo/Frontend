@@ -172,7 +172,7 @@ A continuación se describen los estudiantes involucrados en la investigación, 
     - [Ir a Haroldo Finanzas](https://haroldo-finanzas.vercel.app)
   
 4. En este link, podrás observar nuestra API del proyecto desplegada en Render:
-    - [Ir a Haroldo Finanzas API](https://backend-j6bh.onrender.com/swagger-ui/index.html)
+    - [Ir a Haroldo Finanzas API](https://backend-v45w.onrender.com/swagger-ui/index.html)
 
 5. En este link, podrás explorar nuestra organización de GitHub, donde encontrarás los repositorios de desarrollo de nuestro proyecto:
     - [Ir a GitHub](https://github.com/Proyecto-Haroldo)
@@ -283,8 +283,10 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://aws-0-us-east-2.pooler.supabase.com:6543/postgres?preferQueryMode=simple
       SPRING_DATASOURCE_USERNAME: postgres.umtlidnqgmsutxwmljyx
-      SPRING_DATASOURCE_PASSWORD: uXrnxCb6DRWJCV9n
+      SPRING_DATASOURCE_PASSWORD: ${DBPASSWORD}
       MICROSERVICE_IA_URL: http://microservicio-ia:8081/ia/recomendacion
+      REDIS_BASE_URL: https://helped-cockatoo-53634.upstash.io
+      REDIS_BEARER_TOKEN: ${REDIS_BEARER_TOKEN}
     depends_on:
       - microservicio-ia
     networks:
@@ -297,9 +299,9 @@ services:
     build: ../IA-Microservice
     container_name: microservicio-ia-haroldo
     ports:
-      - "8081:8081"
+      - "8081:8080"
     environment:
-      GEMINI_API_KEY: YOUR_API_KEY
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
     networks:
       - haroldo-network
 
@@ -328,28 +330,46 @@ docker compose up --build
 docker compose run --service-ports Frontend npm run dev
 ```
 
-4. Ahora, debido al `.gitignore`, al clonar el respositorio de frontend no tendras el archivo con las variables de entorno de este proyecto. Para solucionar esto, crea un archivo de nombre `.env` __en la raíz del directorio del proyecto__ (`/Frontend`):
+4. Ahora, debido al `.gitignore`, al clonar el respositorio de backend no tendrás el archivo con las variables de entorno de este proyecto. Para solucionar esto, crea un archivo de nombre `.env` __en la raíz del directorio del proyecto__ (`/Backend`):
 
 ```bash
 # File name
 .env
 ```
 
-_P.S: Utilizar como base el archvio `.env.example`._
+_P.S: Utilizar como base el archivo `.env.example`._
 
 5. Luego, escribe el valor de la variable de entorno para el backend. Si presentas problemas, puedes usar la versión desplegada como se muestra a continuación:
+
+```bash
+# For security purposes, contact us to get these variables locally...
+REDIS_BEARER_TOKEN=your_redis_bearer_token_here
+DBPASSWORD=your_database_password_here
+GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+6. Finalmente, debido al `.gitignore`, al clonar el respositorio de frontend tampoco tendrás el archivo con las variables de entorno de este proyecto. Para solucionar esto, crea un archivo de nombre `.env` __en la raíz del directorio del proyecto__ (`/Frontend`):
+
+```bash
+# File name
+.env
+```
+
+_P.S: Utilizar como base el archivo `.env.example`._
+
+7. Luego, escribe el valor de la variable de entorno para el backend. Si presentas problemas, puedes usar la versión desplegada como se muestra a continuación:
 
 ```bash
 # Local version
 NEXT_PUBLIC_GITHUB_API_URL=http://localhost:8080/api
 
 # Deploy version
-NEXT_PUBLIC_GITHUB_API_URL=https://backend-j6bh.onrender.com/api
+NEXT_PUBLIC_GITHUB_API_URL=https://backend-v45w.onrender.com/api
 ```
 
 _P.S: El backend local lo encontrarás en_ [http://localhost:8080/api](http://localhost:8080/api), _el swagger local con cada endpoint en_ [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) _y el microservicio de IA local en_ [http://localhost:8081](http://localhost:8081).
 
-6. Finalmente, abre [http://localhost:5173](http://localhost:5173) en tu navegador y disfruta de nuestro proyecto localmente. Si presentas problemas, puedes usar la versión desplegada.
+8. Finalmente, abre [http://localhost:5173](http://localhost:5173) en tu navegador y disfruta de nuestro proyecto localmente. Si presentas problemas, puedes usar la versión desplegada.
 
 --------------------------------------------------------------------------------------------------------
 
