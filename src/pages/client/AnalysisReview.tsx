@@ -17,6 +17,7 @@ import {
   getRiskDescription,
   formatAnalysisTitle
 } from '../../shared/types/analysis';
+import { Stoplight } from '../../shared/ui/Stoplight';
 import { IAnalysis } from '../../core/models/analysis';
 
 function AnalysisReview() {
@@ -210,34 +211,6 @@ function AnalysisReview() {
     }
   };
 
-  const pulseVariants = {
-    initial: { scale: 1, opacity: 0.7 },
-    animate: {
-      scale: [1, 1.6],
-      opacity: [0.7, 0],
-      transition: {
-        duration: 1.6,
-        repeat: Infinity,
-        repeatDelay: 0.6,
-        ease: "easeOut" as const
-      }
-    }
-  };
-
-  const pingVariants = {
-    initial: { scale: 1, opacity: 0.35 },
-    animate: {
-      scale: [1, 1.9],
-      opacity: [0.35, 0],
-      transition: {
-        duration: 1.4,
-        repeat: Infinity,
-        repeatDelay: 0.6,
-        ease: "easeOut" as const
-      }
-    }
-  };
-
   // Modern minimalist stoplight with Motion animations
   const stoplight = (
     <motion.div
@@ -274,118 +247,7 @@ function AnalysisReview() {
           className="flex justify-center"
           variants={itemVariants}
         >
-          <div className="relative">
-            {/* Stoplight Housing */}
-            <motion.div
-              className="bg-neutral rounded-3xl p-6 shadow-2xl border-4 border-neutral-focus"
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            >
-              <div className="flex flex-col space-y-5">
-
-                {/* Green Light (TOP) */}
-                <div className="relative flex justify-center">
-                  <div className={`w-20 h-20 rounded-full border-4 border-neutral-content/20 transition-all duration-700 ${analysisData.colorSemaforo === 'verde'
-                    ? 'bg-green-500 shadow-xl shadow-green-500/60'
-                    : 'bg-neutral-content/10 shadow-inner'
-                    }`}>
-                    {analysisData.colorSemaforo === 'verde' && (
-                      <>
-                        <motion.div
-                          className="absolute inset-2 bg-green-400 rounded-full"
-                          variants={pingVariants}
-                          initial="initial"
-                          animate="animate"
-                        />
-                        <motion.div
-                          className="absolute inset-3 bg-gradient-to-br from-green-300 via-green-500 to-green-700 rounded-full"
-                          variants={pulseVariants}
-                          initial="initial"
-                          animate="animate"
-                        />
-                        <div className="absolute top-3 left-3 w-4 h-4 bg-green-200 rounded-full blur-sm opacity-80" />
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                {/* Yellow Light (MIDDLE) */}
-                <div className="relative flex justify-center">
-                  <div className={`w-20 h-20 rounded-full border-4 border-neutral-content/20 transition-all duration-700 ${analysisData.colorSemaforo === 'amarillo'
-                    ? 'bg-yellow-400 shadow-xl shadow-yellow-400/60'
-                    : 'bg-neutral-content/10 shadow-inner'
-                    }`}>
-                    {analysisData.colorSemaforo === 'amarillo' && (
-                      <>
-                        <motion.div
-                          className="absolute inset-2 bg-yellow-300 rounded-full"
-                          variants={pingVariants}
-                          initial="initial"
-                          animate="animate"
-                        />
-                        <motion.div
-                          className="absolute inset-3 bg-gradient-to-br from-yellow-200 via-yellow-400 to-yellow-600 rounded-full"
-                          variants={pulseVariants}
-                          initial="initial"
-                          animate="animate"
-                        />
-                        <div className="absolute top-3 left-3 w-4 h-4 bg-yellow-100 rounded-full blur-sm opacity-80" />
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                {/* Red Light (BOTTOM) */}
-                <div className="relative flex justify-center">
-                  <div className={`w-20 h-20 rounded-full border-4 border-neutral-content/20 transition-all duration-700 ${analysisData.colorSemaforo === 'rojo'
-                    ? 'bg-red-500 shadow-xl shadow-red-500/60'
-                    : 'bg-neutral-content/10 shadow-inner'
-                    }`}>
-                    {analysisData.colorSemaforo === 'rojo' && (
-                      <>
-                        <motion.div
-                          className="absolute inset-2 bg-red-400 rounded-full"
-                          variants={pingVariants}
-                          initial="initial"
-                          animate="animate"
-                        />
-                        <motion.div
-                          className="absolute inset-3 bg-gradient-to-br from-red-300 via-red-500 to-red-700 rounded-full"
-                          variants={pulseVariants}
-                          initial="initial"
-                          animate="animate"
-                        />
-                        <div className="absolute top-3 left-3 w-4 h-4 bg-red-200 rounded-full blur-sm opacity-80" />
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Subtle Glow Effect */}
-            {analysisData.colorSemaforo === 'rojo' && (
-              <motion.div
-                className="absolute inset-0 bg-red-500/10 rounded-3xl blur-xl -z-10"
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              />
-            )}
-            {analysisData.colorSemaforo === 'amarillo' && (
-              <motion.div
-                className="absolute inset-0 bg-yellow-400/10 rounded-3xl blur-xl -z-10"
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              />
-            )}
-            {analysisData.colorSemaforo === 'verde' && (
-              <motion.div
-                className="absolute inset-0 bg-green-500/10 rounded-3xl blur-xl -z-10"
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              />
-            )}
-          </div>
+          <Stoplight color={analysisData.colorSemaforo} animated />
         </motion.div>
       </motion.div>
 

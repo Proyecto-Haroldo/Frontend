@@ -157,8 +157,9 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
         role={role}
       />
 
+      <hr className="text-accent/20 mx-4" />
+
       <AnimatePresence mode="wait">
-        <hr className="text-accent/20 mx-4"></hr>
         {/* --------------------- SELECTOR ---------------------- */}
         {view === "selector" && (
           <motion.div

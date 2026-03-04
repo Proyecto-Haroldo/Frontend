@@ -19,6 +19,7 @@ import {
   getRiskLevel,
   getRiskDescription,
 } from '../../../shared/types/analysis';
+import { Stoplight } from '../../../shared/ui/Stoplight';
 
 function AnalysisOverview({
   analysisId,
@@ -207,21 +208,10 @@ function AnalysisOverview({
               </div>
             </div>
 
-            {/* Realistic Stoplight */}
-            <div className="relative">
-              <div className="bg-neutral rounded-3xl p-6 shadow-2xl border-4 border-neutral-focus">
-                <div className="flex flex-col space-y-5">
-
-                  {/* Verde */}
-                  <div className={`w-20 h-20 rounded-full border-4 border-neutral-content/20 transition-all duration-700 ${colorSemaforo === 'verde' ? 'bg-green-500 shadow-xl shadow-green-500/60' : 'bg-neutral-content/10 shadow-inner'}`} />
-                  {/* Amarillo */}
-                  <div className={`w-20 h-20 rounded-full border-4 border-neutral-content/20 transition-all duration-700 ${colorSemaforo === 'amarillo' ? 'bg-yellow-400 shadow-xl shadow-yellow-400/60' : 'bg-neutral-content/10 shadow-inner'}`} />
-                  {/* Rojo */}
-                  <div className={`w-20 h-20 rounded-full border-4 border-neutral-content/20 transition-all duration-700 ${colorSemaforo === 'rojo' ? 'bg-red-500 shadow-xl shadow-red-500/60' : 'bg-neutral-content/10 shadow-inner'}`} />
-
-                </div>
-              </div>
-            </div>
+          {/* Realistic Stoplight */}
+          <div className="relative">
+            <Stoplight color={colorSemaforo} />
+          </div>
           </div>
 
           {/* Summary */}
