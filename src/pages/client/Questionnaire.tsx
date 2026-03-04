@@ -296,12 +296,12 @@ const Questionnaire = () => {
 
       case 'single':
         return (
-          <div className="space-y-1">
+          <div className="space-y-2">
             {currentQuestion.options?.map(option => (
               <div key={option.id} className="form-control">
                 <label
                   htmlFor={String(option.id)}
-                  className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg"
+                  className="label cursor-pointer justify-start items-start gap-3 p-2 hover:bg-base-200 rounded-lg w-full"
                 >
                   <input
                     type="radio"
@@ -312,7 +312,7 @@ const Questionnaire = () => {
                     onChange={() => handleAnswerChange(String(option.id))}
                     className="radio radio-primary"
                   />
-                  <span className="label-text text-left">
+                  <span className="label-text text-left break-words whitespace-normal flex-1">
                     <HighlightedText
                       text={option.text}
                       keywords={currentQuestion.keywords || []}
@@ -327,12 +327,12 @@ const Questionnaire = () => {
 
       case 'multiple':
         return (
-          <div className="space-y-1">
+          <div className="space-y-2">
             {currentQuestion.options?.map(option => (
               <div key={option.id} className="form-control">
                 <label
                   htmlFor={String(option.id)}
-                  className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg"
+                  className="label cursor-pointer justify-start items-start gap-3 p-2 hover:bg-base-200 rounded-lg w-full"
                 >
                   <input
                     type="checkbox"
@@ -349,7 +349,7 @@ const Questionnaire = () => {
                     }}
                     className="checkbox checkbox-primary"
                   />
-                  <span className="label-text text-left">
+                  <span className="label-text text-left break-words whitespace-normal flex-1">
                     <HighlightedText
                       text={option.text}
                       keywords={currentQuestion.keywords || []}
