@@ -19,11 +19,16 @@ import {
 } from '../../shared/types/analysis';
 import { Stoplight } from '../../shared/ui/Stoplight';
 import { IAnalysis } from '../../core/models/analysis';
+import { getAnalysisAnswers } from '../../api/analysisApi';
+import type { QuestionAnswerDTO } from '../../shared/types/analysis';
+import type { QuestionnaireAnswer } from '../../shared/types/questionnaire';
 
 function AnalysisReview() {
   const navigate = useNavigate();
   const location = useLocation();
   const [showAnswers, setShowAnswers] = useState(false);
+  const [apiAnswers, setApiAnswers] = useState<QuestionAnswerDTO[] | null>(null);
+  const [answersLoading, setAnswersLoading] = useState(false);
   const [searchParams] = useSearchParams();
 
   // Get analysis data from navigation state
@@ -35,6 +40,15 @@ function AnalysisReview() {
   // For backward compatibility with localStorage (questionnaire completion flow)
   const aiRecommendationFromLS = localStorage.getItem('aiRecommendation');
   const questionnaireDataFromLS = localStorage.getItem('questionnaireData');
+  const parsedQuestionnaireFromLS = (() => {
+    if (!questionnaireDataFromLS) return null;
+    try {
+      const parsed = JSON.parse(questionnaireDataFromLS) as { answers?: QuestionnaireAnswer[] } | null;
+      return parsed?.answers ? parsed : null;
+    } catch {
+      return null;
+    }
+  })();
 
   let analysisData: {
     id: string;
@@ -133,6 +147,25 @@ function AnalysisReview() {
     }
   }, [analysisData, navigate]);
 
+  // Fetch questionnaire answers from API when viewing an analysis from state
+  useEffect(() => {
+    if (!analysis?.analysisId) return;
+    let cancelled = false;
+    setAnswersLoading(true);
+    setApiAnswers(null);
+    getAnalysisAnswers(analysis.analysisId)
+      .then((data) => {
+        if (!cancelled) setApiAnswers(data);
+      })
+      .catch(() => {
+        if (!cancelled) setApiAnswers([]);
+      })
+      .finally(() => {
+        if (!cancelled) setAnswersLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [analysis?.analysisId]);
+
   if (!analysisData) {
     return (
       <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
@@ -162,6 +195,20 @@ function AnalysisReview() {
 
   const currentStatus = statusConfig[analysisData.colorSemaforo];
   const StatusIcon = currentStatus.icon;
+
+  // Unified list for the Answers Section: from API when available, else from localStorage
+  const displayAnswers: { questionText: string; answerText: string }[] =
+    analysis && apiAnswers !== null
+      ? apiAnswers.map((a) => ({
+          questionText: a.questionText ?? '',
+          answerText: a.answerText ?? ''
+        }))
+      : (parsedQuestionnaireFromLS?.answers ?? []).map((a) => ({
+          questionText: a.questionTitle ?? '',
+          answerText: Array.isArray(a.answer) ? a.answer.filter(Boolean).join(', ') : String(a.answer ?? '')
+        }));
+  const hasAnswersFromApi = Boolean(analysis?.analysisId);
+  const showAnswersLoading = hasAnswersFromApi && answersLoading;
 
   const formatDate = (timestamp: string) => {
     try {
@@ -429,31 +476,42 @@ function AnalysisReview() {
                           exit={{ opacity: 0, height: 0 }}
                           transition={{ duration: 0.3, ease: "easeInOut" }}
                         >
-                          <div className="text-center py-8 text-base-content/60">
-                            <motion.div
-                              className="w-16 h-16 bg-base-300 rounded-full flex items-center justify-center mx-auto mb-4"
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              transition={{ type: "spring", stiffness: 300, delay: 0.1 }}
-                            >
-                              <AlertCircle className="h-8 w-8 text-base-content/60" />
-                            </motion.div>
-                            <motion.p
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.2 }}
-                            >
-                              Esta sección mostrará todas sus respuestas al cuestionario.
-                            </motion.p>
-                            <motion.div
-                              className="badge badge-outline mt-2"
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              transition={{ delay: 0.3 }}
-                            >
-                              Implementación pendiente
-                            </motion.div>
-                          </div>
+                          {showAnswersLoading ? (
+                            <div className="flex items-center justify-center gap-2 py-8 text-base-content/60">
+                              <motion.div
+                                className="loading loading-spinner loading-md"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                              />
+                              <span>Cargando respuestas...</span>
+                            </div>
+                          ) : displayAnswers.length === 0 ? (
+                            <div className="text-center py-8 text-base-content/60">
+                              <AlertCircle className="h-12 w-12 mx-auto mb-3 opacity-60" />
+                              <p>No hay respuestas guardadas para este análisis.</p>
+                            </div>
+                          ) : (
+                            <ul className="space-y-3">
+                              {displayAnswers.map((a, idx) => (
+                                <motion.li
+                                  key={`ans-${idx}`}
+                                  className="bg-base-100 rounded-lg p-4 border border-base-300"
+                                  initial={{ opacity: 0, y: 8 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: idx * 0.03 }}
+                                >
+                                  <p className="text-sm font-medium text-base-content/70 mb-1">
+                                    Pregunta {idx + 1}
+                                  </p>
+                                  <p className="text-base-content/90 mb-2">{a.questionText}</p>
+                                  <p className="text-sm font-medium text-primary">Respuesta:</p>
+                                  <p className="text-base-content/80 whitespace-pre-wrap">
+                                    {a.answerText || '—'}
+                                  </p>
+                                </motion.li>
+                              ))}
+                            </ul>
+                          )}
                         </motion.div>
                       )}
                     </AnimatePresence>
