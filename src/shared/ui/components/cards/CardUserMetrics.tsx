@@ -31,7 +31,7 @@ const CardUserMetrics: React.FC<CardUserMetricsProps> = ({ user, analysis, error
             counts[q.status] = (counts[q.status] || 0) + 1;
         });
         return counts;
-    }, [user]);
+    }, [analysis]);
 
     // Agrupar por categoría
     const categoryData = useMemo(() => {

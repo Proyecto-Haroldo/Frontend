@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Filter, Search, Eye, Trash } from "lucide-react";
+import { Filter, Search, Eye, Trash, Loader2, Edit } from "lucide-react";
 import { IUser } from "../../../../core/models/user.ts";
-import { useThemeColors } from "../../../hooks/useThemeColors.ts";
 import { motion } from 'motion/react';
 import { IAnalysis } from "../../../../core/models/analysis.ts";
 import { getUserAnalysis } from "../../../../api/analysisApi.ts";
@@ -10,93 +9,12 @@ import CardConfirmDelete from "../cards/CardConfirmDelete.tsx";
 import ModalEditUser from "../modals/ModalEditUser.tsx";
 import CardUserMetrics from "../cards/CardUserMetrics.tsx";
 
-import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css';
-
 interface TableSearchUsersProps {
     users: IUser[];
     loading: boolean;
     error: string | null;
     role: number | null;
 }
-
-const SearchTableSkeleton: React.FC = () => {
-    const { base, highlight } = useThemeColors();
-
-    return (
-        <SkeletonTheme baseColor={base} highlightColor={highlight}>
-            <div className="container mx-auto space-y-4 md:space-y-6">
-                {/* Filtros y búsqueda */}
-                <div className="card bg-base-100 shadow-sm border border-base-200">
-                    <div className="card-body p-3 md:p-6 space-y-4">
-                        <div className="flex flex-col gap-3">
-                            {/* Search Input */}
-                            <div>
-                                <Skeleton height={40} borderRadius={8} />
-                            </div>
-                            {/* Filter Button */}
-                            <div className="flex gap-2">
-                                <Skeleton width={100} height={32} borderRadius={6} />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Tabla de Cuestionarios */}
-                <div className="card bg-base-100 shadow-sm border border-base-200">
-                    <div className="card-body p-3 md:p-6">
-                        <Skeleton width={150} height={20} className="mb-4" />
-
-                        {/* Vista de escritorio */}
-                        <div className="hidden lg:block overflow-x-auto">
-                            <table className="table table-zebra">
-                                <thead>
-                                    <tr>
-                                        <th><Skeleton width={80} height={16} /></th>
-                                        <th><Skeleton width={80} height={16} /></th>
-                                        <th><Skeleton width={80} height={16} /></th>
-                                        <th><Skeleton width={80} height={16} /></th>
-                                        <th><Skeleton width={80} height={16} /></th>
-                                        <th><Skeleton width={80} height={16} /></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {[...Array(5)].map((_, i) => (
-                                        <tr key={i}>
-                                            <td><Skeleton width={120} height={16} /></td>
-                                            <td><Skeleton width={100} height={16} /></td>
-                                            <td><Skeleton width={90} height={16} /></td>
-                                            <td><Skeleton width={80} height={16} /></td>
-                                            <td><Skeleton width={100} height={16} /></td>
-                                            <td><Skeleton width={60} height={30} borderRadius={6} /></td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        {/* Vista móvil */}
-                        <div className="lg:hidden space-y-3">
-                            {[...Array(3)].map((_, i) => (
-                                <div
-                                    key={i}
-                                    className="card bg-base-200 p-4 space-y-3 border border-base-300 rounded-lg"
-                                >
-                                    <Skeleton width="60%" height={16} />
-                                    <Skeleton width="40%" height={14} />
-                                    <div className="flex justify-between items-center">
-                                        <Skeleton width="30%" height={14} />
-                                        <Skeleton width="30%" height={30} borderRadius={6} />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </SkeletonTheme>
-    );
-};
 
 const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
     loading,
@@ -187,7 +105,73 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
     console.log("SelectedUser:", selectedUser);
 
 
-    if (loading) return <SearchTableSkeleton />;
+    if (loading)
+        return (
+            <div className="container mx-auto space-y-4 md:space-y-6">
+                {/* Filtros y búsqueda */}
+                <div className="card bg-base-100 shadow-sm border border-base-200">
+                    <div className="card-body p-3 md:p-6">
+                        <div className="flex flex-col gap-3">
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-base-content/50 z-10" />
+                                <input
+                                    type="text"
+                                    placeholder="Buscar por nombre, NIT o sector..."
+                                    className="input input-bordered w-full pl-10 text-sm"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="flex gap-2">
+                                <div className="dropdown dropdown-end">
+                                    <div tabIndex={0} role="button" className="btn btn-outline btn-sm gap-2 text-base-content/50">
+                                        <Filter className="h-4 w-4" />
+                                        <span className="hidden sm:inline">
+                                            {filter === "all"
+                                                ? "Todos"
+                                                : filter === "admin"
+                                                    ? "Administradores"
+                                                    : filter === "client"
+                                                        ? "Clientes"
+                                                        : "Asesores"}
+                                        </span>
+                                    </div>
+                                    <ul
+                                        tabIndex={0}
+                                        className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+                                    >
+                                        <li key={"all"}>
+                                            <button onClick={() => setFilter("all")}>Todos</button>
+                                        </li>
+                                        <li key={"admin"}>
+                                            <button onClick={() => setFilter("admin")}>Administradores</button>
+                                        </li>
+                                        <li key={"client"}>
+                                            <button onClick={() => setFilter("client")}>Clientes</button>
+                                        </li>
+                                        <li key={"adviser"}>
+                                            <button onClick={() => setFilter("adviser")}>Asesores</button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="container mx-auto space-y-6 overflow-hidden">
+                    <div className="flex items-center justify-center">
+                        <div className="card w-full bg-base-100 shadow-sm border border-base-200">
+                            <div className="card-body items-center text-center">
+                                <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
+                                <p className="mt-4">Cargando usuarios...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
 
     if (error || role !== 1)
         return (
@@ -282,7 +266,7 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                                         <td>{user.legalName}</td>
                                         <td>{user.cedulaOrNIT}</td>
                                         <td>{user.clientType}</td>
-                                        <td>{user.sector}</td>
+                                        <td>{user.sector || "No especificado"}</td>
                                         <td>
                                             <span className="badge badge-outline text-xs">{user.role.name}</span>
                                         </td>
@@ -292,15 +276,15 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                                                 onClick={() => openDetailsModal(user)}
                                             >
                                                 <Eye className="h-3 w-3" />
-                                                Ver detalles
+                                                <p className="whitespace-nowrap">Ver detalle</p>
                                             </button>
                                         </td>
                                         <td>
                                             <button
-                                                className="btn btn-primary btn-xs gap-1 whitespace-nowrap"
+                                                className="btn btn-warning btn-xs gap-1 whitespace-nowrap"
                                                 onClick={() => openEditModal(user)}
                                             >
-                                                <Eye className="h-3 w-3" />
+                                                <Edit className="h-3 w-3" />
                                                 Editar
                                             </button>
                                         </td>
@@ -349,7 +333,7 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                                         className="btn btn-primary btn-xs gap-1 whitespace-nowrap"
                                         onClick={() => openEditModal(user)}
                                     >
-                                        <Eye className="h-3 w-3" />
+                                        <Edit className="h-3 w-3" />
                                         Editar
                                     </button>
                                     <button
@@ -425,7 +409,7 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                             {selectedUserAnalysis.length > 0 ? (
                                 <CardUserMetrics loading={loading} error={error} user={selectedUser} analysis={selectedUserAnalysis} />
                             ) : (
-                                <p className="text-sm text-base-content/70">
+                                <p className="text-sm text-base-content/70 card bg-base-100 flex flex-row p-4 gap-3 border-b border-base-200">
                                     Este cliente aún no ha completado cuestionarios.
                                 </p>
                             )}

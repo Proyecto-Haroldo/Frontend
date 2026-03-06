@@ -37,18 +37,28 @@ const HeaderStatsSkeleton: React.FC = () => {
     const { base, highlight } = useThemeColors();
 
     return (
-        <SkeletonTheme baseColor={base} highlightColor={highlight}>
-            <div className="container mx-auto space-y-4 md:space-y-6">
-                {/* Header */}
+        <div className="container mx-auto space-y-4 md:space-y-6">
+            {/* Header */}
+            <SkeletonTheme baseColor={highlight} highlightColor={highlight}>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <h1 className="text-2xl font-semibold">Panel Administrativo</h1>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-4">
+
+                    {/* BEFORE MD */}
+                    <div className="inline w-full md:hidden">
+                        <Skeleton className="w-full" height={32} borderRadius={16} style={{ marginBottom: "8px" }} />
+                        <Skeleton className="w-full" height={32} borderRadius={16} />
+                    </div>
+
+                    {/* MD AND UP */}
+                    <div className="hidden md:flex items-center justify-end gap-4 w-[105px]">
                         <Skeleton width={105} height={32} borderRadius={16} />
                         <Skeleton width={105} height={32} borderRadius={16} />
                     </div>
                 </div>
+            </SkeletonTheme>
 
-                {/* Statistics Section */}
+            {/* Statistics Section */}
+            <SkeletonTheme baseColor={base} highlightColor={base}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
                     <SkeletonCard />
                     <SkeletonCard />
@@ -57,14 +67,13 @@ const HeaderStatsSkeleton: React.FC = () => {
                 </div>
 
                 {/* Risk Distribution */}
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                     <SkeletonCard />
                     <SkeletonCard />
                     <SkeletonCard />
                 </div>
-            </div>
-        </SkeletonTheme>
+            </SkeletonTheme >
+        </div>
     );
 };
 

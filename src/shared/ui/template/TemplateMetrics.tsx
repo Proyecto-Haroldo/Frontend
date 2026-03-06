@@ -89,16 +89,25 @@ const baseChartOptions: any = {
 };
 
 const TemplateMetricsSkeleton: React.FC = () => {
-    const { base, highlight } = useThemeColors();
+    const { highlight } = useThemeColors();
 
     return (
-        <SkeletonTheme baseColor={base} highlightColor={highlight}>
+        <SkeletonTheme baseColor={highlight} highlightColor={highlight}>
             <div className="w-full box-border">
                 <div className="relative w-full overflow-hidden">
                     <div className="flex flex-col gap-5 p-5 px-3">
                         <div className="flex w-full gap-3">
-                            {Array.from({ length: 3 }).map((_, i) => (
-                                <div key={i} className="w-full flex flex-col gap-3">
+                            <div className="w-full flex flex-col gap-3">
+                                <Skeleton height={180} style={{ width: '100%' }} />
+                                <div style={{ width: '70%' }}>
+                                    <Skeleton height={22} />
+                                </div>
+                                <div style={{ width: '95%' }}>
+                                    <Skeleton count={2} />
+                                </div>
+                            </div>
+                            {Array.from({ length: 2 }).map((_, i) => (
+                                <div key={i} className="w-full hidden md:flex flex-col gap-3">
                                     <Skeleton height={180} style={{ width: '100%' }} />
                                     <div style={{ width: '70%' }}>
                                         <Skeleton height={22} />
