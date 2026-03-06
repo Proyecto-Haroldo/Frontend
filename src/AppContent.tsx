@@ -169,6 +169,9 @@ function AppContent() {
                     </ProtectedRoute>
                 }
             />
+
+            {/* FALLBACK ROUTE */}
+            <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
     );
 }

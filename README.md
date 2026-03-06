@@ -361,10 +361,10 @@ _P.S: Utilizar como base el archivo `.env.example`._
 
 ```bash
 # Local version
-NEXT_PUBLIC_GITHUB_API_URL=http://localhost:8080/api
+VITE_API_URL="http://localhost:8080/api"
 
 # Deploy version
-NEXT_PUBLIC_GITHUB_API_URL=https://backend-v45w.onrender.com/api
+VITE_API_URL="https://backend-v45w.onrender.com/api"
 ```
 
 _P.S: El backend local lo encontrarás en_ [http://localhost:8080/api](http://localhost:8080/api), _el swagger local con cada endpoint en_ [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) _y el microservicio de IA local en_ [http://localhost:8081](http://localhost:8081).

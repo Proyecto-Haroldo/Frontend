@@ -8,9 +8,9 @@ import {
   User,
   Loader2,
   MessageSquare,
-  Send,
-  FileText
+  Send
 } from 'lucide-react';
+import { motion } from 'motion/react';
 import { IAnalysis } from '../../../core/models/analysis';
 import { getAnalysisById, getAnalysisAnswers, gradeAnalysis } from '../../../api/analysisApi';
 import type { QuestionAnswerDTO } from '../../../shared/types/analysis';
@@ -19,9 +19,9 @@ import {
   getRiskLevel,
   getRiskDescription,
 } from '../../../shared/types/analysis';
-import { Stoplight } from '../../../shared/ui/Stoplight';
+import { Stoplight } from '../../../shared/ui/components/stoplight/Stoplight';
 
-function AnalysisOverview({
+function AnalysisManager({
   analysisId,
   onAnalysisUpdated,
 }: {
@@ -84,9 +84,13 @@ function AnalysisOverview({
   if (loading) {
     return (
       <div className="container mx-auto space-y-6 overflow-hidden">
-        <div className="flex items-center justify-center min-h-screen">
-          <Loader2 className="h-10 w-10 text-primary animate-spin" />
-          <p className="ml-2">Cargando análisis...</p>
+        <div className="flex items-center justify-center">
+          <div className="card w-full bg-base-100 shadow-sm border border-base-200">
+            <div className="card-body items-center text-center">
+              <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
+              <p className="mt-4">Cargando análisis...</p>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -174,12 +178,40 @@ function AnalysisOverview({
     }
   };
 
+  const getStateBadge = (state: string) => {
+    switch (state) {
+      case "pending":
+        return (
+          <span className="badge badge-warning p-1 badge-sm gap-1 text-xs">
+            <Clock className="h-3 w-3" />
+            <span className="hidden sm:inline">Pendiente</span>
+            <span className="sm:hidden">Pend.</span>
+          </span>
+        );
+      case "checked":
+      case "completed":
+        return (
+          <span className="badge badge-success p-1 badge-sm gap-1 text-xs">
+            <CheckCircle className="h-3 w-3" />
+            <span className="hidden sm:inline">Completado</span>
+            <span className="sm:hidden">Comp.</span>
+          </span>
+        );
+      default:
+        return (
+          <span className="badge badge-neutral p-1 badge-sm text-xs">
+            Desconocido
+          </span>
+        );
+    }
+  };
+
   return (
     <div className="min-h-screen bg-base-200">
-      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8 card bg-base-100 shadow-xl">
 
         {/* Header */}
-        <div className="flex items-center justify-between py-4">
+        <div className="flex items-center justify-end">
           <div className="flex items-center gap-4 text-base-content/60 text-sm">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4" />
@@ -197,141 +229,178 @@ function AnalysisOverview({
           {/* Stoplight */}
           <div className="flex flex-col items-center justify-center space-y-6">
             <div className="text-center space-y-4">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-base-200">
+              <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full rounded-full text-sm font-medium border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}>
                 <StatusIcon className={`w-10 h-10 ${currentStatus.color}`} />
               </div>
               <div>
-                <h2 className="text-2xl font-bold mb-2">Estado del análisis</h2>
+                <h2 className="text-2xl font-bold mb-4">Estado del análisis</h2>
                 <div className={`inline-block px-4 py-2 rounded-full text-sm font-medium border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}>
                   {currentStatus.title}
                 </div>
               </div>
             </div>
 
-          {/* Realistic Stoplight */}
-          <div className="relative">
-            <Stoplight color={colorSemaforo} />
-          </div>
+            {/* Realistic Stoplight */}
+            <div className="relative">
+              <Stoplight color={colorSemaforo} />
+            </div>
           </div>
 
           {/* Summary */}
-          <div className="rounded-xl p-8 border bg-base-100 shadow-md">
+          <div className="rounded-xl p-8 bg-base-200 shadow-md">
             <h3 className="text-xl font-semibold mb-4 text-center">Resumen del Análisis</h3>
             <p className="text-base-content/80 leading-relaxed text-justify">
               {analysis.recomendacionInicial || 'No disponible'}
             </p>
-            <div className="mt-4 flex justify-center gap-2">
-              <div className={`badge ${colorSemaforo === 'verde' ? 'badge-success' : colorSemaforo === 'amarillo' ? 'badge-warning' : 'badge-error'}`}>
+            <div className={`card p-4 bg-base-200 gap-2 mt-4 border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}>
+              <div className={`badge text-sm ${colorSemaforo === 'verde' ? 'badge-success' : colorSemaforo === 'amarillo' ? 'badge-warning' : 'badge-error'}`}>
                 {getRiskLevel(colorSemaforo)}
               </div>
-              <span className="text-base-content/80">{getRiskDescription(colorSemaforo)}</span>
+              <span className="text-base-content/80 text-sm">{getRiskDescription(colorSemaforo)}</span>
             </div>
           </div>
 
         </div>
 
-        {/* Detalles completos del análisis */}
-        <div className="card bg-base-100 shadow-md p-6">
-          <h3 className="text-lg font-semibold mb-4">Detalles Completos del Análisis</h3>
+        {/* Detalles del análisis */}
+        <div className="card bg-base-200 shadow-md p-6">
+          <h3 className="text-lg font-semibold mb-4">Detalles del Análisis</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium text-base-content/70">ID</label>
-              <p>{analysis.analysisId}</p>
+              <p className='text-sm'>{analysis.analysisId}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Estado</label>
-              <p>{analysis.status}</p>
+              <div>{getStateBadge(analysis.status)}</div>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Cliente</label>
-              <p>{analysis.clientName}</p>
+              <p className='text-sm'>{analysis.clientName}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Asesor</label>
-              <p className="flex items-center gap-2"><User className="h-4 w-4 text-base-content/60" /> {analysis.asesorName || 'Sin Asignar'}</p>
+              <p className="flex items-center gap-2 text-sm"><User className="h-4 w-4 text-base-content/60" /> {analysis.asesorName || 'Sin Asignar'}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Categoría</label>
-              <p>{analysis.categoria}</p>
+              <p className='text-sm'>{analysis.categoria}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Fecha de Resolución</label>
-              <p>{formatDate(analysis.timeWhenSolved)} {formatTime(analysis.timeWhenSolved)}</p>
+              <p className='text-sm'>{formatDate(analysis.timeWhenSolved)} · {formatTime(analysis.timeWhenSolved)}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Fecha Revisado</label>
-              <p>{analysis.timeWhenChecked ? `${formatDate(analysis.timeWhenChecked)} ${formatTime(analysis.timeWhenChecked)}` : 'No revisado aún'}</p>
+              <p className='text-sm'>{analysis.timeWhenChecked ? `${formatDate(analysis.timeWhenChecked)} · ${formatTime(analysis.timeWhenChecked)}` : 'No revisado aún'}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Nivel de Riesgo</label>
-              <p>{colorSemaforo}</p>
+              <p className='text-sm'>{colorSemaforo}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Recomendación Inicial</label>
-              <p className="bg-base-200 p-2 rounded">{analysis.recomendacionInicial || 'No disponible'}</p>
+              <p className="card border text-sm p-4 mt-2 bg-primary/10 border-primary/50 rounded text-justify max-h-59 overflow-y-auto">{analysis.recomendacionInicial || 'No disponible'}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">
                 {analysis.status === 'checked' ? 'Revisión del asesor' : 'Análisis inicial (IA)'}
               </label>
-              <p className="bg-base-200 p-2 rounded">{analysis.contenidoRevision || 'No disponible'}</p>
+              <p className="card border p-4 mt-2 text-sm bg-primary/10 border-primary/50 rounded text-justify max-h-59 overflow-y-auto">{analysis.contenidoRevision || 'No disponible'}</p>
               {analysis.status === 'pending' && analysis.contenidoRevision && (
-                <p className="text-xs text-base-content/50 mt-1">Generado por IA hasta que un asesor revise.</p>
+                <p className="text-xs text-base-content/50 mt-3">* Generado por IA hasta que un asesor revise.</p>
               )}
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Conteo</label>
-              <p>{analysis.conteo}</p>
+              <p className='text-sm'>{analysis.conteo}</p>
             </div>
           </div>
         </div>
 
         {/* Respuestas del cuestionario */}
-        <div className="card bg-base-200 p-4">
-          <label className="flex items-center justify-between cursor-pointer" onClick={() => setShowAnswers(!showAnswers)}>
-            <span className="font-medium flex items-center gap-2">
-              <FileText className="w-5 h-5" />
-              Respuestas del Cuestionario ({answersLoading ? '...' : answers.length})
-            </span>
-            <ChevronDown className={`w-5 h-5 transition-transform ${showAnswers ? 'rotate-180' : 'rotate-0'}`} />
-          </label>
-          {showAnswers && (
-            <div className="mt-4 space-y-4">
-              {answersLoading ? (
-                <div className="flex items-center gap-2 text-base-content/60">
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  <span className="text-sm">Cargando respuestas...</span>
+        <div className="card bg-base-200 shadow-md">
+          <motion.div
+            className="card bg-base-200/50"
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.7, delay: 0.8, ease: "easeOut" }}
+          >
+            <div className="card-body">
+              <div className="collapse">
+                <input
+                  id="answers-toggle"
+                  name='answers-toggle'
+                  type="checkbox"
+                  checked={showAnswers}
+                  onChange={(e) => setShowAnswers(e.target.checked)}
+                />
+                <motion.div
+                  className="collapse-title flex items-center justify-center gap-2 cursor-pointer hover:bg-base-300/50 rounded-lg transition-all duration-300"
+                  onClick={() => setShowAnswers(!showAnswers)}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                >
+                  <motion.div
+                    className="transition-transform duration-300"
+                    animate={{ rotate: showAnswers ? 180 : 0 }}
+                  >
+                    <ChevronDown className="w-5 h-5" />
+                  </motion.div>
+
+                  <label htmlFor='answers-toggle' className="font-medium">
+                    {showAnswers ? "Ocultar" : "Ver"} Respuestas del Cuestionario
+                  </label>
+                </motion.div>
+
+                <div className="collapse-content">
+                  {showAnswers && (
+                    <div className="mt-4 space-y-4">
+                      {answersLoading ? (
+                        <div className="flex items-center gap-2 text-base-content/60">
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <span className="text-sm">Cargando respuestas...</span>
+                        </div>
+                      ) : answersError ? (
+                        <p className="text-error text-sm">{answersError}</p>
+                      ) : answers.length === 0 ? (
+                        <p className="text-base-content/60 text-sm">No hay respuestas guardadas para este análisis.</p>
+                      ) : (
+                        <ul className="space-y-3">
+                          {answers.map((a, idx) => (
+                            <motion.li
+                              key={a.questionId != null ? `q-${a.questionId}-${idx}` : idx}
+                              className="bg-base-100 rounded-lg p-4"
+                              initial={{ opacity: 0, y: 8 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: idx * 0.03 }}
+                            >
+                              <p className="text-sm font-medium text-base-content/80 mb-1">Pregunta {idx + 1}</p>
+                              <p className="text-base-content/90 mb-2">{a.questionText ?? ''}</p>
+                              <p className="text-sm text-primary font-medium">Respuesta:</p>
+                              <p className="text-sm text-base-content/80 whitespace-pre-wrap card border p-4 mt-2 bg-primary/10 border-primary/50">{a.answerText ?? ''}</p>
+                            </motion.li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
                 </div>
-              ) : answersError ? (
-                <p className="text-error text-sm">{answersError}</p>
-              ) : answers.length === 0 ? (
-                <p className="text-base-content/60 text-sm">No hay respuestas guardadas para este análisis.</p>
-              ) : (
-                <ul className="space-y-3">
-                  {answers.map((a, idx) => (
-                    <li key={a.questionId != null ? `q-${a.questionId}-${idx}` : idx} className="bg-base-100 rounded-lg p-4 border border-base-300">
-                      <p className="text-sm font-medium text-base-content/80 mb-1">Pregunta {idx + 1}</p>
-                      <p className="text-base-content/90 mb-2">{a.questionText ?? ''}</p>
-                      <p className="text-sm text-primary font-medium">Respuesta:</p>
-                      <p className="text-base-content/80 whitespace-pre-wrap">{a.answerText ?? ''}</p>
-                    </li>
-                  ))}
-                </ul>
-              )}
+              </div>
             </div>
-          )}
+          </motion.div>
         </div>
 
         {/* Formulario de calificación (solo si está pendiente) */}
         {analysis.status === 'pending' && (
-          <div className="card bg-base-100 shadow-md border border-primary/20 p-6">
+          <div className="card bg-base-200 shadow-md p-6">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-primary" />
               Calificar cuestionario
             </h3>
             <p className="text-sm text-base-content/70 mb-4">
               Escriba su comentario para el cliente y opcionalmente ajuste el semáforo. Al enviar, el análisis quedará marcado como revisado.
             </p>
+            <hr className="text-accent/20 mx-4"></hr>
             {gradeError && (
               <div className="alert alert-error mb-4">
                 <XCircle className="h-5 w-5" />
@@ -341,7 +410,7 @@ function AnalysisOverview({
             <div className="space-y-4">
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Comentario del asesor (obligatorio)</span>
+                  <span className="text-sm my-4">* Comentario del asesor (obligatorio)</span>
                 </label>
                 <textarea
                   className="textarea textarea-bordered w-full min-h-[120px]"
@@ -351,9 +420,9 @@ function AnalysisOverview({
                   disabled={isGrading}
                 />
               </div>
-              <div className="form-control">
+              <div className="form-control flex flex-col">
                 <label className="label">
-                  <span className="label-text">Semáforo (opcional)</span>
+                  <span className="text-sm my-4">* Semáforo (opcional)</span>
                 </label>
                 <select
                   className="select select-bordered w-full max-w-xs"
@@ -422,4 +491,4 @@ function AnalysisOverview({
   );
 }
 
-export default AnalysisOverview;
+export default AnalysisManager;

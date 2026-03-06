@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { ColorSemaforo } from '../types/analysis';
+import { ColorSemaforo } from '../../../types/analysis';
 
 type StoplightProps = {
   color: ColorSemaforo;

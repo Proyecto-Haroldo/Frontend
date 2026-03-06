@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import {
-  ChevronDown,
   Clock,
   CheckCircle,
   AlertTriangle,
@@ -15,10 +14,9 @@ import {
   getRiskLevel,
   getRiskDescription,
 } from '../../../shared/types/analysis';
-import { Stoplight } from '../../../shared/ui/Stoplight';
+import { Stoplight } from '../../../shared/ui/components/stoplight/Stoplight';
 
 function AnalysisOverview({ analysisId }: { analysisId?: number }) {
-  const [showAnswers, setShowAnswers] = useState(false);
   const [analysis, setAnalysis] = useState<IAnalysis | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -45,9 +43,13 @@ function AnalysisOverview({ analysisId }: { analysisId?: number }) {
   if (loading) {
     return (
       <div className="container mx-auto space-y-6 overflow-hidden">
-        <div className="flex items-center justify-center min-h-screen">
-          <Loader2 className="h-10 w-10 text-primary animate-spin" />
-          <p className="ml-2">Cargando análisis...</p>
+        <div className="flex items-center justify-center">
+          <div className="card w-full bg-base-100 shadow-sm border border-base-200">
+            <div className="card-body items-center text-center">
+              <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
+              <p className="mt-4">Cargando análisis...</p>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -135,12 +137,40 @@ function AnalysisOverview({ analysisId }: { analysisId?: number }) {
     }
   };
 
+  const getStateBadge = (state: string) => {
+    switch (state) {
+      case "pending":
+        return (
+          <span className="badge badge-warning p-2 badge-sm gap-1 text-xs">
+            <Clock className="h-3 w-3" />
+            <span className="hidden sm:inline">Pendiente</span>
+            <span className="sm:hidden">Pend.</span>
+          </span>
+        );
+      case "checked":
+      case "completed":
+        return (
+          <span className="badge badge-success p-2 badge-sm gap-1 text-xs">
+            <CheckCircle className="h-3 w-3" />
+            <span className="hidden sm:inline">Completado</span>
+            <span className="sm:hidden">Comp.</span>
+          </span>
+        );
+      default:
+        return (
+          <span className="badge badge-neutral p-2 badge-sm text-xs">
+            Desconocido
+          </span>
+        );
+    }
+  };
+
   return (
     <div className="min-h-screen bg-base-200">
-      <div className="max-w-6xl mx-auto px-4 space-y-8">
+      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8 card bg-base-100 shadow-xl">
 
         {/* Header */}
-        <div className="flex items-center justify-end py-4">
+        <div className="flex items-center justify-end">
           <div className="flex items-center gap-4 text-base-content/60 text-sm">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4" />
@@ -158,103 +188,93 @@ function AnalysisOverview({ analysisId }: { analysisId?: number }) {
           {/* Stoplight */}
           <div className="flex flex-col items-center justify-center space-y-6">
             <div className="text-center space-y-4">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-base-200">
+              <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full rounded-full text-sm font-medium border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}>
                 <StatusIcon className={`w-10 h-10 ${currentStatus.color}`} />
               </div>
               <div>
-                <h2 className="text-2xl font-bold mb-2">Estado del análisis</h2>
+                <h2 className="text-2xl font-bold mb-4">Estado del análisis</h2>
                 <div className={`inline-block px-4 py-2 rounded-full text-sm font-medium border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}>
                   {currentStatus.title}
                 </div>
               </div>
             </div>
 
-          {/* Realistic Stoplight */}
-          <div className="relative">
-            <Stoplight color={colorSemaforo} />
-          </div>
+            {/* Realistic Stoplight */}
+            <div className="relative">
+              <Stoplight color={colorSemaforo} />
+            </div>
           </div>
 
           {/* Summary */}
-          <div className="rounded-xl p-8 border bg-base-100 shadow-md">
+          <div className="rounded-xl p-8 bg-base-200 shadow-md">
             <h3 className="text-xl font-semibold mb-4 text-center">Resumen del Análisis</h3>
             <p className="text-base-content/80 leading-relaxed text-justify">
               {analysis.recomendacionInicial || 'No disponible'}
             </p>
-            <div className="mt-4 flex justify-center gap-2">
-              <div className={`badge ${colorSemaforo === 'verde' ? 'badge-success' : colorSemaforo === 'amarillo' ? 'badge-warning' : 'badge-error'}`}>
+            <div className={`card p-4 bg-base-100 gap-2 mt-4 border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}>
+              <div className={`badge text-sm ${colorSemaforo === 'verde' ? 'badge-success' : colorSemaforo === 'amarillo' ? 'badge-warning' : 'badge-error'}`}>
                 {getRiskLevel(colorSemaforo)}
               </div>
-              <span className="text-base-content/80">{getRiskDescription(colorSemaforo)}</span>
+              <span className="text-base-content/80 text-sm">{getRiskDescription(colorSemaforo)}</span>
             </div>
           </div>
-
         </div>
 
-        {/* Detalles completos del análisis */}
-        <div className="card bg-base-100 shadow-md p-6">
-          <h3 className="text-lg font-semibold mb-4">Detalles Completos del Análisis</h3>
+        {/* Detalles del análisis */}
+        <div className="card bg-base-200 shadow-md p-6">
+          <h3 className="text-lg font-semibold mb-4">Detalles del Análisis</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium text-base-content/70">ID</label>
-              <p>{analysis.analysisId}</p>
+              <p className='text-sm'>{analysis.analysisId}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Estado</label>
-              <p>{analysis.status}</p>
+              <div>{getStateBadge(analysis.status)}</div>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Cliente</label>
-              <p>{analysis.clientName}</p>
+              <p className='text-sm'>{analysis.clientName}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Asesor</label>
-              <p className="flex items-center gap-2"><User className="h-4 w-4 text-base-content/60" /> {analysis.asesorName || 'Sin Asignar'}</p>
+              <p className="flex items-center gap-2 text-sm"><User className="h-4 w-4 text-base-content/60" /> {analysis.asesorName || 'Sin Asignar'}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Categoría</label>
-              <p>{analysis.categoria}</p>
+              <p className='text-sm'>{analysis.categoria}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Fecha de Resolución</label>
-              <p>{formatDate(analysis.timeWhenSolved)} {formatTime(analysis.timeWhenSolved)}</p>
+              <p className='text-sm'>{formatDate(analysis.timeWhenSolved)} · {formatTime(analysis.timeWhenSolved)}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Fecha Revisado</label>
-              <p>{analysis.timeWhenChecked ? `${formatDate(analysis.timeWhenChecked)} ${formatTime(analysis.timeWhenChecked)}` : 'No revisado aún'}</p>
+              <p className='text-sm'>{analysis.timeWhenChecked ? `${formatDate(analysis.timeWhenChecked)} · ${formatTime(analysis.timeWhenChecked)}` : 'No revisado aún'}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Nivel de Riesgo</label>
-              <p>{colorSemaforo}</p>
+              <p className='text-sm'>{colorSemaforo}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Recomendación Inicial</label>
-              <p className="bg-base-200 p-2 rounded">{analysis.recomendacionInicial || 'No disponible'}</p>
+              <p className="card border text-sm p-4 mt-2 bg-primary/10 border-primary/50 rounded text-justify max-h-59 overflow-y-auto">{analysis.recomendacionInicial || 'No disponible'}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-base-content/70">Revisión del Asesor</label>
-              <p className="bg-base-200 p-2 rounded">{analysis.contenidoRevision || 'No disponible'}</p>
+              <label className="text-sm font-medium text-base-content/70">
+                {analysis.status === 'checked' ? 'Revisión del asesor' : 'Análisis inicial (IA)'}
+              </label>
+              <p className="card border p-4 mt-2 text-sm bg-primary/10 border-primary/50 rounded text-justify max-h-59 overflow-y-auto">{analysis.contenidoRevision || 'No disponible'}</p>
+              {analysis.status === 'pending' && analysis.contenidoRevision && (
+                <p className="text-xs text-base-content/50 mt-3">* Generado por IA hasta que un asesor revise.</p>
+              )}
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Conteo</label>
-              <p>{analysis.conteo}</p>
+              <p className='text-sm'>{analysis.conteo}</p>
             </div>
           </div>
         </div>
-
-        {/* Sección de respuestas opcional */}
-        <div className="card bg-base-200 p-4">
-          <label className="flex items-center justify-between cursor-pointer" onClick={() => setShowAnswers(!showAnswers)}>
-            <span className="font-medium">Respuestas del Cuestionario</span>
-            <ChevronDown className={`w-5 h-5 transition-transform ${showAnswers ? 'rotate-180' : 'rotate-0'}`} />
-          </label>
-          {showAnswers && (
-            <div className="mt-4 text-base-content/70">
-              <p>Esta sección mostrará todas sus respuestas al cuestionario. Implementación pendiente.</p>
-            </div>
-          )}
-        </div>
-
       </div>
     </div>
   );

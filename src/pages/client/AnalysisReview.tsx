@@ -17,7 +17,7 @@ import {
   getRiskDescription,
   formatAnalysisTitle
 } from '../../shared/types/analysis';
-import { Stoplight } from '../../shared/ui/Stoplight';
+import { Stoplight } from '../../shared/ui/components/stoplight/Stoplight';
 import { IAnalysis } from '../../core/models/analysis';
 import { getAnalysisAnswers } from '../../api/analysisApi';
 import type { QuestionAnswerDTO } from '../../shared/types/analysis';
@@ -200,13 +200,13 @@ function AnalysisReview() {
   const displayAnswers: { questionText: string; answerText: string }[] =
     analysis && apiAnswers !== null
       ? apiAnswers.map((a) => ({
-          questionText: a.questionText ?? '',
-          answerText: a.answerText ?? ''
-        }))
+        questionText: a.questionText ?? '',
+        answerText: a.answerText ?? ''
+      }))
       : (parsedQuestionnaireFromLS?.answers ?? []).map((a) => ({
-          questionText: a.questionTitle ?? '',
-          answerText: Array.isArray(a.answer) ? a.answer.filter(Boolean).join(', ') : String(a.answer ?? '')
-        }));
+        questionText: a.questionTitle ?? '',
+        answerText: Array.isArray(a.answer) ? a.answer.filter(Boolean).join(', ') : String(a.answer ?? '')
+      }));
   const hasAnswersFromApi = Boolean(analysis?.analysisId);
   const showAnswersLoading = hasAnswersFromApi && answersLoading;
 
@@ -271,14 +271,14 @@ function AnalysisReview() {
         {/* Status Header */}
         <motion.div className="text-center space-y-4" variants={itemVariants}>
           <motion.div
-            className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-base-200"
+            className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-base-200 rounded-full text-sm font-medium border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
             <StatusIcon className={`w-10 h-10 ${currentStatus.color}`} />
           </motion.div>
           <motion.div variants={itemVariants}>
-            <h2 className="text-2xl font-bold mb-2">Estado del análisis</h2>
+            <h2 className="text-2xl font-bold mb-4">Estado del análisis</h2>
             <motion.div
               className={`inline-block px-4 py-2 rounded-full text-sm font-medium border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}
               whileHover={{ scale: 1.05 }}
@@ -330,7 +330,7 @@ function AnalysisReview() {
           <div className="card-body">
             {/* Header */}
             <motion.div
-              className="flex items-center justify-between py-4"
+              className="flex items-center justify-between mb-2"
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
@@ -380,7 +380,7 @@ function AnalysisReview() {
 
               {/* Stoplight Section */}
               <motion.div
-                className="card bg-base-200/50 backdrop-blur-sm"
+                className="card bg-base-200/50 backdrop-blur-sm shadow-md"
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
@@ -392,16 +392,16 @@ function AnalysisReview() {
 
               {/* Risk Assessment Card */}
               <motion.div
-                className="card bg-base-200/50"
+                className="card bg-base-200/50 shadow-md"
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.7, delay: 0.6, ease: "easeOut" }}
                 whileHover={{ scale: 1.01 }}
               >
                 <div className="card-body">
-                  <h3 className="card-title text-lg mb-4">Nivel de Riesgo</h3>
-                  <div className="flex items-center gap-4">
-                    <div className={`badge badge-lg px-4 py-3 transition-all duration-300 ${analysisData.colorSemaforo === 'verde' ? 'badge-success' :
+                  <h3 className="card-title text-lg">Nivel de Riesgo</h3>
+                  <div className={`card p-4 bg-base-200 gap-2 mt-2 border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}>
+                    <div className={`badge text-sm badge-lg transition-all duration-300 ${analysisData.colorSemaforo === 'verde' ? 'badge-success' :
                       analysisData.colorSemaforo === 'amarillo' ? 'badge-warning' : 'badge-error'
                       }`}>
                       {getRiskLevel(analysisData.colorSemaforo)}
@@ -426,7 +426,7 @@ function AnalysisReview() {
                       <MessageSquare className="w-5 h-5 text-primary" />
                       Comentario del asesor
                     </h3>
-                    <p className="text-base-content/80 whitespace-pre-wrap">
+                    <p className="text-base-content/80 text-justify whitespace-pre-wrap">
                       {analysis.contenidoRevision}
                     </p>
                   </div>
@@ -435,7 +435,7 @@ function AnalysisReview() {
 
               {/* Answers Section - Optional placeholder */}
               <motion.div
-                className="card bg-base-200/50"
+                className="card bg-base-200/50 shadow-md"
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.7, delay: 0.8, ease: "easeOut" }}
@@ -495,7 +495,7 @@ function AnalysisReview() {
                               {displayAnswers.map((a, idx) => (
                                 <motion.li
                                   key={`ans-${idx}`}
-                                  className="bg-base-100 rounded-lg p-4 border border-base-300"
+                                  className="bg-base-100 rounded-lg p-4"
                                   initial={{ opacity: 0, y: 8 }}
                                   animate={{ opacity: 1, y: 0 }}
                                   transition={{ delay: idx * 0.03 }}
@@ -505,7 +505,7 @@ function AnalysisReview() {
                                   </p>
                                   <p className="text-base-content/90 mb-2">{a.questionText}</p>
                                   <p className="text-sm font-medium text-primary">Respuesta:</p>
-                                  <p className="text-base-content/80 whitespace-pre-wrap">
+                                  <p className="text-base-content/80 whitespace-pre-wrap card border p-4 mt-2 bg-primary/10 border-primary/50">
                                     {a.answerText || '—'}
                                   </p>
                                 </motion.li>

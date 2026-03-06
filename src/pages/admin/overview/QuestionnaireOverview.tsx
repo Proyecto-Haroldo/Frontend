@@ -112,7 +112,7 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
         <div className="w-full">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <h1 className="text-xl sm:text-2xl font-bold">
-              Gestión de Preguntas
+              Visor de Preguntas
               {questionnaire && (
                 <span className="block capitalize sm:inline text-base sm:text-lg font-normal text-base-content/70 sm:ml-2">
                   <span className="hidden sm:inline">- </span>{questionnaire.categoryName}

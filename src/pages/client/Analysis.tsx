@@ -51,7 +51,7 @@ function Analysis() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [userId]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
