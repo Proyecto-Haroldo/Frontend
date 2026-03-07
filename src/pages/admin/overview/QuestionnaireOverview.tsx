@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import {
   X,
   Loader2,
-  Search
+  Search,
+  Eye
 } from 'lucide-react';
+import { motion } from 'motion/react';
 import {
   fetchQuestionsByQuestionnaire,
   getQuestionnaireById
@@ -14,6 +16,7 @@ import { IQuestionnaire } from '../../../core/models/questionnaire';
 function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }) {
   const [questions, setQuestions] = useState<IQuestion[]>([]);
   const [filteredQuestions, setFilteredQuestions] = useState<IQuestion[]>([]);
+  const [viewingQuestion, setViewingQuestion] = useState<IQuestion | null>(null);
   const [searchTitle, setSearchTitle] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -76,6 +79,10 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
     setFilteredQuestions(filtered);
   }, [searchTitle, questions]);
 
+  const handleView = (question: IQuestion) => {
+    setViewingQuestion(question);
+  };
+
   if (loading && !questions.length) {
     return (
       <div className="container mx-auto space-y-6 overflow-hidden">
@@ -137,7 +144,7 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
       )}
 
       {/* Questions Table */}
-      {(
+      {!viewingQuestion && (
         <div className="card bg-base-100 shadow-sm border border-base-200">
           <div className="card-body p-3 md:p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 flex-wrap">
@@ -189,6 +196,7 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
                           <th className="min-w-[200px]">Título</th>
                           <th className="w-28">Tipo</th>
                           <th className="w-24">Opciones</th>
+                          <th className='w-16'>Acciones</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -209,6 +217,15 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
                             </td>
                             <td className="text-center">
                               {question.options?.length || 0}
+                            </td>
+                            <td>
+                              <button
+                                onClick={() => handleView(question)}
+                                className="btn btn-xs btn-ghost"
+                                title="Ver pregunta"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </button>
                             </td>
                           </tr>
                         ))}
@@ -240,6 +257,15 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
                             <h3 className="font-medium text-sm break-words line-clamp-2" title={question.question}>
                               {question.question}
                             </h3>
+                            <div className="flex justify-end pt-2">
+                              <button
+                                onClick={() => handleView(question)}
+                                className="btn btn-xs btn-ghost gap-1"
+                              >
+                                <Eye className="h-3 w-3" />
+                                Ver
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -250,6 +276,80 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
             )}
           </div>
         </div>
+      )}
+
+      {/* View Question Modal */}
+      {viewingQuestion && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="card bg-base-100 shadow-sm border border-base-200"
+        >
+          <div className="card-body p-3 md:p-6">
+            <h2 className="card-title text-lg sm:text-xl">
+              Ver Pregunta - #{viewingQuestion.id}
+            </h2>
+
+            <div className="space-y-4">
+
+              {/* Question */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Pregunta</span>
+                </label>
+
+                <div className="textarea textarea-bordered text-start w-full bg-base-200 text-base-content/80 overflow-y-auto mt-2 bg-primary/10 border-primary/50">                  {viewingQuestion.question}
+                </div>
+              </div>
+
+              {/* Type */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Tipo de Pregunta</span>
+                </label>
+
+                <div className="input input-bordered w-full flex items-center bg-base-200">
+                  {viewingQuestion.questionType === 'open' && 'Abierta'}
+                  {viewingQuestion.questionType === 'single' && 'Opción Única'}
+                  {viewingQuestion.questionType === 'multiple' && 'Opción Múltiple'}
+                </div>
+              </div>
+
+              {/* Options */}
+              {(viewingQuestion.questionType === 'single' ||
+                viewingQuestion.questionType === 'multiple') && (
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text">Opciones</span>
+                    </label>
+
+                    <div className="space-y-2">
+                      {viewingQuestion.options?.map((option, index) => (
+                        <span
+                          key={option.id || index}
+                          title={viewingQuestion.question}
+                          className="input w-full whitespace-nowrap input-bordered flex items-center bg-base-200 overflow-x-auto"
+                        >
+                          {option.text}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+              {/* Buttons */}
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setViewingQuestion(null)}
+                  className="btn btn-primary"
+                >
+                  Cerrar
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </motion.div>
       )}
     </div>
   );

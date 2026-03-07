@@ -7,7 +7,8 @@ import {
   Save,
   X,
   Loader2,
-  Search
+  Search,
+  Eye
 } from 'lucide-react';
 import {
   fetchQuestionsByQuestionnaire,
@@ -26,6 +27,7 @@ function QuestionnaireManager({ questionnaireId }: { questionnaireId?: number })
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingQuestion, setEditingQuestion] = useState<IQuestion | null>(null);
+  const [viewingQuestion, setViewingQuestion] = useState<IQuestion | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [questionnaire, setQuestionnaire] = useState<IQuestionnaire | null>(null);
@@ -87,6 +89,11 @@ function QuestionnaireManager({ questionnaireId }: { questionnaireId?: number })
     setFilteredQuestions(filtered);
   }, [searchTitle, questions]);
 
+  const handleView = (question: IQuestion) => {
+    setEditingQuestion(null);
+    setViewingQuestion(question);
+  };
+
   const handleCreate = () => {
     if (!questionnaire) {
       setError('No se encontró información del cuestionario');
@@ -104,6 +111,7 @@ function QuestionnaireManager({ questionnaireId }: { questionnaireId?: number })
   };
 
   const handleEdit = (question: IQuestion) => {
+    setViewingQuestion(null);
     setEditingQuestion({ ...question });
     setIsCreating(false);
   };
@@ -247,7 +255,7 @@ function QuestionnaireManager({ questionnaireId }: { questionnaireId?: number })
                 </span>
               )}
             </h1>
-            {!editingQuestion && (
+            {!editingQuestion && !viewingQuestion && (
               <button
                 onClick={handleCreate}
                 className="btn btn-primary btn-sm gap-2"
@@ -274,134 +282,8 @@ function QuestionnaireManager({ questionnaireId }: { questionnaireId?: number })
         </div>
       )}
 
-      {/* Edit/Create Form */}
-      {editingQuestion && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="card bg-base-100 shadow-sm border border-base-200"
-        >
-          <div className="card-body p-3 md:p-6">
-            <h2 className="card-title text-lg sm:text-xl">
-              {isCreating ? 'Nueva Pregunta' : 'Editar Pregunta'}
-            </h2>
-
-            <div className="space-y-4">
-              {/* Question Text */}
-              <div className="form-control">
-                <label className="label" htmlFor='question'>
-                  <span className="label-text">Pregunta</span>
-                </label>
-                <input
-                  type="text"
-                  title='question'
-                  className="input input-bordered w-full"
-                  value={editingQuestion.question}
-                  onChange={(e) =>
-                    setEditingQuestion({ ...editingQuestion, question: e.target.value })
-                  }
-                  placeholder="Escriba la pregunta aquí..."
-                />
-              </div>
-
-              {/* Question Type */}
-              <div className="form-control">
-                <label className="label" htmlFor='question-type'>
-                  <span className="label-text">Tipo de Pregunta</span>
-                </label>
-                <select
-                  className="select select-bordered w-full"
-                  title='question-type'
-                  value={editingQuestion.questionType}
-                  onChange={(e) =>
-                    setEditingQuestion({
-                      ...editingQuestion,
-                      questionType: e.target.value as QuestionType,
-                      options: editingQuestion.options || []
-                    })
-                  }
-                >
-                  <option value="open">Abierta</option>
-                  <option value="single">Opción Única</option>
-                  <option value="multiple">Opción Múltiple</option>
-                </select>
-              </div>
-
-              {/* Options for single/multiple */}
-              {(editingQuestion.questionType === 'single' ||
-                editingQuestion.questionType === 'multiple') && (
-                  <div className="form-control">
-                    <label className="label" htmlFor='options'>
-                      <span className="label-text">Opciones</span>
-                    </label>
-                    <div className="space-y-2">
-                      {editingQuestion.options?.map((option, index) => (
-                        <div key={option.id || index} className="flex gap-2">
-                          <input
-                            type="text"
-                            title='options'
-                            className="input input-bordered flex-1"
-                            value={option.text}
-                            onChange={(e) => handleOptionChange(index, e.target.value)}
-                            placeholder={`Opción ${index + 1}`}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveOption(index)}
-                            className="btn btn-ghost btn-sm flex-shrink-0"
-                            disabled={editingQuestion.options?.length === 2}
-                            title="Eliminar opción"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ))}
-                      <button
-                        type="button"
-                        onClick={handleAddOption}
-                        className="btn btn-outline btn-sm w-full sm:w-auto"
-                      >
-                        <Plus className="h-4 w-4" />
-                        Agregar Opción
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-2 justify-end">
-                <button
-                  onClick={handleCancel}
-                  className="btn btn-ghost w-full sm:w-auto"
-                  disabled={isSaving}
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={handleSave}
-                  className="btn btn-primary gap-2 w-full sm:w-auto"
-                  disabled={isSaving}
-                >
-                  {isSaving ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Guardando...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="h-4 w-4" />
-                      Guardar
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
       {/* Questions Table */}
-      {!editingQuestion && (
+      {!editingQuestion && !viewingQuestion && (
         <div className="card bg-base-100 shadow-sm border border-base-200">
           <div className="card-body p-3 md:p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 flex-wrap">
@@ -478,12 +360,21 @@ function QuestionnaireManager({ questionnaireId }: { questionnaireId?: number })
                             <td>
                               <div className="flex gap-2">
                                 <button
+                                  onClick={() => handleView(question)}
+                                  className="btn btn-sm btn-ghost"
+                                  title="Ver"
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </button>
+
+                                <button
                                   onClick={() => handleEdit(question)}
                                   className="btn btn-sm btn-ghost"
                                   title="Editar"
                                 >
                                   <Edit className="h-4 w-4" />
                                 </button>
+
                                 <button
                                   onClick={() => handleDelete(question.id)}
                                   className="btn btn-sm btn-ghost text-error"
@@ -527,6 +418,15 @@ function QuestionnaireManager({ questionnaireId }: { questionnaireId?: number })
                         </div>
                         <div className="flex gap-1 justify-end pt-1">
                           <button
+                            onClick={() => handleView(question)}
+                            className="btn btn-xs btn-ghost gap-1"
+                            title="Ver"
+                          >
+                            <Eye className="h-3 w-3" />
+                            <span>Ver</span>
+                          </button>
+
+                          <button
                             onClick={() => handleEdit(question)}
                             className="btn btn-xs btn-ghost gap-1"
                             title="Editar"
@@ -534,6 +434,7 @@ function QuestionnaireManager({ questionnaireId }: { questionnaireId?: number })
                             <Edit className="h-3 w-3" />
                             <span>Editar</span>
                           </button>
+
                           <button
                             onClick={() => handleDelete(question.id)}
                             className="btn btn-xs btn-ghost text-error gap-1"
@@ -551,6 +452,205 @@ function QuestionnaireManager({ questionnaireId }: { questionnaireId?: number })
             )}
           </div>
         </div>
+      )}
+
+      {/* View Question Modal */}
+      {viewingQuestion && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="card bg-base-100 shadow-sm border border-base-200"
+        >
+          <div className="card-body p-3 md:p-6">
+            <h2 className="card-title text-lg sm:text-xl">
+              Ver Pregunta - #{viewingQuestion.id}
+            </h2>
+
+            <div className="space-y-4">
+
+              {/* Question */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Pregunta</span>
+                </label>
+
+                <div className="textarea textarea-bordered whitespace-pre-wrap text-start w-full bg-base-200 text-base-content/80 overflow-y-auto mt-2 bg-primary/10 border-primary/50">                  {viewingQuestion.question}
+                </div>
+              </div>
+
+              {/* Type */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Tipo de Pregunta</span>
+                </label>
+
+                <div className="input input-bordered w-full flex items-center bg-base-200">
+                  {viewingQuestion.questionType === 'open' && 'Abierta'}
+                  {viewingQuestion.questionType === 'single' && 'Opción Única'}
+                  {viewingQuestion.questionType === 'multiple' && 'Opción Múltiple'}
+                </div>
+              </div>
+
+              {/* Options */}
+              {(viewingQuestion.questionType === 'single' ||
+                viewingQuestion.questionType === 'multiple') && (
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text">Opciones</span>
+                    </label>
+
+                    <div className="space-y-2">
+                      {viewingQuestion.options?.map((option, index) => (
+                        <span
+                          key={option.id || index}
+                          title={viewingQuestion.question}
+                          className="input w-full whitespace-nowrap input-bordered flex items-center bg-base-200 overflow-x-auto"
+                        >
+                          {option.text}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+              {/* Buttons */}
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setViewingQuestion(null)}
+                  className="btn btn-primary"
+                >
+                  Cerrar
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Edit/Create Form */}
+      {editingQuestion && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="card bg-base-100 shadow-sm border border-base-200"
+        >
+          <div className="card-body p-3 md:p-6">
+            <h2 className="card-title text-lg sm:text-xl">
+              {isCreating ? 'Nueva Pregunta' : `Editar Pregunta - #${editingQuestion.id}`}
+            </h2>
+
+            <div className="space-y-4">
+              {/* Question Text */}
+              <div className="form-control">
+                <label className="label" htmlFor='question'>
+                  <span className="label-text">Pregunta</span>
+                </label>
+                <textarea
+                  title={editingQuestion.question}
+                  className="textarea textarea-bordered text-start w-full bg-base-200 text-base-content/80 overflow-y-auto mt-2 bg-primary/10 border-primary/50"
+                  value={editingQuestion.question}
+                  onChange={(e) =>
+                    setEditingQuestion({ ...editingQuestion, question: e.target.value })
+                  }
+                  placeholder="Escriba la pregunta aquí..."
+                />
+              </div>
+
+              {/* Question Type */}
+              <div className="form-control">
+                <label className="label" htmlFor='question-type'>
+                  <span className="label-text">Tipo de Pregunta</span>
+                </label>
+                <select
+                  className="select select-bordered w-full mt-2"
+                  title='question-type'
+                  value={editingQuestion.questionType}
+                  onChange={(e) =>
+                    setEditingQuestion({
+                      ...editingQuestion,
+                      questionType: e.target.value as QuestionType,
+                      options: editingQuestion.options || []
+                    })
+                  }
+                >
+                  <option value="open">Abierta</option>
+                  <option value="single">Opción Única</option>
+                  <option value="multiple">Opción Múltiple</option>
+                </select>
+              </div>
+
+              {/* Options for single/multiple */}
+              {(editingQuestion.questionType === 'single' ||
+                editingQuestion.questionType === 'multiple') && (
+                  <div className="form-control">
+                    <label className="label" htmlFor='options'>
+                      <span className="label-text">Opciones</span>
+                    </label>
+                    <div className="space-y-2 mt-2">
+                      {editingQuestion.options?.map((option, index) => (
+                        <div key={option.id || index} className="flex gap-2">
+                          <input
+                            type="text"
+                            title='options'
+                            className="input input-bordered flex-1 overflow-x-auto"
+                            value={option.text}
+                            onChange={(e) => handleOptionChange(index, e.target.value)}
+                            placeholder={`Opción ${index + 1}`}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveOption(index)}
+                            className="btn btn-ghost btn-sm flex-shrink-0"
+                            disabled={editingQuestion.options?.length === 2}
+                            title="Eliminar opción"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={handleAddOption}
+                        className="btn btn-outline btn-sm w-full sm:w-auto"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Agregar Opción
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-2 justify-end">
+                <button
+                  onClick={handleCancel}
+                  className="btn btn-ghost w-full sm:w-auto"
+                  disabled={isSaving}
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="btn btn-primary gap-2 w-full sm:w-auto"
+                  disabled={isSaving}
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Guardando...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4" />
+                      Guardar
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       )}
     </div>
   );
