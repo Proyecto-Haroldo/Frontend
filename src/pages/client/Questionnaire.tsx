@@ -13,6 +13,7 @@ import {
   FileText
 } from 'lucide-react';
 import { IQuestion } from '../../core/models/question';
+import { useAuth } from '../../shared/context/AuthContext';
 
 const pageVariants = {
   initial: {
@@ -59,7 +60,7 @@ const HighlightedText = ({
 
   // Split text into words while preserving spaces and punctuation
   const words = text.split(/(\s+|[.,!?;:()"])/);
-  
+
   return (
     <span className="inline">
       {words.map((word, index) => {
@@ -100,6 +101,7 @@ const Questionnaire = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { userId } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -151,11 +153,11 @@ const Questionnaire = () => {
       }
       const foundKeywords = new Set<string>();
       const words = text.split(/(\s+|[.,!?;:()"])/);
-      
+
       words.forEach(word => {
         if (!word || /^\s+$/.test(word)) return;
         const cleanWord = word.toLowerCase().replace(/[.,!?;:()"]/g, '');
-        
+
         currentQuestion.keywords?.forEach(keyword => {
           const keywordLower = keyword.title.toLowerCase();
           if (cleanWord === keywordLower && !usedKeywords.has(keywordLower)) {
@@ -164,7 +166,7 @@ const Questionnaire = () => {
           }
         });
       });
-      
+
       return foundKeywords;
     };
 
@@ -186,7 +188,7 @@ const Questionnaire = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-base-200 flex items-center justify-center p-4">
         <div className="card w-full max-w-2xl bg-base-100 shadow-xl p-6">
           <div className="card-body items-center text-center">
             <span className="loading loading-spinner loading-lg text-primary"></span>
@@ -199,7 +201,7 @@ const Questionnaire = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-base-200 flex items-center justify-center p-4">
         <div className="card w-full max-w-2xl bg-base-100 shadow-xl p-6">
           <div className="card-body items-center text-center">
             <div className="alert alert-error mb-6">
@@ -237,8 +239,8 @@ const Questionnaire = () => {
             questionId: question.id,
             questionTitle: question.question,
             answer: question.questionType === 'open'
-            ? answers[question.id] || []
-            : (answers[question.id] || []).map(
+              ? answers[question.id] || []
+              : (answers[question.id] || []).map(
                 id => question.options?.find(opt => String(opt.id) === String(id))?.text || String(id)
               ),
             questionType: question.questionType
@@ -247,7 +249,12 @@ const Questionnaire = () => {
 
         console.log('Submitting questionnaire data:', questionnaireData);
 
-        const aiRecommendation = await submitQuestionnaireAnswers(questionnaireData);
+        if (userId == null) {
+          setError('Usuario no autenticado. Por favor inicie sesión.');
+          return;
+        }
+
+        const aiRecommendation = await submitQuestionnaireAnswers(questionnaireData, userId);
 
         // Store the full JSON returned by backend: { resumenUsuario, colorSemaforo }
         localStorage.setItem('aiRecommendation', JSON.stringify(aiRecommendation));
@@ -289,12 +296,12 @@ const Questionnaire = () => {
 
       case 'single':
         return (
-          <div className="space-y-1">
+          <div className="space-y-2">
             {currentQuestion.options?.map(option => (
               <div key={option.id} className="form-control">
                 <label
                   htmlFor={String(option.id)}
-                  className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg"
+                  className="label cursor-pointer justify-start items-start gap-3 p-2 hover:bg-base-200 rounded-lg w-full"
                 >
                   <input
                     type="radio"
@@ -305,10 +312,10 @@ const Questionnaire = () => {
                     onChange={() => handleAnswerChange(String(option.id))}
                     className="radio radio-primary"
                   />
-                  <span className="label-text text-left">
-                    <HighlightedText 
-                      text={option.text} 
-                      keywords={currentQuestion.keywords || []} 
+                  <span className="label-text text-left break-words whitespace-normal flex-1">
+                    <HighlightedText
+                      text={option.text}
+                      keywords={currentQuestion.keywords || []}
                       allowedKeywords={keywordAllocation.options.get(String(option.id)) || new Set()}
                     />
                   </span>
@@ -320,12 +327,12 @@ const Questionnaire = () => {
 
       case 'multiple':
         return (
-          <div className="space-y-1">
+          <div className="space-y-2">
             {currentQuestion.options?.map(option => (
               <div key={option.id} className="form-control">
                 <label
                   htmlFor={String(option.id)}
-                  className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg"
+                  className="label cursor-pointer justify-start items-start gap-3 p-2 hover:bg-base-200 rounded-lg w-full"
                 >
                   <input
                     type="checkbox"
@@ -342,10 +349,10 @@ const Questionnaire = () => {
                     }}
                     className="checkbox checkbox-primary"
                   />
-                  <span className="label-text text-left">
-                    <HighlightedText 
-                      text={option.text} 
-                      keywords={currentQuestion.keywords || []} 
+                  <span className="label-text text-left break-words whitespace-normal flex-1">
+                    <HighlightedText
+                      text={option.text}
+                      keywords={currentQuestion.keywords || []}
                       allowedKeywords={keywordAllocation.options.get(String(option.id)) || new Set()}
                     />
                   </span>
@@ -362,7 +369,7 @@ const Questionnaire = () => {
 
   if (isComplete) {
     return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-base-200 flex items-center justify-center p-4">
         <div className="card w-full max-w-2xl bg-base-100 shadow-xl p-6">
           <div className="card-body items-center text-center">
             <div className="mb-6">
@@ -397,7 +404,7 @@ const Questionnaire = () => {
       <AnimatePresence mode="wait">
         <motion.div
           key="submitting"
-          className="min-h-screen bg-base-200 flex items-center justify-center p-4"
+          className="min-h-dvh bg-base-200 flex items-center justify-center p-4"
           variants={pageVariants}
           initial="initial"
           animate="animate"
@@ -424,7 +431,7 @@ const Questionnaire = () => {
     <AnimatePresence mode="wait">
       <motion.div
         key="questionnaire"
-        className="min-h-screen bg-base-200 flex items-center justify-center p-4"
+        className="min-h-dvh bg-base-200 flex items-center justify-center p-4"
         variants={pageVariants}
         initial="initial"
         animate="animate"

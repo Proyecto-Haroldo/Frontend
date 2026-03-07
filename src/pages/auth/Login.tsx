@@ -64,16 +64,16 @@ const Login: React.FC = () => {
       } else {
         setError("Rol no reconocido.");
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('Ocurrió un error. Por favor intenta nuevamente.');
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err instanceof Error ? err.message : 'Ocurrió un error. Por favor intenta nuevamente.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-base-200 relative overflow-hidden font-family">
+    <div className="min-h-dvh p-5 flex items-center justify-center bg-base-200 relative overflow-hidden font-family">
       {/* Animated background elements */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -128,7 +128,7 @@ const Login: React.FC = () => {
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-3xl font-bold text-base-content"
+            className="text-3xl font-bold text-base-content/80"
           >
             Iniciar Sesión
           </motion.h1>

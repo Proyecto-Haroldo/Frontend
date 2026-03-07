@@ -17,6 +17,6 @@ export interface IQuestion {
     question: string;
     questionType: QuestionType;
     questionnaireId?: number;
-    options?: QuestionOption[];
+    options: QuestionOption[];
     keywords: Keyword[];
 }

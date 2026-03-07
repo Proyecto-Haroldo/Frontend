@@ -1,8 +1,10 @@
 import { apiClient } from './apiClient';
-import type { QuestionnaireResult } from '../shared/types/questionnaire';
 import { IAnalysis } from '../core/models/analysis';
 import { IQuestionnaire } from '../core/models/questionnaire';
 import { IQuestion, QuestionType } from '../core/models/question';
+import { AIRecommendationResult, WebAnswersDTO } from '../core/models/answers';
+import type { QuestionnaireResult } from '../shared/types/questionnaire';
+import type { QuestionAnswerDTO, GradeRequest } from '../shared/types/analysis';
 
 const normalizeQuestionType = (value?: string): QuestionType => {
     switch (value?.toLowerCase()) {
@@ -54,6 +56,16 @@ export const getAllAnalysis = async (): Promise<IAnalysis[]> => {
     } catch (error) {
         console.error('Error fetching all analysis:', error);
         throw new Error('Failed to fetch all analysis');
+    }
+};
+
+export const getAnalysisById = async (id: number): Promise<IAnalysis> => {
+    try {
+        const response = await apiClient.get<IAnalysis>(`/analysis/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching analysis by id:', error);
+        throw new Error('Error al obtener el análisis por id');
     }
 };
 
@@ -124,6 +136,26 @@ export const setCheckedAnalysis = async (id: number): Promise<IAnalysis> => {
     } catch (error) {
         console.error('Error setting analysis as checked:', error);
         throw new Error('Error al marcar el análisis como revisado');
+    }
+};
+
+export const getAnalysisAnswers = async (analysisId: number): Promise<QuestionAnswerDTO[]> => {
+    try {
+        const response = await apiClient.get<QuestionAnswerDTO[]>(`/analysis/${analysisId}/answers`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching analysis answers:', error);
+        throw new Error('Error al obtener las respuestas del cuestionario');
+    }
+};
+
+export const gradeAnalysis = async (analysisId: number, request: GradeRequest): Promise<IAnalysis> => {
+    try {
+        const response = await apiClient.put<IAnalysis>(`/analysis/${analysisId}/grade`, request);
+        return response.data;
+    } catch (error) {
+        console.error('Error grading analysis:', error);
+        throw new Error('Error al enviar la revisión del cuestionario');
     }
 };
 
@@ -198,14 +230,19 @@ export const deleteQuestionnaire = async (id: number): Promise<void> => {
 };
 
 // ---------------------- WEB ANSWERS ----------------------
-export interface AIRecommendationResult {
-    resumenUsuario: string;
-    colorSemaforo: string; // 'verde' | 'amarillo' | 'rojo'
-}
 
-export const submitQuestionnaireAnswers = async (questionnaireData: QuestionnaireResult): Promise<AIRecommendationResult> => {
+export const submitQuestionnaireAnswers = async (
+    questionnaireData: QuestionnaireResult,
+    userId: number
+): Promise<AIRecommendationResult> => {
+
+    const payload: WebAnswersDTO = {
+        questionnaireData,
+        userId,
+    };
+
     try {
-        const response = await apiClient.post<AIRecommendationResult>('/respuestas', questionnaireData);
+        const response = await apiClient.post<AIRecommendationResult>('/respuestas', payload);
         return response.data;
     } catch (error) {
         console.error('Error submitting questionnaire answers:', error);

@@ -1,69 +1,21 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Filter, Search, Eye } from "lucide-react";
+import { Filter, Search, Eye, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useThemeColors } from "../../../hooks/useThemeColors";
 import { IQuestionnaire } from "../../../../core/models/questionnaire";
 import { motion } from "motion/react";
-import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
 
-interface QuestionnairesSearchTableProps {
+interface TableSearchQuestionnairesProps {
     questionnaires: IQuestionnaire[];
     loading: boolean;
     error: string | null;
+    role: number | null;
 }
 
-// Skeleton Loader
-const SearchTableSkeleton: React.FC = () => {
-    const { base, highlight } = useThemeColors();
-
-    return (
-        <SkeletonTheme baseColor={base} highlightColor={highlight}>
-            <div className="container mx-auto space-y-4 md:space-y-6">
-                <div className="card bg-base-100 shadow-sm border border-base-200">
-                    <div className="card-body p-3 md:p-6 space-y-4">
-                        <Skeleton height={40} borderRadius={8} />
-                        <Skeleton width={100} height={32} borderRadius={6} />
-                    </div>
-                </div>
-
-                <div className="card bg-base-100 shadow-sm border border-base-200">
-                    <div className="card-body p-3 md:p-6">
-                        <Skeleton width={150} height={20} className="mb-4" />
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    {[...Array(5)].map((_, i) => (
-                                        <th key={i}>
-                                            <Skeleton width={80} height={16} />
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {[...Array(5)].map((_, i) => (
-                                    <tr key={i}>
-                                        {[...Array(5)].map((_, j) => (
-                                            <td key={j}>
-                                                <Skeleton width={100} height={16} />
-                                            </td>
-                                        ))}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </SkeletonTheme>
-    );
-};
-
-// Main Component
-const QuestionnairesSearchTable: React.FC<QuestionnairesSearchTableProps> = ({
+const TableSearchQuestionnaires: React.FC<TableSearchQuestionnairesProps> = ({
     questionnaires,
     loading,
     error,
+    role,
 }) => {
     const navigate = useNavigate();
     const [filter, setFilter] = useState<string>("all");
@@ -104,11 +56,71 @@ const QuestionnairesSearchTable: React.FC<QuestionnairesSearchTableProps> = ({
     }, [filterQuestionnaires]);
 
     const handleViewDetails = (questionnaire: IQuestionnaire) => {
-        navigate(`/a/questionnaires?id=${questionnaire.id}`);
+        if (role === 3) {
+            navigate(`/a/questionnaires/${questionnaire.id}`);
+        } else if (role === 1) {
+            navigate(`/m/questionnaires/${questionnaire.id}`);
+        }
     };
 
     // Errores o carga
-    if (loading) return <SearchTableSkeleton />;
+    if (loading)
+        return (
+            <div className="container mx-auto space-y-4 md:space-y-6">
+                {/* Buscador y Filtros */}
+                <div className="card bg-base-100 shadow-sm border border-base-200">
+                    <div className="card-body p-3 md:p-6 space-y-3">
+                        {/* Search Input */}
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-base-content/50 z-10" />
+                            <input
+                                type="text"
+                                placeholder="Buscar por creador o categoría..."
+                                className="input input-bordered w-full pl-10 text-sm"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+
+                        {/* Filter Dropdown */}
+                        <div className="dropdown dropdown-start">
+                            <div
+                                tabIndex={0}
+                                role="button"
+                                className="btn btn-outline btn-sm gap-2 text-base-content/50"
+                            >
+                                <Filter className="h-4 w-4" />
+                                <span>{filter === "all" ? "Todas las categorías" : filter}</span>
+                            </div>
+                            <ul
+                                tabIndex={0}
+                                className="dropdown-content z-[1] menu p-2 shadow-md bg-base-300 mt-2 rounded-box w-52"
+                            >
+                                {categories.map((cat) => (
+                                    <li key={cat}>
+                                        <button onClick={() => setFilter(cat)}>
+                                            {cat === "all" ? "Todas las categorías" : cat}
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="container mx-auto space-y-6 overflow-hidden">
+                    <div className="flex items-center justify-center">
+                        <div className="card w-full bg-base-100 shadow-sm border border-base-200">
+                            <div className="card-body items-center text-center">
+                                <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
+                                <p className="mt-4">Cargando cuestionarios...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
     if (error)
         return (
             <div className="container mx-auto p-3">
@@ -129,7 +141,7 @@ const QuestionnairesSearchTable: React.FC<QuestionnairesSearchTableProps> = ({
                 <div className="card-body p-3 md:p-6 space-y-3">
                     {/* Search Input */}
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-base-content/50" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-base-content/50 z-10" />
                         <input
                             type="text"
                             placeholder="Buscar por creador o categoría..."
@@ -140,18 +152,18 @@ const QuestionnairesSearchTable: React.FC<QuestionnairesSearchTableProps> = ({
                     </div>
 
                     {/* Filter Dropdown */}
-                    <div className="dropdown dropdown-end">
+                    <div className="dropdown dropdown-start">
                         <div
                             tabIndex={0}
                             role="button"
-                            className="btn btn-outline btn-sm gap-2"
+                            className="btn btn-outline btn-sm gap-2 text-base-content/50"
                         >
                             <Filter className="h-4 w-4" />
                             <span>{filter === "all" ? "Todas las categorías" : filter}</span>
                         </div>
                         <ul
                             tabIndex={0}
-                            className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+                            className="dropdown-content z-[1] menu p-2 shadow-md bg-base-300 mt-2 rounded-box w-52"
                         >
                             {categories.map((cat) => (
                                 <li key={cat}>
@@ -197,7 +209,7 @@ const QuestionnairesSearchTable: React.FC<QuestionnairesSearchTableProps> = ({
                                                         onClick={() => handleViewDetails(q)}
                                                     >
                                                         <Eye className="h-3 w-3" />
-                                                        Ver detalles
+                                                        <p className="whitespace-nowrap">Ver detalles</p>
                                                     </button>
                                                 </td>
                                             </tr>
@@ -238,9 +250,8 @@ const QuestionnairesSearchTable: React.FC<QuestionnairesSearchTableProps> = ({
                     )}
                 </div>
             </div>
-
         </div>
     );
 };
 
-export default QuestionnairesSearchTable;
+export default TableSearchQuestionnaires;

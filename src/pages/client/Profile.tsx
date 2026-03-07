@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
-import { User, Mail, Phone, Building2, Shield, Bell, LogOut, Trash } from 'lucide-react';
+import { User, Mail, Phone, Building2, Shield, Bell, Trash } from 'lucide-react';
 import { useAuth } from '../../shared/context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
 import { getUserById, deleteUserById } from '../../api/userApi';
 import { IUser } from '../../core/models/user';
-import EditUserModal from '../../shared/ui/components/modals/EditUserModal';
-import ConfirmDeleteCard from '../../shared/ui/components/cards/ConfirmDeleteCard';
+import ModalEditUser from '../../shared/ui/components/modals/ModalEditUser';
+import CardConfirmDelete from '../../shared/ui/components/cards/CardConfirmDelete';
 
 interface JwtPayload {
   sub: string; // email
   [key: string]: unknown;
 }
 
-function Account() {
-  const { token, logout } = useAuth();
+function Profile() {
+  const { token, logout, userId } = useAuth();
   const [email, setEmail] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [userData, setUserData] = useState<IUser | null>(null);
@@ -35,23 +35,17 @@ function Account() {
     }
   }, [token]);
 
-  // Obtener clientId desde localStorage
+  // Obtener userId desde AuthContext y cargar datos del usuario
   useEffect(() => {
-    const storedUserId = localStorage.getItem('userId');
-    if (storedUserId) {
-      const id = parseInt(storedUserId, 10);
-      getUserById(id)
-        .then(user => {
-          setUserData(user);
-          setName(user.legalName);
-        })
-        .catch(err => console.error('Error al obtener cliente:', err));
-    }
-  }, []);
+    if (userId == null) return;
 
-  const handleLogout = () => {
-    logout();
-  };
+    getUserById(userId)
+      .then(user => {
+        setUserData(user);
+        setName(user.legalName);
+      })
+      .catch(err => console.error('Error al obtener cliente:', err));
+  }, [userId]);
 
   const handleUpdate = (updatedUser: IUser) => {
     setUserData(updatedUser);
@@ -160,34 +154,19 @@ function Account() {
         </div>
       </div>
 
-      {/* Logout Section */}
-      <div className="card bg-base-100 shadow-sm">
-        <div className="card-body">
-          <h2 className="font-medium text-error mb-4">Sesión</h2>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <LogOut className="h-5 w-5 text-error" />
-              <div>
-                <p className="font-medium">Cerrar Sesión</p>
-                <p className="text-sm text-base-content/70">Salir del panel de asesoría</p>
-              </div>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="btn btn-error btn-sm gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              Cerrar Sesión
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Danger Zone */}
       <div className="card bg-base-100 shadow-sm">
         <div className="card-body">
           <h2 className="font-medium text-error mb-4">Zona de Peligro</h2>
-          <div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Trash className="h-5 w-5 text-error" />
+              <div>
+                <p className="font-medium">Eliminar Cuenta</p>
+                <p className="text-sm text-base-content/70">Borrar permanentemente tu cuenta del sistema</p>
+              </div>
+            </div>
+            <div>
             <button
               onClick={handleDeleteAccount}
               className="btn btn-error btn-sm gap-2"
@@ -196,12 +175,13 @@ function Account() {
               Eliminar cuenta
             </button>
           </div>
+          </div>
         </div>
       </div>
 
       {/* Modal de edición */}
       {showEditModal && userData && (
-        <EditUserModal
+        <ModalEditUser
           user={userData}
           onClose={() => setShowEditModal(false)}
           onUpdate={handleUpdate}
@@ -210,7 +190,7 @@ function Account() {
 
       {/* Modal de confirmación de eliminación */}
       {showDeleteConfirm && (
-        <ConfirmDeleteCard
+        <CardConfirmDelete
           title="Eliminar cuenta"
           message="¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer."
           confirmText="Sí, eliminar"
@@ -224,4 +204,4 @@ function Account() {
   );
 }
 
-export default Account;
+export default Profile;

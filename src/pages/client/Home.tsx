@@ -49,7 +49,7 @@ function Home() {
             </div>
             <div className="space-y-3">
               <p className="text-sm text-base-content/70">
-                análisis Personal - 15 Mar 2024
+                Análisis Personal - 15 Mar 2024
               </p>
               <div className="flex items-center gap-2">
                 <progress className="progress progress-success w-full" value="100" max="100"></progress>

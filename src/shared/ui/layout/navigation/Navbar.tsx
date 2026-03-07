@@ -6,6 +6,7 @@ import type { Variants } from 'motion/react';
 import ThemeToggle from '../theme/ThemeToggle';
 import {
   Home,
+  ChartColumnIncreasing,
   Briefcase,
   Calendar,
   FileText,
@@ -18,12 +19,19 @@ import { useAuth } from '../../../context/AuthContext';
 import { BarChart } from 'lucide-react';
 
 function Navbar() {
+  const navigate = useNavigate();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const { logout, role } = useAuth();
-  const navigate = useNavigate();
 
   const isActive = (path: string) => {
+    if (
+      location.pathname.startsWith('/a/questionnaires') ||
+      location.pathname.startsWith('/a/analysis') ||
+      location.pathname.startsWith('/m/users') ||
+      location.pathname.startsWith('/m/questionnaires') ||
+      location.pathname.startsWith('/m/analysis')
+    ) return location.pathname.includes(path);
     return location.pathname === path;
   };
 
@@ -32,6 +40,7 @@ function Navbar() {
     if (role === 1) { // Admin
       return [
         { path: '/m', icon: BarChart, label: 'Dashboard' },
+        { path: '/m/reports', icon: ChartColumnIncreasing, label: 'Reportes' },
         { path: '/m/profile', icon: User, label: 'Perfil' },
       ];
     } else if (role === 2) { // Client
@@ -40,12 +49,12 @@ function Navbar() {
         { path: '/c/services', icon: Briefcase, label: 'Servicios' },
         { path: '/c/schedule', icon: Calendar, label: 'Agendar' },
         { path: '/c/analysis', icon: FileText, label: 'Análisis' },
-        { path: '/c/account', icon: User, label: 'Cuenta' },
+        { path: '/c/profile', icon: User, label: 'Perfil' },
       ];
     } else if (role === 3) { // Adviser
       return [
         { path: '/a', icon: Home, label: 'Inicio' },
-        { path: '/a/questionnaires', icon: FileText, label: 'Cuestionarios' },
+        { path: '/a/reports', icon: ChartColumnIncreasing, label: 'Reportes' },
         { path: '/a/profile', icon: User, label: 'Perfil' },
       ];
     }
@@ -152,7 +161,7 @@ function Navbar() {
 
       {/* Sidebar */}
       <motion.nav
-        className="fixed md:fixed w-64 h-screen bg-base-100 rounded-r-2xl p-6 z-50 md:translate-x-0"
+        className="fixed md:fixed w-64 h-dvh bg-base-100 rounded-r-2xl p-6 z-50 md:translate-x-0"
         variants={sidebarVariants}
         initial="hidden"
         animate={isOpen ? "visible" : "hidden"}
@@ -228,7 +237,7 @@ function Navbar() {
 
       {/* Desktop Sidebar */}
       <motion.nav
-        className="fixed hidden md:block w-64 h-screen bg-base-100 rounded-r-2xl p-6 z-50"
+        className="fixed hidden md:block w-64 h-dvh bg-base-100 rounded-r-2xl p-6 z-50"
         initial={{ x: -280 }}
         animate={{ x: 0 }}
         transition={{

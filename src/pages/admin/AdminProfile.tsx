@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   User, Mail, Phone, Building2, Shield,
-  Bell, LogOut, Settings, Key,
+  Bell, Settings, Key,
   SquareUserRound,
   BriefcaseBusiness
 } from 'lucide-react';
@@ -10,7 +10,7 @@ import { jwtDecode } from 'jwt-decode';
 import { getUserById } from '../../api/userApi';
 import { useNavigate } from 'react-router-dom';
 import { IUser } from '../../core/models/user';
-import EditUserModal from '../../shared/ui/components/modals/EditUserModal';
+import ModalEditUser from '../../shared/ui/components/modals/ModalEditUser';
 
 interface JwtPayload {
   sub: string; // email
@@ -18,7 +18,7 @@ interface JwtPayload {
 }
 
 function AdminProfile() {
-  const { token, logout } = useAuth();
+  const { token, userId } = useAuth();
   const [email, setEmail] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [userData, setUserData] = useState<IUser | null>(null);
@@ -37,23 +37,17 @@ function AdminProfile() {
     }
   }, [token]);
 
-  // --- Obtener clientId desde localStorage ---
+  // Obtener userId desde AuthContext y cargar datos del usuario
   useEffect(() => {
-    const storedUserId = localStorage.getItem('userId');
-    if (storedUserId) {
-      const id = parseInt(storedUserId, 10);
-      getUserById(id)
-        .then(user => {
-          setUserData(user);
-          setName(user.legalName);
-        })
-        .catch(err => console.error('Error al obtener cliente:', err));
-    }
-  }, []);
+    if (userId == null) return;
 
-  const handleLogout = () => {
-    logout();
-  };
+    getUserById(userId)
+      .then(user => {
+        setUserData(user);
+        setName(user.legalName);
+      })
+      .catch(err => console.error('Error al obtener cliente:', err));
+  }, [userId]);
 
   const handleUpdate = (updatedUser: IUser) => {
     setUserData(updatedUser);
@@ -189,32 +183,9 @@ function AdminProfile() {
         </div>
       </div>
 
-      {/* Logout Section */}
-      <div className="card bg-base-100 shadow-sm">
-        <div className="card-body">
-          <h2 className="font-medium text-error mb-4">Sesión</h2>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <LogOut className="h-5 w-5 text-error" />
-              <div>
-                <p className="font-medium">Cerrar Sesión</p>
-                <p className="text-sm text-base-content/70">Salir del panel administrativo</p>
-              </div>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="btn btn-error btn-sm gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              Cerrar Sesión
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Modal para editar perfil */}
       {showEditModal && userData && (
-        <EditUserModal
+        <ModalEditUser
           user={userData}
           onClose={() => setShowEditModal(false)}
           onUpdate={handleUpdate}
