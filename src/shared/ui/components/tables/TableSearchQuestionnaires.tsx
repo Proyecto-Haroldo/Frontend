@@ -83,7 +83,7 @@ const TableSearchQuestionnaires: React.FC<TableSearchQuestionnairesProps> = ({
                         </div>
 
                         {/* Filter Dropdown */}
-                        <div className="dropdown dropdown-end">
+                        <div className="dropdown dropdown-start">
                             <div
                                 tabIndex={0}
                                 role="button"
@@ -94,7 +94,7 @@ const TableSearchQuestionnaires: React.FC<TableSearchQuestionnairesProps> = ({
                             </div>
                             <ul
                                 tabIndex={0}
-                                className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+                                className="dropdown-content z-[1] menu p-2 shadow-md bg-base-300 mt-2 rounded-box w-52"
                             >
                                 {categories.map((cat) => (
                                     <li key={cat}>
@@ -152,7 +152,7 @@ const TableSearchQuestionnaires: React.FC<TableSearchQuestionnairesProps> = ({
                     </div>
 
                     {/* Filter Dropdown */}
-                    <div className="dropdown dropdown-end">
+                    <div className="dropdown dropdown-start">
                         <div
                             tabIndex={0}
                             role="button"
@@ -163,7 +163,7 @@ const TableSearchQuestionnaires: React.FC<TableSearchQuestionnairesProps> = ({
                         </div>
                         <ul
                             tabIndex={0}
-                            className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+                            className="dropdown-content z-[1] menu p-2 shadow-md bg-base-300 mt-2 rounded-box w-52"
                         >
                             {categories.map((cat) => (
                                 <li key={cat}>

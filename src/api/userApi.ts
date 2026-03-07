@@ -54,6 +54,19 @@ const transformUser = (user: any): IUser => ({
   questionnaires: user.questionnaires || []
 });
 
+export const normalizeUserRole = (value?: number): string => {
+    switch (value) {
+        case 1:
+            return 'Admin';
+        case 2:
+            return 'Cliente';
+        case 3:
+            return 'Asesor';
+        default:
+            return 'N/A';
+    }
+};
+
 export async function getUserByEmail(email: string, token: string) {
   try {
     const response = await fetch(`${API_URL}/users/email/${encodeURIComponent(email)}`, {

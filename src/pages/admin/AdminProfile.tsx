@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   User, Mail, Phone, Building2, Shield,
-  Bell, LogOut, Settings, Key,
+  Bell, Settings, Key,
   SquareUserRound,
   BriefcaseBusiness
 } from 'lucide-react';
@@ -18,7 +18,7 @@ interface JwtPayload {
 }
 
 function AdminProfile() {
-  const { token, logout, userId } = useAuth();
+  const { token, userId } = useAuth();
   const [email, setEmail] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [userData, setUserData] = useState<IUser | null>(null);
@@ -48,10 +48,6 @@ function AdminProfile() {
       })
       .catch(err => console.error('Error al obtener cliente:', err));
   }, [userId]);
-
-  const handleLogout = () => {
-    logout();
-  };
 
   const handleUpdate = (updatedUser: IUser) => {
     setUserData(updatedUser);
@@ -182,29 +178,6 @@ function AdminProfile() {
             <button className="btn btn-outline btn-sm gap-2">
               <Settings className="h-4 w-4" />
               Configuración Avanzada
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Logout Section */}
-      <div className="card bg-base-100 shadow-sm">
-        <div className="card-body">
-          <h2 className="font-medium text-error mb-4">Sesión</h2>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <LogOut className="h-5 w-5 text-error" />
-              <div>
-                <p className="font-medium">Cerrar Sesión</p>
-                <p className="text-sm text-base-content/70">Salir del panel administrativo</p>
-              </div>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="btn btn-error btn-sm gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              Cerrar Sesión
             </button>
           </div>
         </div>

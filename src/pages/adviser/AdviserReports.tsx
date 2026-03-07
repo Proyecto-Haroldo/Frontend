@@ -46,7 +46,6 @@ export default function AdviserReports() {
             setLoading(prev => ({ ...prev, users: true }));
             const data = await getAllUsers();
 
-            console.log(data);
             const onlyClients = data.filter(u => u.role.id === 2);
             setUsers(onlyClients);
         } catch (err: unknown) {

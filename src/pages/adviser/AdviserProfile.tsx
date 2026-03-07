@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import {
-  User, Mail, Phone, Building2, LogOut, Settings, Key,
-  SquareUserRound,
-  BriefcaseBusiness
+  User, Mail, Phone, Building2, Settings, Key,
+  SquareUserRound, BriefcaseBusiness, Trash
 } from 'lucide-react';
 import { useAuth } from '../../shared/context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
-import { getUserById } from '../../api/userApi';
+import { getUserById, deleteUserById } from '../../api/userApi';
 import { useNavigate } from 'react-router-dom';
 import { IUser } from '../../core/models/user';
 import ModalEditUser from '../../shared/ui/components/modals/ModalEditUser';
+import CardConfirmDelete from '../../shared/ui/components/cards/CardConfirmDelete';
 
 interface JwtPayload {
   sub: string; // email
@@ -23,6 +23,10 @@ function AdviserProfile() {
   const [userData, setUserData] = useState<IUser | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const navigate = useNavigate();
+
+  // Estado para confirmar eliminación
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
 
   // --- Obtener email desde token JWT ---
   useEffect(() => {
@@ -48,13 +52,32 @@ function AdviserProfile() {
       .catch(err => console.error('Error al obtener cliente:', err));
   }, [userId]);
 
-  const handleLogout = () => {
-    logout();
-  };
-
   const handleUpdate = (updatedUser: IUser) => {
     setUserData(updatedUser);
     setName(updatedUser.legalName);
+  };
+
+  // Eliminar cuenta
+  const handleDeleteAccount = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteAccount = async () => {
+    const storedUserId = localStorage.getItem('userId');
+    if (!storedUserId || !token) return;
+
+    const id = parseInt(storedUserId, 10);
+
+    try {
+      setLoadingDelete(true);
+      await deleteUserById(id);
+      setLoadingDelete(false);
+      setShowDeleteConfirm(false);
+      logout();
+    } catch (error) {
+      console.error('Error al eliminar cuenta:', error);
+      setLoadingDelete(false);
+    }
   };
 
   return (
@@ -148,25 +171,27 @@ function AdviserProfile() {
         </div>
       </div>
 
-      {/* Logout Section */}
+      {/* Danger Zone */}
       <div className="card bg-base-100 shadow-sm">
         <div className="card-body">
-          <h2 className="font-medium text-error mb-4">Sesión</h2>
+          <h2 className="font-medium text-error mb-4">Zona de Peligro</h2>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <LogOut className="h-5 w-5 text-error" />
+              <Trash className="h-5 w-5 text-error" />
               <div>
-                <p className="font-medium">Cerrar Sesión</p>
-                <p className="text-sm text-base-content/70">Salir del panel de asesoría</p>
+                <p className="font-medium">Eliminar Cuenta</p>
+                <p className="text-sm text-base-content/70">Borrar permanentemente tu cuenta del sistema</p>
               </div>
             </div>
-            <button
-              onClick={handleLogout}
-              className="btn btn-error btn-sm gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              Cerrar Sesión
-            </button>
+            <div>
+              <button
+                onClick={handleDeleteAccount}
+                className="btn btn-error btn-sm gap-2"
+              >
+                <Trash className="h-4 w-4" />
+                Eliminar cuenta
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -177,6 +202,19 @@ function AdviserProfile() {
           user={userData}
           onClose={() => setShowEditModal(false)}
           onUpdate={handleUpdate}
+        />
+      )}
+
+      {/* Modal de confirmación de eliminación */}
+      {showDeleteConfirm && (
+        <CardConfirmDelete
+          title="Eliminar cuenta"
+          message="¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer."
+          confirmText="Sí, eliminar"
+          cancelText="Cancelar"
+          loading={loadingDelete}
+          onConfirm={confirmDeleteAccount}
+          onCancel={() => setShowDeleteConfirm(false)}
         />
       )}
     </div>

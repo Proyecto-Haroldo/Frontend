@@ -21,6 +21,7 @@ import {
 import { Bar, Pie, Line } from 'react-chartjs-2';
 import { useThemeColors } from '../../hooks/useThemeColors';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { normalizeUserRole } from '../../../api/userApi';
 
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
@@ -96,7 +97,7 @@ const TemplateMetricsSkeleton: React.FC = () => {
             <div className="w-full box-border">
                 <div className="relative w-full overflow-hidden">
                     <div className="flex flex-col gap-5 p-5 px-3">
-                        <div className="flex w-full gap-3">
+                        <div className="flex w-full gap-4">
                             <div className="w-full flex flex-col gap-3">
                                 <Skeleton height={180} style={{ width: '100%' }} />
                                 <div style={{ width: '70%' }}>
@@ -285,7 +286,7 @@ export default function TemplateMetrics({
                 id: 'analysis-avg-solve',
                 title: 'Tiempo Promedio de Resolución',
                 description: `Tiempo promedio de resolución por día. Último: ${avgMins.length ? formatMinutes(avgMins[avgMins.length - 1]) : 'sin datos'}`,
-                chart: <Line data={{ labels: dateLabels, datasets: [{ data: avgMins, fill: true, backgroundColor: MAIN_COLORS }] }} options={baseChartOptions} />,
+                chart: <Line data={{ labels: dateLabels, datasets: [{ data: avgMins, fill: true, backgroundColor: MAIN_COLORS, tension: 0.4 }] }} options={baseChartOptions} />,
             });
 
             // 4) Principales clientes (barra)
@@ -381,7 +382,7 @@ export default function TemplateMetrics({
 
             // 2) Distribución de roles
             const roleMap: Record<string, number> = {};
-            users.forEach((u) => (roleMap[u.role?.name || 'desconocido'] = (roleMap[u.role?.name || 'desconocido'] || 0) + 1));
+            users.forEach((u) => (roleMap[normalizeUserRole(u.role?.id) || 'desconocido'] = (roleMap[normalizeUserRole(u.role?.id) || 'desconocido'] || 0) + 1));
             arr.push({
                 id: 'u-roles',
                 title: 'Distribución de Roles',
