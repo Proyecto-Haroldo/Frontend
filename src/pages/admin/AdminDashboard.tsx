@@ -133,7 +133,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
   const stats = {
     total: analysis.length,
     pending: analysis.filter((q) => q.status === "pending").length,
-    completed: analysis.filter((q) => q.status === "completed").length,
+    completed: analysis.filter((q) => q.status === "checked").length,
     green: analysis.filter((q) => q.colorSemaforo === "verde").length,
     yellow: analysis.filter((q) => q.colorSemaforo === "amarillo").length,
     red: analysis.filter((q) => q.colorSemaforo === "rojo").length,
@@ -185,7 +185,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
                 setView("users");
               }}
             >
-              <div className="card-body flex flex-col items-center text-center space-y-3">
+              <div className="card-body flex flex-col items-center text-center space-y-2">
                 <Users className="h-10 w-10 text-primary" />
                 <h2 className="card-title text-lg md:text-xl">Usuarios</h2>
                 <p className="text-sm text-base-content/70">
@@ -209,7 +209,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
                 setView("questionnaires");
               }}
             >
-              <div className="card-body flex flex-col items-center text-center space-y-3">
+              <div className="card-body flex flex-col items-center text-center space-y-2">
                 <FileText className="h-10 w-10 text-secondary" />
                 <h2 className="card-title text-lg md:text-xl">Cuestionarios</h2>
                 <p className="text-sm text-base-content/70">
@@ -233,7 +233,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
                 setView("analysis");
               }}
             >
-              <div className="card-body flex flex-col items-center text-center space-y-3">
+              <div className="card-body flex flex-col items-center text-center space-y-2">
                 <ClipboardList className="h-10 w-10 text-secondary" />
                 <h2 className="card-title text-lg md:text-xl">Análisis</h2>
                 <p className="text-sm text-base-content/70">

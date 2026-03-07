@@ -168,7 +168,7 @@ function AnalysisReview() {
 
   if (!analysisData) {
     return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-base-200 flex items-center justify-center p-4">
         <div className="card w-full max-w-lg bg-base-100 shadow-xl">
           <div className="card-body items-center text-center">
             <div className="mb-6">
@@ -320,7 +320,7 @@ function AnalysisReview() {
 
   return (
     <motion.div
-      className="min-h-screen"
+      className="min-h-dvh"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}

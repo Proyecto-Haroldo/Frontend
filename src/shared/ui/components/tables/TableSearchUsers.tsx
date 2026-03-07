@@ -4,7 +4,7 @@ import { IUser } from "../../../../core/models/user.ts";
 import { motion } from 'motion/react';
 import { IAnalysis } from "../../../../core/models/analysis.ts";
 import { getUserAnalysis } from "../../../../api/analysisApi.ts";
-import { deleteUserById } from "../../../../api/userApi.ts";
+import { deleteUserById, normalizeUserRole } from "../../../../api/userApi.ts";
 import CardConfirmDelete from "../cards/CardConfirmDelete.tsx";
 import ModalEditUser from "../modals/ModalEditUser.tsx";
 import CardUserMetrics from "../cards/CardUserMetrics.tsx";
@@ -102,9 +102,6 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
         setSelectedUser(null);
     };
 
-    console.log("SelectedUser:", selectedUser);
-
-
     if (loading)
         return (
             <div className="container mx-auto space-y-4 md:space-y-6">
@@ -124,7 +121,7 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                             </div>
 
                             <div className="flex gap-2">
-                                <div className="dropdown dropdown-end">
+                                <div className="dropdown dropdown-start">
                                     <div tabIndex={0} role="button" className="btn btn-outline btn-sm gap-2 text-base-content/50">
                                         <Filter className="h-4 w-4" />
                                         <span className="hidden sm:inline">
@@ -139,7 +136,7 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                                     </div>
                                     <ul
                                         tabIndex={0}
-                                        className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+                                        className="dropdown-content z-[1] menu p-2 shadow-md bg-base-300 mt-2 rounded-box w-52"
                                     >
                                         <li key={"all"}>
                                             <button onClick={() => setFilter("all")}>Todos</button>
@@ -207,7 +204,7 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                         </div>
 
                         <div className="flex gap-2">
-                            <div className="dropdown dropdown-end">
+                            <div className="dropdown dropdown-start">
                                 <div tabIndex={0} role="button" className="btn btn-outline btn-sm gap-2 text-base-content/50">
                                     <Filter className="h-4 w-4" />
                                     <span className="hidden sm:inline">
@@ -222,7 +219,7 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                                 </div>
                                 <ul
                                     tabIndex={0}
-                                    className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+                                    className="dropdown-content z-[1] menu p-2 shadow-md bg-base-300 mt-2 rounded-box w-52"
                                 >
                                     <li key={"all"}>
                                         <button onClick={() => setFilter("all")}>Todos</button>
@@ -268,7 +265,7 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                                         <td>{user.clientType}</td>
                                         <td>{user.sector || "No especificado"}</td>
                                         <td>
-                                            <span className="badge badge-outline text-xs">{user.role.name}</span>
+                                            <span className="badge badge-outline text-xs">{normalizeUserRole(user.role.id)}</span>
                                         </td>
                                         <td>
                                             <button
@@ -317,7 +314,7 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                                         <h3 className="font-medium text-sm">{user.legalName}</h3>
                                         <p className="text-xs text-base-content/60">{user.cedulaOrNIT}</p>
                                     </div>
-                                    <span className="badge badge-outline text-xs">{user.role.name}</span>
+                                    <span className="badge badge-outline text-xs">{normalizeUserRole(user.role.id)}</span>
                                 </div>
                                 <div className="text-xs text-base-content/70">
                                     {user.clientType} - {user.sector}
@@ -400,7 +397,7 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium text-base-content/70">Rol</label>
-                                    <p className="text-base-content">{selectedUser.role.name}</p>
+                                    <p className="text-base-content">{normalizeUserRole(selectedUser.role.id)}</p>
                                 </div>
                             </div>
 

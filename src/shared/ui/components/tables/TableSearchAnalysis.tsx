@@ -126,7 +126,7 @@ const TableSearchAnalysis: React.FC<TableSearchAnalysisProps> = ({
                             </div>
 
                             <div className="flex gap-2">
-                                <div className="dropdown dropdown-end">
+                                <div className="dropdown dropdown-start">
                                     <div
                                         tabIndex={0}
                                         role="button"
@@ -143,7 +143,7 @@ const TableSearchAnalysis: React.FC<TableSearchAnalysisProps> = ({
                                     </div>
                                     <ul
                                         tabIndex={0}
-                                        className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+                                        className="dropdown-content z-[1] menu p-2 shadow-md bg-base-300 mt-2 rounded-box w-52"
                                     >
                                         <li>
                                             <button onClick={() => setFilter("all")}>Todos</button>
@@ -222,7 +222,7 @@ const TableSearchAnalysis: React.FC<TableSearchAnalysisProps> = ({
                         </div>
 
                         <div className="flex gap-2">
-                            <div className="dropdown dropdown-end">
+                            <div className="dropdown dropdown-start">
                                 <div
                                     tabIndex={0}
                                     role="button"
@@ -239,7 +239,7 @@ const TableSearchAnalysis: React.FC<TableSearchAnalysisProps> = ({
                                 </div>
                                 <ul
                                     tabIndex={0}
-                                    className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+                                    className="dropdown-content z-[1] menu p-2 shadow-md bg-base-300 mt-2 rounded-box w-52"
                                 >
                                     <li>
                                         <button onClick={() => setFilter("all")}>Todos</button>

@@ -161,7 +161,7 @@ function Navbar() {
 
       {/* Sidebar */}
       <motion.nav
-        className="fixed md:fixed w-64 h-screen bg-base-100 rounded-r-2xl p-6 z-50 md:translate-x-0"
+        className="fixed md:fixed w-64 h-dvh bg-base-100 rounded-r-2xl p-6 z-50 md:translate-x-0"
         variants={sidebarVariants}
         initial="hidden"
         animate={isOpen ? "visible" : "hidden"}
@@ -237,7 +237,7 @@ function Navbar() {
 
       {/* Desktop Sidebar */}
       <motion.nav
-        className="fixed hidden md:block w-64 h-screen bg-base-100 rounded-r-2xl p-6 z-50"
+        className="fixed hidden md:block w-64 h-dvh bg-base-100 rounded-r-2xl p-6 z-50"
         initial={{ x: -280 }}
         animate={{ x: 0 }}
         transition={{

@@ -98,7 +98,7 @@ function AnalysisManager({
 
   if (error || !analysis) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-base-200 p-4">
+      <div className="min-h-dvh flex items-center justify-center bg-base-200 p-4">
         <div className="card w-full max-w-lg bg-base-100 shadow-xl text-center">
           <div className="card-body">
             <div className="w-16 h-16 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -207,7 +207,7 @@ function AnalysisManager({
   };
 
   return (
-    <div className="min-h-screen bg-base-200">
+    <div className="min-h-dvh bg-base-200">
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8 card bg-base-100 shadow-xl">
 
         {/* Header */}
@@ -426,6 +426,7 @@ function AnalysisManager({
                 </label>
                 <select
                   className="select select-bordered w-full max-w-xs"
+                  title='stoplight-color'
                   value={gradingColor}
                   onChange={(e) => setGradingColor(e.target.value)}
                   disabled={isGrading}

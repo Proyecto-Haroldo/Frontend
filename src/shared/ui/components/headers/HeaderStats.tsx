@@ -190,7 +190,7 @@ const HeaderStats: React.FC<HeaderStatsProps> = ({
                     valueClass="text-success"
                 />
                 <StatCard
-                    label="Clientes"
+                    label="Asesorados"
                     value={uniqueClients}
                     icon={<Users className="h-8 w-8 text-info" />}
                     valueClass="text-info"

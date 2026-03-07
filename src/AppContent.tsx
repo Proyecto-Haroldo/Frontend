@@ -105,7 +105,7 @@ function AppContent() {
             {/* Moderator area (Administrador) */}
             <Route path="/m/*" element={
                 <ProtectedRoute allowedRoles={[1]}>
-                    <div className="min-h-screen bg-base-200 flex flex-col md:flex-row font-family">
+                    <div className="min-h-dvh bg-base-200 flex flex-col md:flex-row font-family">
                         <Navbar />
                         <main className="flex-1 p-4 md:p-8 md:ml-64 pt-20 md:pt-8">
                             <Routes>
@@ -126,7 +126,7 @@ function AppContent() {
             {/* Client area (Clientes) */}
             <Route path="/c/*" element={
                 <ProtectedRoute allowedRoles={[2]}>
-                    <div className="min-h-screen bg-base-200 flex flex-col md:flex-row font-family">
+                    <div className="min-h-dvh bg-base-200 flex flex-col md:flex-row font-family">
                         <Navbar />
                         <main className="flex-1 p-4 md:p-8 md:ml-64 pt-20 md:pt-8">
                             {isFirstMount ? (
@@ -152,7 +152,7 @@ function AppContent() {
                 path="/a/*"
                 element={
                     <ProtectedRoute allowedRoles={[3]}>
-                        <div className="min-h-screen bg-base-200 flex flex-col md:flex-row font-family">
+                        <div className="min-h-dvh bg-base-200 flex flex-col md:flex-row font-family">
                             <Navbar />
                             <main className="flex-1 p-4 md:p-8 md:ml-64 pt-20 md:pt-8">
                                 <Routes>

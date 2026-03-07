@@ -188,7 +188,7 @@ const Questionnaire = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-base-200 flex items-center justify-center p-4">
         <div className="card w-full max-w-2xl bg-base-100 shadow-xl p-6">
           <div className="card-body items-center text-center">
             <span className="loading loading-spinner loading-lg text-primary"></span>
@@ -201,7 +201,7 @@ const Questionnaire = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-base-200 flex items-center justify-center p-4">
         <div className="card w-full max-w-2xl bg-base-100 shadow-xl p-6">
           <div className="card-body items-center text-center">
             <div className="alert alert-error mb-6">
@@ -369,7 +369,7 @@ const Questionnaire = () => {
 
   if (isComplete) {
     return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-base-200 flex items-center justify-center p-4">
         <div className="card w-full max-w-2xl bg-base-100 shadow-xl p-6">
           <div className="card-body items-center text-center">
             <div className="mb-6">
@@ -404,7 +404,7 @@ const Questionnaire = () => {
       <AnimatePresence mode="wait">
         <motion.div
           key="submitting"
-          className="min-h-screen bg-base-200 flex items-center justify-center p-4"
+          className="min-h-dvh bg-base-200 flex items-center justify-center p-4"
           variants={pageVariants}
           initial="initial"
           animate="animate"
@@ -431,7 +431,7 @@ const Questionnaire = () => {
     <AnimatePresence mode="wait">
       <motion.div
         key="questionnaire"
-        className="min-h-screen bg-base-200 flex items-center justify-center p-4"
+        className="min-h-dvh bg-base-200 flex items-center justify-center p-4"
         variants={pageVariants}
         initial="initial"
         animate="animate"

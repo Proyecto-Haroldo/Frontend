@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { User, Mail, Phone, Building2, Shield, Bell, LogOut, Trash } from 'lucide-react';
+import { User, Mail, Phone, Building2, Shield, Bell, Trash } from 'lucide-react';
 import { useAuth } from '../../shared/context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
 import { getUserById, deleteUserById } from '../../api/userApi';
@@ -46,10 +46,6 @@ function Profile() {
       })
       .catch(err => console.error('Error al obtener cliente:', err));
   }, [userId]);
-
-  const handleLogout = () => {
-    logout();
-  };
 
   const handleUpdate = (updatedUser: IUser) => {
     setUserData(updatedUser);
@@ -158,34 +154,19 @@ function Profile() {
         </div>
       </div>
 
-      {/* Logout Section */}
-      <div className="card bg-base-100 shadow-sm">
-        <div className="card-body">
-          <h2 className="font-medium text-error mb-4">Sesión</h2>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <LogOut className="h-5 w-5 text-error" />
-              <div>
-                <p className="font-medium">Cerrar Sesión</p>
-                <p className="text-sm text-base-content/70">Salir del panel de asesoría</p>
-              </div>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="btn btn-error btn-sm gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              Cerrar Sesión
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Danger Zone */}
       <div className="card bg-base-100 shadow-sm">
         <div className="card-body">
           <h2 className="font-medium text-error mb-4">Zona de Peligro</h2>
-          <div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Trash className="h-5 w-5 text-error" />
+              <div>
+                <p className="font-medium">Eliminar Cuenta</p>
+                <p className="text-sm text-base-content/70">Borrar permanentemente tu cuenta del sistema</p>
+              </div>
+            </div>
+            <div>
             <button
               onClick={handleDeleteAccount}
               className="btn btn-error btn-sm gap-2"
@@ -193,6 +174,7 @@ function Profile() {
               <Trash className="h-4 w-4" />
               Eliminar cuenta
             </button>
+          </div>
           </div>
         </div>
       </div>

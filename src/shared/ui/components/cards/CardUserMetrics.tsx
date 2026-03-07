@@ -13,6 +13,7 @@ import {
 import { User, BarChart2, XCircle, Loader2 } from "lucide-react";
 import { IUser } from "../../../../core/models/user";
 import { IAnalysis } from "../../../../core/models/analysis";
+import { normalizeUserRole } from "../../../../api/userApi";
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -76,7 +77,7 @@ const CardUserMetrics: React.FC<CardUserMetricsProps> = ({ user, analysis, error
     if (loading) {
         return (
             <div className="container mx-auto space-y-6 overflow-hidden">
-                <div className="flex items-center justify-center min-h-screen">
+                <div className="flex items-center justify-center min-h-dvh">
                     <Loader2 className="h-10 w-10 text-primary animate-spin" />
                     <p className="ml-2">Cargando métricas...</p>
                 </div>
@@ -86,7 +87,7 @@ const CardUserMetrics: React.FC<CardUserMetricsProps> = ({ user, analysis, error
 
     if (error) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-base-200 p-4">
+            <div className="min-h-dvh flex items-center justify-center bg-base-200 p-4">
                 <div className="card w-full max-w-lg bg-base-100 shadow-xl text-center">
                     <div className="card-body">
                         <div className="w-16 h-16 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -117,7 +118,7 @@ const CardUserMetrics: React.FC<CardUserMetricsProps> = ({ user, analysis, error
                 <div>
                     <h2 className="font-semibold text-base-content">{user.legalName}</h2>
                     <p className="text-sm text-base-content/70">
-                        {user.role?.name} • {user.sector}
+                        {normalizeUserRole(user.role?.id)} · {user.sector}
                     </p>
                 </div>
             </div>

@@ -156,7 +156,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
                 setView("questionnaires");
               }}
             >
-              <div className="card-body flex flex-col items-center text-center space-y-3">
+              <div className="card-body flex flex-col items-center text-center space-y-2">
                 <FileText className="h-10 w-10 text-secondary" />
                 <h2 className="card-title text-lg md:text-xl">Cuestionarios</h2>
                 <p className="text-sm text-base-content/70">
@@ -180,7 +180,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
                 setView("analysis");
               }}
             >
-              <div className="card-body flex flex-col items-center text-center space-y-3">
+              <div className="card-body flex flex-col items-center text-center space-y-2">
                 <ClipboardList className="h-10 w-10 text-secondary" />
                 <h2 className="card-title text-lg md:text-xl">Análisis</h2>
                 <p className="text-sm text-base-content/70">
