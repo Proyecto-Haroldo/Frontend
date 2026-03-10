@@ -72,7 +72,7 @@ function ThemeToggle() {
         <ChevronDown className="h-4 w-4" />
       </motion.div>
       
-      <ul tabIndex={0} className="dropdown-content bg-base-300 rounded-box z-50 w-52 p-2 shadow-2xl">
+      <ul tabIndex={0} className="dropdown-content bg-base-300 rounded-box z-40 w-52 p-2 shadow-2xl">
         <li>
           <input
             type="radio"

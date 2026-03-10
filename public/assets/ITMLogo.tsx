@@ -20,7 +20,7 @@ const ITMLogo: React.FC<ITMLogoProps> = ({
       width={width}
       height={height}
       viewBox="0 0 230 100"
-      fill="none"
+      fill = 'currentColor'
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
