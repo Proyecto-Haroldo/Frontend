@@ -112,7 +112,7 @@ function Navbar() {
   return (
     <>
       {/* Mobile Header */}
-      <div className="fixed top-0 left-0 right-0 h-16 bg-base-100 rounded-b-2xl flex items-center justify-between px-4 md:hidden z-50">
+      <div className="fixed top-0 left-0 right-0 h-16 bg-base-100 rounded-b-2xl flex items-center justify-between px-4 md:hidden z-20">
         <motion.div
           className="flex items-center gap-3"
           initial={{ opacity: 0, y: -10 }}
@@ -161,7 +161,7 @@ function Navbar() {
 
       {/* Sidebar */}
       <motion.nav
-        className="fixed md:fixed w-64 h-dvh bg-base-100 rounded-r-2xl p-6 z-50 md:translate-x-0"
+        className="fixed md:fixed w-64 h-dvh bg-base-100 rounded-r-2xl p-6 z-20 md:translate-x-0"
         variants={sidebarVariants}
         initial="hidden"
         animate={isOpen ? "visible" : "hidden"}
@@ -179,9 +179,9 @@ function Navbar() {
           transition={{ delay: 0.1 }}
         >
           <div className="h-12 w-12 flex items-center justify-center">
-            <ITMLogo fill='#FFFFFFD0' />
+            <ITMLogo className='h-15 w-15 text-[var(--color-navbar)]'/>
           </div>
-          <span className="font-normal text-sm text-white/80 tracking-[4px]">CONSULTORÍA</span>
+          <span className="font-normal text-sm trackin text-[var(--color-navbar)] g-[4px]">CONSULTORÍA</span>
         </motion.div>
 
         <div className="space-y-2">
@@ -237,7 +237,7 @@ function Navbar() {
 
       {/* Desktop Sidebar */}
       <motion.nav
-        className="fixed hidden md:block w-64 h-dvh bg-base-100 rounded-r-2xl p-6 z-50"
+        className="fixed hidden md:block w-64 h-dvh bg-base-100 rounded-r-2xl p-6 z-20"
         initial={{ x: -280 }}
         animate={{ x: 0 }}
         transition={{
@@ -254,9 +254,9 @@ function Navbar() {
           transition={{ delay: 0.5 }}
         >
           <div className="h-12 w-12 flex items-center justify-center">
-            <ITMLogo fill='#FFFFFFD0' className='h-15 w-15 text-primary' />
+            <ITMLogo className='h-15 w-15 text-[var(--color-navbar)]'/>
           </div>
-          <span className="font-normal text-sm text-white/80 tracking-[4px]">CONSULTORÍA</span>
+          <span className="font-normal text-sm tracking-[4px] text-[var(--color-navbar)]">CONSULTORÍA</span>
         </motion.div>
 
         <div className="space-y-2">

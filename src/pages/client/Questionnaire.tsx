@@ -77,7 +77,7 @@ const HighlightedText = ({
           return (
             <span
               key={index}
-              className="tooltip tooltip-info inline-block"
+              className="tooltip tooltip-info inline-block z-30"
               data-tip={keyword.description}
             >
               <span className="text-primary cursor-help underline decoration-dotted underline-offset-2 inline-block hover:bg-base-300 hover:text-primary transition-all duration-200 rounded-sm px-0.5 -mx-0.5">
