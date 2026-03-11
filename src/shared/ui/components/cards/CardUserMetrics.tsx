@@ -42,7 +42,7 @@ const CardUserMetrics: React.FC<CardUserMetricsProps> = ({ user, analysis, error
             counts[category] = (counts[category] || 0) + (q.conteo || 0);
         });
         return counts;
-    }, [user]);
+    }, [analysis]);
 
     // Datos para Doughnut (estados)
     const doughnutData = {
@@ -108,10 +108,10 @@ const CardUserMetrics: React.FC<CardUserMetricsProps> = ({ user, analysis, error
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
-            className="card shadow-md border border-base-200 rounded-2xl space-y-6"
+            className="card border border-base-200 rounded-2xl space-y-6"
         >
             {/* Header */}
-            <div className="card bg-base-100 flex flex-row p-4 gap-3 border-b border-base-200">
+            <div className="card bg-base-100 shadow-sm flex flex-row p-4 gap-3 border-b border-base-200">
                 <div className="p-2 bg-primary/10 rounded-full">
                     <User className="text-primary h-6 w-6" />
                 </div>
@@ -167,7 +167,22 @@ const CardUserMetrics: React.FC<CardUserMetricsProps> = ({ user, analysis, error
                             data={barData}
                             options={{
                                 responsive: true,
-                                plugins: { legend: { display: false } }
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    },
+                                },
+                                scales: {
+                                    x: {
+                                        ticks: { color: '#ccc' },
+                                        grid: { display: false },
+                                    },
+                                    y: {
+                                        ticks: { color: '#ccc' },
+                                        grid: { color: '#333' },
+                                        beginAtZero: true,
+                                    },
+                                },
                             }}
                         />
                     </div>

@@ -60,12 +60,26 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
   *   Si no hay id y estábamos en el overview → volver a questionnaires o analysis
   */
   useEffect(() => {
+    const path = location.pathname;
+
     if (id) {
-      // Si la URL contiene "analysis", activamos el manager de análisis
-      if (location.pathname.includes("/analysis/")) {
+      if (path.includes("/analysis/")) {
         setView("analysisOverview");
-      } else if (location.pathname.includes("/questionnaires/")) {
+      } else if (path.includes("/questionnaires/")) {
         setView("questionnaireOverview");
+      }
+    } else {
+      if (path === "/m" || path === "/m/") {
+        setView("selector");
+      }
+      else if (path.includes("/users")) {
+        setView("users");
+      }
+      else if (path.includes("/analysis")) {
+        setView("analysis");
+      }
+      else if (path.includes("/questionnaires")) {
+        setView("questionnaires");
       }
     }
   }, [id, location.pathname]);
@@ -157,7 +171,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
         role={role}
       />
 
-      <hr className="text-accent/20 mx-4" />
+      <hr className="text-accent/25 mx-4" />
 
       <AnimatePresence mode="wait">
         {/* --------------------- SELECTOR ---------------------- */}
@@ -185,7 +199,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
                 setView("users");
               }}
             >
-              <div className="card-body flex flex-col items-center text-center space-y-2">
+              <div className="card-body flex flex-col items-center text-center space-y-1">
                 <Users className="h-10 w-10 text-primary" />
                 <h2 className="card-title text-lg md:text-xl">Usuarios</h2>
                 <p className="text-sm text-base-content/70">
@@ -209,8 +223,8 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
                 setView("questionnaires");
               }}
             >
-              <div className="card-body flex flex-col items-center text-center space-y-2">
-                <FileText className="h-10 w-10 text-secondary" />
+              <div className="card-body flex flex-col items-center text-center space-y-1">
+                <FileText className="h-10 w-10 text-primary" />
                 <h2 className="card-title text-lg md:text-xl">Cuestionarios</h2>
                 <p className="text-sm text-base-content/70">
                   Gestiona los cuestionarios y sus categorías.
@@ -233,8 +247,8 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
                 setView("analysis");
               }}
             >
-              <div className="card-body flex flex-col items-center text-center space-y-2">
-                <ClipboardList className="h-10 w-10 text-secondary" />
+              <div className="card-body flex flex-col items-center text-center space-y-1">
+                <ClipboardList className="h-10 w-10 text-primary" />
                 <h2 className="card-title text-lg md:text-xl">Análisis</h2>
                 <p className="text-sm text-base-content/70">
                   Gestiona los análisis y analiza sus resultados.
