@@ -8,4 +8,5 @@ export interface WebAnswersDTO {
 export interface AIRecommendationResult {
     resumenUsuario: string;
     colorSemaforo: string; // 'verde' | 'amarillo' | 'rojo'
+    analisisAsesor?: string;
 }
