@@ -117,13 +117,16 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 flex-wrap">
         <div className="w-full">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <h1 className="text-xl sm:text-2xl font-bold">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-start gap-4">
+            <h1 className="text-xl sm:text-2xl font-semibold">
               Visor de Preguntas
               {questionnaire && (
-                <span className="block capitalize sm:inline text-base sm:text-lg font-normal text-base-content/70 sm:ml-2">
-                  <span className="hidden sm:inline">- </span>{questionnaire.categoryName}
-                </span>
+                <div className="flex mt-2 gap-2 capitalize text-base text-md font-normal text-base-content/70">
+                  {questionnaire.title || "Sin definir"}
+                  <div className={`badge font-semibold text-sm badge-md transition-all duration-300 badge-primary`}>
+                    #{questionnaire.id}
+                  </div>
+                </div>
               )}
             </h1>
           </div>
@@ -148,7 +151,7 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
         <div className="card bg-base-100 shadow-sm border border-base-200">
           <div className="card-body p-3 md:p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 flex-wrap">
-              <h2 className="card-title text-lg sm:text-xl flex-shrink-0">
+              <h2 className="card-title text-lg flex-shrink-0">
                 Preguntas ({filteredQuestions.length}{searchTitle && ` de ${questions.length}`})
               </h2>
 
@@ -187,7 +190,7 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
             ) : (
               <>
                 {/* Desktop Table */}
-                <div className="hidden lg:block -mx-3 md:-mx-6">
+                <div className="hidden lg:block">
                   <div className="overflow-x-auto">
                     <table className="table table-zebra w-full">
                       <thead>
@@ -196,7 +199,7 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
                           <th className="min-w-[200px]">Título</th>
                           <th className="w-28">Tipo</th>
                           <th className="w-24">Opciones</th>
-                          <th className='w-16'>Acciones</th>
+                          <th className="w-32">Acciones</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -209,7 +212,7 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
                               </div>
                             </td>
                             <td>
-                              <span className="badge badge-outline badge-sm">
+                              <span className="badge badge-outline border-0 bg-base-content/30 text-xs badge-sm">
                                 {question.questionType === 'open' && 'Abierta'}
                                 {question.questionType === 'single' && 'Única'}
                                 {question.questionType === 'multiple' && 'Múltiple'}
@@ -219,13 +222,16 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
                               {question.options?.length || 0}
                             </td>
                             <td>
-                              <button
-                                onClick={() => handleView(question)}
-                                className="btn btn-xs btn-ghost"
-                                title="Ver pregunta"
-                              >
-                                <Eye className="h-4 w-4" />
-                              </button>
+                              <div className="flex gap-2">
+                                <button
+                                  className="btn btn-info btn-xs gap-1"
+                                  title='Ver'
+                                  onClick={() => handleView(question)}
+                                >
+                                  <Eye className="h-3 w-3" />
+                                  <p className="whitespace-nowrap">Ver</p>
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))}
@@ -242,31 +248,31 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
                         <div className="flex justify-between items-start gap-2">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1 flex-wrap">
-                              <span className="text-xs text-base-content/50 font-mono">ID: {question.id}</span>
-                              <span className="badge badge-outline badge-xs">
+                              <span className="badge badge-outline border-0 bg-base-content/30 text-xs badge-sm">
                                 {question.questionType === 'open' && 'Abierta'}
                                 {question.questionType === 'single' && 'Única'}
                                 {question.questionType === 'multiple' && 'Múltiple'}
                               </span>
                               {question.options && question.options.length > 0 && (
                                 <span className="text-xs text-base-content/50">
-                                  {question.options.length} opciones
+                                  #{question.id} · {question.options.length} opciones
                                 </span>
                               )}
                             </div>
                             <h3 className="font-medium text-sm break-words line-clamp-2" title={question.question}>
                               {question.question}
                             </h3>
-                            <div className="flex justify-end pt-2">
-                              <button
-                                onClick={() => handleView(question)}
-                                className="btn btn-xs btn-ghost gap-1"
-                              >
-                                <Eye className="h-3 w-3" />
-                                Ver
-                              </button>
-                            </div>
                           </div>
+                        </div>
+                        <div className="flex gap-1 justify-end pt-1">
+                          <button
+                            className="btn btn-info btn-xs gap-1"
+                            onClick={() => handleView(question)}
+                            title='Ver'
+                          >
+                            <Eye className="h-3 w-3" />
+                            <p className="whitespace-nowrap">Ver</p>
+                          </button>
                         </div>
                       </div>
                     </div>

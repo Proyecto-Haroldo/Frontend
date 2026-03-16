@@ -325,7 +325,7 @@ function AnalysisReview() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+      <div className="max-w-6xl mx-auto space-y-8">
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             {/* Header */}
@@ -337,7 +337,7 @@ function AnalysisReview() {
             >
               <motion.button
                 onClick={() => navigate(-1)}
-                className="btn btn-ghost btn-sm gap-2"
+                className="btn btn-outline btn-sm gap-2 text-base-content/50"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -401,7 +401,7 @@ function AnalysisReview() {
                 <div className="card-body">
                   <h3 className="card-title text-lg">Nivel de Riesgo</h3>
                   <div className={`card p-4 bg-base-200 gap-2 mt-2 border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}>
-                    <div className={`badge text-sm badge-lg transition-all duration-300 ${analysisData.colorSemaforo === 'verde' ? 'badge-success' :
+                    <div className={`badge font-semibold text-sm badge-lg transition-all duration-300 ${analysisData.colorSemaforo === 'verde' ? 'badge-success' :
                       analysisData.colorSemaforo === 'amarillo' ? 'badge-warning' : 'badge-error'
                       }`}>
                       {getRiskLevel(analysisData.colorSemaforo)}

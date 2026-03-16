@@ -109,7 +109,7 @@ function AppContent() {
                         <Navbar />
                         <main className="flex-1 p-4 md:p-8 md:ml-64 pt-20 md:pt-8">
                             <Routes>
-                                <Route path="" element={<AdminDashboard />} />
+                                <Route path="" element={<AdminDashboard view="selector" />} />
                                 <Route path="users" element={<AdminDashboard view="users" />} />
                                 <Route path="questionnaires" element={<AdminDashboard view="questionnaires" />} />
                                 <Route path="questionnaires/:id" element={<AdminDashboard view="questionnaireOverview" />} />
@@ -156,7 +156,7 @@ function AppContent() {
                             <Navbar />
                             <main className="flex-1 p-4 md:p-8 md:ml-64 pt-20 md:pt-8">
                                 <Routes>
-                                    <Route path="" element={<AdviserDashboard />} />
+                                    <Route path="" element={<AdviserDashboard view="selector" />} />
                                     <Route path="questionnaires" element={<AdviserDashboard view="questionnaires" />} />
                                     <Route path="questionnaires/:id" element={<AdviserDashboard view="questionnaireManager" />} />
                                     <Route path="analysis" element={<AdviserDashboard view="analysis" />} />

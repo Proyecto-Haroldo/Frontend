@@ -1,6 +1,6 @@
 export type ClientType = "persona" | "empresa";
 
-interface IRole {
+export interface IRole {
   id: number;
   name: string;
 }

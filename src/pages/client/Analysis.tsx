@@ -130,7 +130,8 @@ function Analysis() {
   const analysisLength = filteredAndSortedAnalysis.length;
 
   return (
-    <div className="space-y-6">
+  <div className='h-full flex items-center justify-center'>
+    <div className="space-y-6 container">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h1 className="text-2xl font-semibold">Mis análisis</h1>
       </div>
@@ -274,7 +275,7 @@ function Analysis() {
                       </div>
                     </div>
                     <button
-                      className="btn btn-ghost btn-sm"
+                      className="btn btn-info btn-sm"
                       title="Ver análisis"
                       onClick={e => {
                         e.stopPropagation();
@@ -290,6 +291,7 @@ function Analysis() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

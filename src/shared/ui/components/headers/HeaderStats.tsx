@@ -176,7 +176,7 @@ const HeaderStats: React.FC<HeaderStatsProps> = ({
 
             {/* Statistics Section */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-                <StatCard label="Total Cuestionarios" value={stats.total} icon={<FileText className="h-8 w-8 text-primary" />} />
+                <StatCard label="Total Cuestionarios" value={stats.total} valueClass="text-primary" icon={<FileText className="h-8 w-8 text-primary" />} />
                 <StatCard
                     label="Pendientes"
                     value={stats.pending}

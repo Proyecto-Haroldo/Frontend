@@ -5,6 +5,7 @@ import { Mail, KeyRound, Eye, EyeOff, Banknote, Wallet, PiggyBank, TrendingUp, B
 import { login } from '../../api/authApi';
 import { useAuth } from '../../shared/context/AuthContext';
 import HFIsotype from '../../../public/assets/HFIsotype';
+import ThemeToggle from '../../shared/ui/layout/theme/ThemeToggle';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -73,7 +74,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-dvh p-5 flex items-center justify-center bg-base-200 relative overflow-hidden font-family">
+    <div className="min-h-dvh p-5 md:p-8 flex flex-col items-center justify-center bg-base-200 relative overflow-hidden font-family">
       {/* Animated background elements */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -353,6 +354,18 @@ const Login: React.FC = () => {
           </p>
         </motion.div>
       </motion.div>
+
+      {/* Footer */}
+      <footer className='w-full text-center flex flex-col items-center justify-center'>
+        <div className="p-6 pb-4">
+          <ThemeToggle />
+        </div>
+        <hr className="text-accent/30 w-[80%] max-w-100 m-0" />
+        <div className='mt-6 mb-2 sm:mb-0 flex flex-col-reverse sm:flex-col gap-1'>
+          <p className='text-xs sm:text-sm text-accent/30'>© {new Date().getFullYear()} Haroldo Finanzas. Todos los derechos reservados.</p>
+          <p className='text-xs sm:text-sm text-accent/30'>Institución Universitaria ITM. Colombia.</p>
+        </div>
+      </footer>
     </div>
   );
 };

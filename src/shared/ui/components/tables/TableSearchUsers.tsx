@@ -27,6 +27,8 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
     const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
     const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
     const [selectedUserAnalysis, setSelectedUserAnalysis] = useState<IAnalysis[]>([]);
+    const [loadingAnalysis, setLoadingAnalysis] = useState(true);
+    const [errorAnalysis, setErrorAnalysis] = useState("");
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [confirmUserId, setConfirmUserId] = useState<number | null>(null);
@@ -58,14 +60,19 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
 
     const fetchUserAnalysis = async (userId: number) => {
         try {
+            setLoadingAnalysis(true);
             const data = await getUserAnalysis(userId);
             setSelectedUserAnalysis(data);
         } catch (error: unknown) {
             if (error instanceof Error) {
-                console.error('Error fetching analysis:', error.message);
+                console.error("Error fetching analysis:", error.message);
+                setErrorAnalysis(error.message);
             } else {
-                console.error('Unexpected error fetching analysis:', error);
+                console.error("Unexpected error fetching analysis:", error);
+                setErrorAnalysis("Unexpected error occurred");
             }
+        } finally {
+            setLoadingAnalysis(false);
         }
     };
 
@@ -249,6 +256,7 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                         <table className="table table-zebra">
                             <thead>
                                 <tr>
+                                    <th>ID</th>
                                     <th>Nombre Legal</th>
                                     <th>Cédula/NIT</th>
                                     <th>Tipo</th>
@@ -260,44 +268,46 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                             <tbody>
                                 {filteredUsers.map((user) => (
                                     <tr key={user.userId}>
+                                        <td>{user.userId}</td>
                                         <td>{user.legalName}</td>
                                         <td>{user.cedulaOrNIT}</td>
                                         <td>{user.clientType}</td>
                                         <td>{user.sector || "No especificado"}</td>
                                         <td>
-                                            <span className="badge badge-outline text-xs">{normalizeUserRole(user.role.id)}</span>
+                                            <span className="badge badge-outline border-0 bg-base-content/30 text-xs badge-sm">{normalizeUserRole(user.role.id)}</span>
                                         </td>
                                         <td>
-                                            <button
-                                                className="btn btn-primary btn-xs gap-1 whitespace-nowrap"
-                                                onClick={() => openDetailsModal(user)}
-                                            >
-                                                <Eye className="h-3 w-3" />
-                                                <p className="whitespace-nowrap">Ver detalle</p>
-                                            </button>
-                                        </td>
-                                        <td>
-                                            <button
-                                                className="btn btn-warning btn-xs gap-1 whitespace-nowrap"
-                                                onClick={() => openEditModal(user)}
-                                            >
-                                                <Edit className="h-3 w-3" />
-                                                Editar
-                                            </button>
-                                        </td>
-                                        <td>
-                                            <button
-                                                className="btn btn-error btn-xs gap-1 whitespace-nowrap"
-                                                onClick={() => setConfirmUserId(user.userId)}
-                                                disabled={deleting === user.userId}
-                                            >
-                                                {deleting === user.userId ? (
-                                                    <span className="loading loading-spinner loading-xs" />
-                                                ) : (
-                                                    <Trash className="h-3 w-3" />
-                                                )}
-                                                {deleting === user.userId ? "Eliminando..." : "Eliminar"}
-                                            </button>
+                                            <div className="flex gap-2">
+
+                                                <button
+                                                    className="btn btn-primary btn-xs gap-1 whitespace-nowrap"
+                                                    onClick={() => openDetailsModal(user)}
+                                                >
+                                                    <Eye className="h-3 w-3" />
+                                                    <p className="whitespace-nowrap">Ver</p>
+                                                </button>
+
+                                                <button
+                                                    className="btn btn-warning btn-xs gap-1 whitespace-nowrap"
+                                                    onClick={() => openEditModal(user)}
+                                                >
+                                                    <Edit className="h-3 w-3" />
+                                                    Editar
+                                                </button>
+
+                                                <button
+                                                    className="btn btn-error btn-xs gap-1 whitespace-nowrap"
+                                                    onClick={() => setConfirmUserId(user.userId)}
+                                                    disabled={deleting === user.userId}
+                                                >
+                                                    {deleting === user.userId ? (
+                                                        <span className="loading loading-spinner loading-xs" />
+                                                    ) : (
+                                                        <Trash className="h-3 w-3" />
+                                                    )}
+                                                    {deleting === user.userId ? "Eliminando..." : "Eliminar"}
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -310,18 +320,21 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                         {filteredUsers.map((user) => (
                             <div key={user.userId} className="card bg-base-200 p-4 space-y-2">
                                 <div className="flex justify-between items-start">
-                                    <div>
-                                        <h3 className="font-medium text-sm">{user.legalName}</h3>
-                                        <p className="text-xs text-base-content/60">{user.cedulaOrNIT}</p>
-                                    </div>
-                                    <span className="badge badge-outline text-xs">{normalizeUserRole(user.role.id)}</span>
+                                    <span className="text-xs text-base-content/70 whitespace-nowrap">
+                                        #{user.userId}
+                                    </span>
+                                    <span className="badge badge-outline border-0 bg-base-content/30 text-xs badge-sm">{normalizeUserRole(user.role.id)}</span>
                                 </div>
-                                <div className="text-xs text-base-content/70">
-                                    {user.clientType} - {user.sector}
+                                <div>
+                                    <h3 className="font-semibold text-sm">{user.legalName}</h3>
+                                    <p className="text-xs text-base-content/60">{user.cedulaOrNIT}</p>
                                 </div>
+                                <p className="text-xs capitalize text-base-content/70">
+                                    {user.clientType} · {user.sector}
+                                </p>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                     <button
-                                        className="btn btn-primary btn-xs gap-1"
+                                        className="btn btn-info btn-xs gap-1"
                                         onClick={() => openDetailsModal(user)}
                                     >
                                         <Eye className="h-3 w-3" /> Ver
@@ -374,7 +387,7 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                         <div className="overflow-y-auto overflow-x-hidden pr-1 flex-1">
                             {/* Info básica */}
                             <h3 className="font-semibold mb-2">Información Personal</h3>
-                            <div className="grid grid-cols-1 card bg-base-100 p-4 sm:grid-cols-2 gap-3 md:gap-4 mb-6">
+                            <div className="grid grid-cols-1 shadow-sm card bg-base-100 p-4 sm:grid-cols-2 gap-3 md:gap-4 mb-6">
                                 <div>
                                     <label className="text-sm font-medium text-base-content/70">Nombre Legal</label>
                                     <p className="text-base-content">{selectedUser.legalName}</p>
@@ -403,12 +416,27 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
 
                             {/* Métricas */}
                             <h3 className="font-semibold mb-2">Métricas de Cuestionarios</h3>
-                            {selectedUserAnalysis.length > 0 ? (
-                                <CardUserMetrics loading={loading} error={error} user={selectedUser} analysis={selectedUserAnalysis} />
-                            ) : (
+
+                            {loadingAnalysis ? (
+                                <div className="flex items-center justify-center">
+                                    <div className="card w-full bg-base-100 shadow-sm border border-base-200">
+                                        <div className="card-body items-center text-center">
+                                            <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
+                                            <p className="mt-4">Buscando métricas...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : selectedUserAnalysis.length <= 0 ? (
                                 <p className="text-sm text-base-content/70 card bg-base-100 flex flex-row p-4 gap-3 border-b border-base-200">
                                     Este cliente aún no ha completado cuestionarios.
                                 </p>
+                            ) : (
+                                <CardUserMetrics
+                                    loading={loadingAnalysis}
+                                    error={errorAnalysis}
+                                    user={selectedUser}
+                                    analysis={selectedUserAnalysis}
+                                />
                             )}
                         </div>
                     </div>
