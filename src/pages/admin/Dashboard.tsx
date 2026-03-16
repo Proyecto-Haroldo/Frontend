@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { getAllAnalysis, getAllQuestionnaires } from "../../api/analysisApi";
-import { getAllUsers } from "../../api/userApi";
+import { getAllAnalysis } from "../../api/analysisApi";
+import { getAllQuestionnaires } from "../../api/questionnairesApi";
+import { getAllUsers } from "../../api/usersApi";
 import { motion, AnimatePresence } from "motion/react";
 import { ClipboardList, ArrowLeft, FileText, Users } from "lucide-react";
 import { IQuestionnaire } from "../../core/models/questionnaire";
@@ -9,11 +10,11 @@ import { IUser } from "../../core/models/user";
 import { IAnalysis } from "../../core/models/analysis";
 import { useAuth } from "../../shared/context/AuthContext";
 import HeaderStats from "../../shared/ui/components/headers/HeaderStats";
-import Questionnaire from "./overview/QuestionnaireOverview";
-import Analysis from "./overview/AnalysisOverview";
-import TableSearchQuestionnaires from "../../shared/ui/components/tables/TableSearchQuestionnaires";
-import TableSearchAnalysis from "../../shared/ui/components/tables/TableSearchAnalysis";
-import TableSearchUsers from "../../shared/ui/components/tables/TableSearchUsers";
+import AnalysisReview from "../../shared/ui/template/TemplateAnalysisReview";
+import TableSearchUsers from "../../shared/ui/template/TemplateUsers";
+import Analysis from "../../shared/ui/template/TemplateAnalysis";
+import Questionnaires from "../../shared/ui/template/TemplateQuestionnaires";
+import Questions from "../../shared/ui/template/TemplateQuestions";
 
 function AdminDashboard({ view: forcedView }: { view?: string }) {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
   }, []);
 
   const [view, setView] = useState<
-    "selector" | "questionnaires" | "users" | "analysis" | "questionnaireOverview" | "analysisOverview"
+    "selector" | "questionnaires" | "users" | "analysis" | "questions" | "analysisReview"
   >(
     forcedView === "questionnaires"
       ? "questionnaires"
@@ -45,10 +46,10 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
         ? "users"
         : forcedView === "analysis"
           ? "analysis"
-          : forcedView === "analysisOverview"
-            ? "analysisOverview"
-            : forcedView === "questionnaireOverview"
-              ? "questionnaireOverview"
+          : forcedView === "analysisReview"
+            ? "analysisReview"
+            : forcedView === "questions"
+              ? "questions"
               : "selector"
   );
 
@@ -64,9 +65,9 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
 
     if (id) {
       if (path.includes("/analysis/")) {
-        setView("analysisOverview");
+        setView("analysisReview");
       } else if (path.includes("/questionnaires/")) {
-        setView("questionnaireOverview");
+        setView("questions");
       }
     } else {
       if (path === "/m" || path === "/m/") {
@@ -314,7 +315,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
               </button>
             </div>
 
-            <TableSearchQuestionnaires
+            <Questionnaires
               loading={loadingQuestionnaires}
               error={errorQuestionnaires}
               questionnaires={questionnaires}
@@ -346,7 +347,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
               </button>
             </div>
 
-            <TableSearchAnalysis
+            <Analysis
               loading={loadingAnalysis}
               error={errorAnalysis}
               analysis={analysis}
@@ -356,9 +357,9 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
         )}
 
         {/* ------------------ VISTA GESTOR DE CUESTIONARIOS (RUTA /a/questionnaire/:id) --------------------- */}
-        {view === "questionnaireOverview" && (
+        {view === "questions" && (
           <motion.div
-            key="questionnaireOverview"
+            key="questions"
             initial={{ x: 40, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -40, opacity: 0 }}
@@ -376,14 +377,14 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
               Volver
             </button>
 
-            <Questionnaire questionnaireId={Number(id)} />
+            <Questions questionnaireId={Number(id)} />
           </motion.div>
         )}
 
         {/* ------------------ VISTA GESTOR DE ANÁLISIS (RUTA /a/analysis/:id) --------------------- */}
-        {view === "analysisOverview" && (
+        {view === "analysisReview" && (
           <motion.div
-            key="analysisOverview"
+            key="analysisReview"
             initial={{ x: 40, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -40, opacity: 0 }}
@@ -401,7 +402,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
               Volver
             </button>
 
-            <Analysis analysisId={Number(id)} />
+            <AnalysisReview analysisId={Number(id)} />
           </motion.div>
         )}
       </AnimatePresence>

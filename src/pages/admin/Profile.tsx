@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../shared/context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
-import { getUserById } from '../../api/userApi';
+import { getUserById } from '../../api/usersApi';
 import { useNavigate } from 'react-router-dom';
 import { IUser } from '../../core/models/user';
 import ModalEditUser from '../../shared/ui/components/modals/ModalEditUser';

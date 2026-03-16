@@ -1,13 +1,13 @@
 import React from "react";
 
-interface CardConfirmEditProps {
+interface DialogConfirmEditProps {
     message: string;
     onConfirm: () => void;
     onCancel: () => void;
     loading?: boolean;
 }
 
-const CardConfirmEdit: React.FC<CardConfirmEditProps> = ({
+const DialogConfirmEdit: React.FC<DialogConfirmEditProps> = ({
     message,
     onConfirm,
     onCancel,
@@ -41,4 +41,4 @@ const CardConfirmEdit: React.FC<CardConfirmEditProps> = ({
     );
 };
 
-export default CardConfirmEdit;
+export default DialogConfirmEdit;

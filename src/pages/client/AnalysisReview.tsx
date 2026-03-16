@@ -21,7 +21,7 @@ import { Stoplight } from '../../shared/ui/components/stoplight/Stoplight';
 import { IAnalysis } from '../../core/models/analysis';
 import { getAnalysisAnswers } from '../../api/analysisApi';
 import type { QuestionAnswerDTO } from '../../shared/types/analysis';
-import type { QuestionnaireAnswer } from '../../shared/types/questionnaire';
+import type { IQuestionnaireAnswer } from '../../shared/types/questionnaire';
 
 function AnalysisReview() {
   const navigate = useNavigate();
@@ -43,7 +43,7 @@ function AnalysisReview() {
   const parsedQuestionnaireFromLS = (() => {
     if (!questionnaireDataFromLS) return null;
     try {
-      const parsed = JSON.parse(questionnaireDataFromLS) as { answers?: QuestionnaireAnswer[] } | null;
+      const parsed = JSON.parse(questionnaireDataFromLS) as { answers?: IQuestionnaireAnswer[] } | null;
       return parsed?.answers ? parsed : null;
     } catch {
       return null;
@@ -97,13 +97,13 @@ function AnalysisReview() {
       resumenUsuario = aiRecommendationFromLS;
     }
 
-    const parsedQuestionnaireData = questionnaireDataFromLS ? JSON.parse(questionnaireDataFromLS) : null;
+    const parsedIQuestionnaireData = questionnaireDataFromLS ? JSON.parse(questionnaireDataFromLS) : null;
 
     analysisData = {
       id: analysisIdFromUrl,
       conteo: 1, // Default to 1 for legacy localStorage data
-      timestamp: parsedQuestionnaireData?.metadata?.timestamp || new Date().toISOString(),
-      categoria: parsedQuestionnaireData?.metadata?.category || 'General',
+      timestamp: parsedIQuestionnaireData?.metadata?.timestamp || new Date().toISOString(),
+      categoria: parsedIQuestionnaireData?.metadata?.category || 'General',
       recomendacionUsuario: resumenUsuario,
       colorSemaforo: colorSemaforo
     };

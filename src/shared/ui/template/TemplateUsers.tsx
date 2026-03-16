@@ -1,22 +1,22 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Filter, Search, Eye, Trash, Loader2, Edit } from "lucide-react";
-import { IUser } from "../../../../core/models/user.ts";
+import { IUser } from "../../../core/models/user.ts";
 import { motion } from 'motion/react';
-import { IAnalysis } from "../../../../core/models/analysis.ts";
-import { getUserAnalysis } from "../../../../api/analysisApi.ts";
-import { deleteUserById, normalizeUserRole } from "../../../../api/userApi.ts";
-import CardConfirmDelete from "../cards/CardConfirmDelete.tsx";
-import ModalEditUser from "../modals/ModalEditUser.tsx";
-import CardUserMetrics from "../cards/CardUserMetrics.tsx";
+import { IAnalysis } from "../../../core/models/analysis.ts";
+import { getUserAnalysis } from "../../../api/analysisApi.ts";
+import { deleteUserById, normalizeUserRole } from "../../../api/usersApi.ts";
+import DialogConfirmDelete from "../components/dialogs/DialogConfirmDelete.tsx";
+import ModalEditUser from "../components/modals/ModalEditUser.tsx";
+import ModalDetailUser from "../components/modals/ModalDetailUser.tsx";
 
-interface TableSearchUsersProps {
+interface TemplateUsersProps {
     users: IUser[];
     loading: boolean;
     error: string | null;
     role: number | null;
 }
 
-const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
+const TemplateUsers: React.FC<TemplateUsersProps> = ({
     loading,
     error,
     role,
@@ -31,8 +31,8 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
     const [errorAnalysis, setErrorAnalysis] = useState("");
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
-    const [confirmUserId, setConfirmUserId] = useState<number | null>(null);
-    const [deleting, setDeleting] = useState<number | null>(null);
+    const [toConfirm, setToConfirm] = useState<number | null>(null);
+    const [toDelete, setToDelete] = useState<number | null>(null);
 
     const filterUsers = useCallback(() => {
         let filtered = users;
@@ -297,15 +297,15 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
 
                                                 <button
                                                     className="btn btn-error btn-xs gap-1 whitespace-nowrap"
-                                                    onClick={() => setConfirmUserId(user.userId)}
-                                                    disabled={deleting === user.userId}
+                                                    onClick={() => setToConfirm(user.userId)}
+                                                    disabled={toDelete === user.userId}
                                                 >
-                                                    {deleting === user.userId ? (
+                                                    {toDelete === user.userId ? (
                                                         <span className="loading loading-spinner loading-xs" />
                                                     ) : (
                                                         <Trash className="h-3 w-3" />
                                                     )}
-                                                    {deleting === user.userId ? "Eliminando..." : "Eliminar"}
+                                                    {toDelete === user.userId ? "Eliminando..." : "Eliminar"}
                                                 </button>
                                             </div>
                                         </td>
@@ -348,15 +348,15 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                                     </button>
                                     <button
                                         className="btn btn-error btn-xs gap-1 whitespace-nowrap"
-                                        onClick={() => setConfirmUserId(user.userId)}
-                                        disabled={deleting === user.userId}
+                                        onClick={() => setToConfirm(user.userId)}
+                                        disabled={toDelete === user.userId}
                                     >
-                                        {deleting === user.userId ? (
+                                        {toDelete === user.userId ? (
                                             <span className="loading loading-spinner loading-xs" />
                                         ) : (
                                             <Trash className="h-3 w-3" />
                                         )}
-                                        {deleting === user.userId ? "Eliminando..." : "Eliminar"}
+                                        {toDelete === user.userId ? "Eliminando..." : "Eliminar"}
                                     </button>
                                 </div>
                             </div>
@@ -373,75 +373,15 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
 
             {/* Modal de detalles */}
             {showDetailsModal && selectedUser && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-base-200 rounded-lg p-4 md:p-6 max-w-3xl w-full max-h-[90vh] flex flex-col">
-
-                        {/* Header fijo */}
-                        <div className="flex justify-between items-center mb-4 shrink-0">
-                            <h2 className="text-xl md:text-xl font-semibold">Detalles del Usuario</h2>
-                            <button onClick={closeDetailsModal} className="btn btn-ghost btn-sm btn-circle">
-                                ✕
-                            </button>
-                        </div>
-
-                        <div className="overflow-y-auto overflow-x-hidden pr-1 flex-1">
-                            {/* Info básica */}
-                            <h3 className="font-semibold mb-2">Información Personal</h3>
-                            <div className="grid grid-cols-1 shadow-sm card bg-base-100 p-4 sm:grid-cols-2 gap-3 md:gap-4 mb-6">
-                                <div>
-                                    <label className="text-sm font-medium text-base-content/70">Nombre Legal</label>
-                                    <p className="text-base-content">{selectedUser.legalName}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-base-content/70">Cédula / NIT</label>
-                                    <p className="text-base-content">{selectedUser.cedulaOrNIT}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-base-content/70">Correo</label>
-                                    <p className="text-base-content">{selectedUser.email}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-base-content/70">Tipo de Cliente</label>
-                                    <p className="text-base-content">{selectedUser.clientType}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-base-content/70">Sector</label>
-                                    <p className="text-base-content">{selectedUser.sector || "N/A"}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-base-content/70">Rol</label>
-                                    <p className="text-base-content">{normalizeUserRole(selectedUser.role.id)}</p>
-                                </div>
-                            </div>
-
-                            {/* Métricas */}
-                            <h3 className="font-semibold mb-2">Métricas de Cuestionarios</h3>
-
-                            {loadingAnalysis ? (
-                                <div className="flex items-center justify-center">
-                                    <div className="card w-full bg-base-100 shadow-sm border border-base-200">
-                                        <div className="card-body items-center text-center">
-                                            <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
-                                            <p className="mt-4">Buscando métricas...</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : selectedUserAnalysis.length <= 0 ? (
-                                <p className="text-sm text-base-content/70 card bg-base-100 flex flex-row p-4 gap-3 border-b border-base-200">
-                                    Este cliente aún no ha completado cuestionarios.
-                                </p>
-                            ) : (
-                                <CardUserMetrics
-                                    loading={loadingAnalysis}
-                                    error={errorAnalysis}
-                                    user={selectedUser}
-                                    analysis={selectedUserAnalysis}
-                                />
-                            )}
-                        </div>
-                    </div>
-                </div>
+                <ModalDetailUser
+                    onClose={closeDetailsModal}
+                    loading={loadingAnalysis}
+                    error={errorAnalysis}
+                    user={selectedUser}
+                    analysis={selectedUserAnalysis}
+                />
             )}
+
             {/* Modal de edición */}
             {showEditModal && selectedUser && (
                 <ModalEditUser
@@ -457,27 +397,27 @@ const TableSearchUsers: React.FC<TableSearchUsersProps> = ({
                 />
             )}
 
-            {confirmUserId !== null && (
-                <CardConfirmDelete
+            {toConfirm !== null && (
+                <DialogConfirmDelete
                     message="¿Estás seguro de que deseas eliminar este cliente? Esta acción no se puede deshacer."
                     onConfirm={async () => {
-                        setDeleting(confirmUserId);
+                        setToDelete(toConfirm);
                         try {
-                            await deleteUserById(confirmUserId);
-                            setFilteredUsers(prev => prev.filter(u => u.userId !== confirmUserId));
+                            await deleteUserById(toConfirm);
+                            setFilteredUsers(prev => prev.filter(u => u.userId !== toConfirm));
                         } catch (error) {
                             console.error("Error al eliminar cliente:", error);
                         } finally {
-                            setDeleting(null);
-                            setConfirmUserId(null);
+                            setToDelete(null);
+                            setToConfirm(null);
                         }
                     }}
-                    onCancel={() => setConfirmUserId(null)}
-                    loading={deleting === confirmUserId}
+                    onCancel={() => setToConfirm(null)}
+                    loading={toDelete === toConfirm}
                 />
             )}
         </div>
     );
 };
 
-export default TableSearchUsers;
+export default TemplateUsers;

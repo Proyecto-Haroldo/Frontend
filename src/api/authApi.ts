@@ -1,34 +1,8 @@
-// API service for authentication
 import { apiClient } from './apiClient';
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface RegisterRequest {
-  email: string;
-  password: string;
-  cedulaOrNIT: string;
-  legalName: string;
-  clientType: string;
-  role: { id: number };
-  sector: string;
-}
-
-export interface LoginResponse {
-  token: string;
-  role: { id: number, name: string };
-  id: number;
-  message?: string;
-}
-
-export interface RegisterResponse {
-  token: string;
-  role: { id: number, name: string };
-  id: number;
-  message?: string;
-}
+import {
+  LoginRequest, LoginResponse,
+  RegisterRequest, RegisterResponse
+} from '../core/dto/auth';
 
 function getMessageFromResponse(response: { status: number; data?: unknown }): string | null {
   if (typeof response.data === 'string' && response.data.trim()) {

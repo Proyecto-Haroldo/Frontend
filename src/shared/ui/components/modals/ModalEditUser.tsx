@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { IUser } from "../../../../core/models/user";
-import { putUserById } from "../../../../api/userApi";
-import CardConfirmEdit from "../cards/CardConfirmEdit";
+import { putUserById } from "../../../../api/usersApi";
+import DialogConfirmEdit from "../dialogs/DialogConfirmEdit";
 
 interface ModalEditUserProps {
     user: IUser;
@@ -165,7 +165,7 @@ const ModalEditUser: React.FC<ModalEditUserProps> = ({
             </div>
 
             {showConfirm && (
-                <CardConfirmEdit
+                <DialogConfirmEdit
                     message="¿Deseas guardar los cambios realizados en este usuario?"
                     onConfirm={handleConfirmEdit}
                     onCancel={() => setShowConfirm(false)}

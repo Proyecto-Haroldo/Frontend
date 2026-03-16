@@ -1,23 +1,22 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Filter, Search, Eye, Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { IQuestionnaire } from "../../../../core/models/questionnaire";
+import { Filter, Search, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
+import { IQuestionnaire } from "../../../core/models/questionnaire";
+import TableQuestionnaires from "../components/tables/TableQuestionnaires";
 
-interface TableSearchQuestionnairesProps {
+interface TemplateQuestionnairesProps {
     questionnaires: IQuestionnaire[];
     loading: boolean;
     error: string | null;
     role: number | null;
 }
 
-const TableSearchQuestionnaires: React.FC<TableSearchQuestionnairesProps> = ({
+const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
     questionnaires,
     loading,
     error,
     role,
 }) => {
-    const navigate = useNavigate();
     const [filter, setFilter] = useState<string>("all");
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredQuestionnaires, setFilteredQuestionnaires] = useState<
@@ -54,14 +53,6 @@ const TableSearchQuestionnaires: React.FC<TableSearchQuestionnairesProps> = ({
     useEffect(() => {
         filterQuestionnaires();
     }, [filterQuestionnaires]);
-
-    const handleViewDetails = (questionnaire: IQuestionnaire) => {
-        if (role === 3) {
-            navigate(`/a/questionnaires/${questionnaire.id}`);
-        } else if (role === 1) {
-            navigate(`/m/questionnaires/${questionnaire.id}`);
-        }
-    };
 
     // Errores o carga
     if (loading)
@@ -178,95 +169,12 @@ const TableSearchQuestionnaires: React.FC<TableSearchQuestionnairesProps> = ({
             </div>
 
             {/* Tabla de Cuestionarios */}
-            <div className="card bg-base-100 shadow-sm border border-base-200">
-                <div className="card-body p-3 md:p-6">
-                    <h2 className="card-title mb-4 text-lg">Cuestionarios</h2>
-
-                    {filteredQuestionnaires.length > 0 ? (
-                        <>
-                            {/* Desktop Table */}
-                            <div className="hidden lg:block overflow-x-auto">
-                                <table className="table table-zebra">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Detalles</th>
-                                            <th>Creador</th>
-                                            <th>ID Creador</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {filteredQuestionnaires.map((q) => (
-                                            <tr key={q.id}>
-                                                <td>{q.id}</td>
-                                                <td>
-                                                    <div className="flex flex-col items-start justify-center">
-                                                        <h3 className="text-md font-bold">
-                                                            {q.title || "Sin definir"}
-                                                        </h3>
-                                                        <div className="flex capitalize text-base text-sm font-normal text-base-content/70">
-                                                            {q.categoryName}
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>{q.creatorName}</td>
-                                                <td>{q.creatorId}</td>
-                                                <td>
-                                                    <button
-                                                        className="btn btn-info btn-xs gap-1"
-                                                        onClick={() => handleViewDetails(q)}
-                                                    >
-                                                        <Eye className="h-3 w-3" />
-                                                        <p className="whitespace-nowrap">Ver</p>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            {/* Mobile Cards */}
-                            <div className="lg:hidden space-y-3">
-                                {filteredQuestionnaires.map((q) => (
-                                    <div key={q.id} className="card bg-base-200 p-4 space-y-2">
-                                        <div className="flex justify-between items-start">
-                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                                                <span className="text-xs text-base-content/50">
-                                                    #{q.id}
-                                                </span>
-                                                <h1 className="text-sm font-bold capitalize">
-                                                    {q.title || "Sin definir"}
-                                                </h1>
-                                                <p className="inline text-base text-xs font-normal text-base-content/70">
-                                                    <strong>Categoría: </strong>{q.categoryName}
-                                                </p>
-                                                <div className="capitalize text-base text-xs font-normal text-base-content/70">
-                                                    <strong>Creador: </strong>{q.creatorName}
-                                                </div>
-                                            </div>
-                                            <button
-                                                className="btn btn-info btn-xs gap-1"
-                                                onClick={() => handleViewDetails(q)}
-                                            >
-                                                <Eye className="h-3 w-3" />
-                                                Ver
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </>
-                    ) : (
-                        <div className="text-center py-8 text-base-content/50">
-                            No se encontraron cuestionarios
-                        </div>
-                    )}
-                </div>
-            </div>
+            <TableQuestionnaires
+                questionnaires={filteredQuestionnaires}
+                role={role}
+            />
         </div>
     );
 };
 
-export default TableSearchQuestionnaires;
+export default TemplateQuestionnaires;

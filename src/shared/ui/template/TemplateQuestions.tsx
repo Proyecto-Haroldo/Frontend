@@ -1,26 +1,50 @@
 import { useEffect, useState } from 'react';
+import { motion } from 'motion/react';
 import {
+  Plus,
+  Edit,
+  Trash2,
+  Save,
   X,
   Loader2,
   Search,
   Eye
 } from 'lucide-react';
-import { motion } from 'motion/react';
 import {
   fetchQuestionsByQuestionnaire,
-  getQuestionnaireById
-} from '../../../api/analysisApi';
-import { IQuestion } from '../../../core/models/question';
+  getQuestionnaireById,
+  createQuestion,
+  updateQuestion,
+  deleteQuestion,
+} from '../../../api/questionnairesApi';
+import { IQuestion, QuestionType } from '../../../core/models/question';
 import { IQuestionnaire } from '../../../core/models/questionnaire';
+import { useAuth } from '../../context/AuthContext';
 
-function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }) {
+interface TemplateQuestionsProps {
+  questionnaireId: number | null;
+}
+
+function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
   const [questions, setQuestions] = useState<IQuestion[]>([]);
   const [filteredQuestions, setFilteredQuestions] = useState<IQuestion[]>([]);
-  const [viewingQuestion, setViewingQuestion] = useState<IQuestion | null>(null);
   const [searchTitle, setSearchTitle] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editingQuestion, setEditingQuestion] = useState<IQuestion | null>(null);
+  const [viewingQuestion, setViewingQuestion] = useState<IQuestion | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [questionnaire, setQuestionnaire] = useState<IQuestionnaire | null>(null);
+  const { userId, role } = useAuth();
+
+  const isAdmin = role === 1;
+
+  const isOwnerAdviser =
+    role === 3 &&
+    questionnaire?.creatorId === userId;
+
+  const canManage = isAdmin || isOwnerAdviser;
 
   // Fetch questionnaire
   useEffect(() => {
@@ -80,7 +104,133 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
   }, [searchTitle, questions]);
 
   const handleView = (question: IQuestion) => {
+    setEditingQuestion(null);
     setViewingQuestion(question);
+  };
+  const handleCreate = () => {
+    if (!canManage) return;
+
+    if (!questionnaire) {
+      setError('No se encontró información del cuestionario');
+      return;
+    }
+
+    setIsCreating(true);
+    setEditingQuestion({
+      id: 0,
+      question: '',
+      questionType: 'open',
+      options: [],
+      keywords: []
+    });
+  };
+
+  const handleEdit = (question: IQuestion) => {
+    if (!canManage) return;
+
+    setViewingQuestion(null);
+    setEditingQuestion({ ...question });
+    setIsCreating(false);
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!canManage) return;
+
+    if (!confirm('¿Está seguro de que desea eliminar esta pregunta?')) {
+      return;
+    }
+
+    try {
+      await deleteQuestion(id);
+      await fetchQuestions();
+    } catch (err) {
+      console.error('Error deleting question:', err);
+      setError('Error al eliminar la pregunta');
+    }
+  };
+
+  const handleSave = async () => {
+    if (!canManage) return;
+
+    if (!editingQuestion || !questionnaire) {
+      return;
+    }
+
+    // Validation
+    if (!editingQuestion.question.trim()) {
+      setError('La pregunta es requerida');
+      return;
+    }
+
+    if ((editingQuestion.questionType === 'single' || editingQuestion.questionType === 'multiple')
+      && (!editingQuestion.options || editingQuestion.options.length < 2)) {
+      setError('Las preguntas de opción múltiple deben tener al menos 2 opciones');
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      setError(null);
+
+      // Map to backend format
+      const questionData: Omit<IQuestion, "id" | "keywords"> = {
+        question: editingQuestion.question,
+        questionType: editingQuestion.questionType,
+        categoryName: questionnaire.categoryName,
+        options: editingQuestion.options?.map((opt) => ({
+          id: opt.id,
+          text: opt.text
+        })) || []
+      };
+
+      if (isCreating) {
+        await createQuestion(questionData);
+      } else {
+        await updateQuestion(editingQuestion.id, questionData);
+      }
+
+      setEditingQuestion(null);
+      setIsCreating(false);
+      await fetchQuestions();
+    } catch (err) {
+      console.error('Error saving question:', err);
+      setError('Error al guardar la pregunta');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setEditingQuestion(null);
+    setIsCreating(false);
+    setError(null);
+  };
+
+  const handleAddOption = () => {
+    if (!editingQuestion) return;
+
+    const newOptions = [...(editingQuestion.options || [])];
+    newOptions.push({
+      id: Date.now(),
+      text: ''
+    });
+    setEditingQuestion({ ...editingQuestion, options: newOptions });
+  };
+
+  const handleRemoveOption = (index: number) => {
+    if (!editingQuestion) return;
+
+    const newOptions = [...(editingQuestion.options || [])];
+    newOptions.splice(index, 1);
+    setEditingQuestion({ ...editingQuestion, options: newOptions });
+  };
+
+  const handleOptionChange = (index: number, text: string) => {
+    if (!editingQuestion) return;
+
+    const newOptions = [...(editingQuestion.options || [])];
+    newOptions[index] = { ...newOptions[index], text };
+    setEditingQuestion({ ...editingQuestion, options: newOptions });
   };
 
   if (loading && !questions.length) {
@@ -117,9 +267,9 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 flex-wrap">
         <div className="w-full">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-start gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <h1 className="text-xl sm:text-2xl font-semibold">
-              Visor de Preguntas
+              Gestor de Preguntas
               {questionnaire && (
                 <div className="flex mt-2 gap-2 capitalize text-base text-md font-normal text-base-content/70">
                   {questionnaire.title || "Sin definir"}
@@ -129,6 +279,16 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
                 </div>
               )}
             </h1>
+            {!editingQuestion && !viewingQuestion && canManage && (
+              <button
+                onClick={handleCreate}
+                className="btn btn-primary btn-sm gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                <span className="hidden sm:inline">Nueva Pregunta</span>
+                <span className="sm:hidden">Nueva</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -147,7 +307,7 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
       )}
 
       {/* Questions Table */}
-      {!viewingQuestion && (
+      {!editingQuestion && !viewingQuestion && (
         <div className="card bg-base-100 shadow-sm border border-base-200">
           <div className="card-body p-3 md:p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 flex-wrap">
@@ -229,8 +389,27 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
                                   onClick={() => handleView(question)}
                                 >
                                   <Eye className="h-3 w-3" />
-                                  <p className="whitespace-nowrap">Ver</p>
                                 </button>
+
+                                {canManage && (
+                                  <>
+                                    <button
+                                      onClick={() => handleEdit(question)}
+                                      className="btn btn-xs btn-warning gap-1"
+                                      title="Editar"
+                                    >
+                                      <Edit className="h-3 w-3" />
+                                    </button>
+
+                                    <button
+                                      onClick={() => handleDelete(question.id)}
+                                      className="btn btn-xs btn-error gap-1"
+                                      title="Eliminar"
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </button>
+                                  </>
+                                )}
                               </div>
                             </td>
                           </tr>
@@ -273,6 +452,27 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
                             <Eye className="h-3 w-3" />
                             <p className="whitespace-nowrap">Ver</p>
                           </button>
+                          {canManage && (
+                            <>
+                              <button
+                                onClick={() => handleEdit(question)}
+                                className="btn btn-xs btn-warning gap-1"
+                                title="Editar"
+                              >
+                                <Edit className="h-3 w-3" />
+                                <p className="whitespace-nowrap">Editar</p>
+                              </button>
+
+                              <button
+                                onClick={() => handleDelete(question.id)}
+                                className="btn btn-xs btn-error gap-1"
+                                title="Eliminar"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                                <p className="whitespace-nowrap">Eliminar</p>
+                              </button>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -284,7 +484,7 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
         </div>
       )}
 
-      {/* View Question Modal */}
+      {/* View Question Section */}
       {viewingQuestion && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -357,8 +557,133 @@ function QuestionnaireOverview({ questionnaireId }: { questionnaireId?: number }
           </div>
         </motion.div>
       )}
+
+      {/* Edit/Create Form */}
+      {editingQuestion && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="card bg-base-100 shadow-sm border border-base-200"
+        >
+          <div className="card-body p-3 md:p-6">
+            <h2 className="card-title text-lg sm:text-xl">
+              {isCreating ? 'Nueva Pregunta' : `Editar Pregunta - #${editingQuestion.id}`}
+            </h2>
+
+            <div className="space-y-4">
+              {/* Question Text */}
+              <div className="form-control">
+                <label className="label" htmlFor='question'>
+                  <span className="label-text">Pregunta</span>
+                </label>
+                <textarea
+                  title={editingQuestion.question}
+                  className="textarea textarea-bordered text-start w-full bg-base-200 text-base-content/80 overflow-y-auto mt-2 bg-primary/10 border-primary/50"
+                  value={editingQuestion.question}
+                  onChange={(e) =>
+                    setEditingQuestion({ ...editingQuestion, question: e.target.value })
+                  }
+                  placeholder="Escriba la pregunta aquí..."
+                />
+              </div>
+
+              {/* Question Type */}
+              <div className="form-control">
+                <label className="label" htmlFor='question-type'>
+                  <span className="label-text">Tipo de Pregunta</span>
+                </label>
+                <select
+                  className="select select-bordered w-full mt-2"
+                  title='question-type'
+                  value={editingQuestion.questionType}
+                  onChange={(e) =>
+                    setEditingQuestion({
+                      ...editingQuestion,
+                      questionType: e.target.value as QuestionType,
+                      options: editingQuestion.options || []
+                    })
+                  }
+                >
+                  <option value="open">Abierta</option>
+                  <option value="single">Opción Única</option>
+                  <option value="multiple">Opción Múltiple</option>
+                </select>
+              </div>
+
+              {/* Options for single/multiple */}
+              {(editingQuestion.questionType === 'single' ||
+                editingQuestion.questionType === 'multiple') && (
+                  <div className="form-control">
+                    <label className="label" htmlFor='options'>
+                      <span className="label-text">Opciones</span>
+                    </label>
+                    <div className="space-y-2 mt-2">
+                      {editingQuestion.options?.map((option, index) => (
+                        <div key={option.id || index} className="flex gap-2">
+                          <input
+                            type="text"
+                            title='options'
+                            className="input input-bordered flex-1 overflow-x-auto"
+                            value={option.text}
+                            onChange={(e) => handleOptionChange(index, e.target.value)}
+                            placeholder={`Opción ${index + 1}`}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveOption(index)}
+                            className="btn btn-ghost btn-sm flex-shrink-0"
+                            disabled={editingQuestion.options?.length === 2}
+                            title="Eliminar opción"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={handleAddOption}
+                        className="btn btn-outline btn-sm w-full sm:w-auto"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Agregar Opción
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-2 justify-end">
+                <button
+                  onClick={handleCancel}
+                  className="btn btn-ghost w-full sm:w-auto"
+                  disabled={isSaving}
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="btn btn-primary gap-2 w-full sm:w-auto"
+                  disabled={isSaving}
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Guardando...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4" />
+                      Guardar
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }
 
-export default QuestionnaireOverview;
+export default TemplateQuestions;
