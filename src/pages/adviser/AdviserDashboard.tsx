@@ -74,6 +74,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
     try {
       setLoadingAnalysis(true);
       const data = await getAllAnalysis();
+      console.log(data);
       setAnalysis(data);
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -113,8 +114,8 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
 
   const stats = {
     total: analysis.length,
-    pending: analysis.filter((q) => q.status === "pending").length,
-    completed: analysis.filter((q) => q.status === "checked").length,
+    pending: analysis.filter((q) => q.status?.toUpperCase() === "PENDING").length,
+    completed: analysis.filter((q) => q.status?.toUpperCase() === "CHECKED").length,
     green: analysis.filter((q) => q.colorSemaforo === "verde").length,
     yellow: analysis.filter((q) => q.colorSemaforo === "amarillo").length,
     red: analysis.filter((q) => q.colorSemaforo === "rojo").length,

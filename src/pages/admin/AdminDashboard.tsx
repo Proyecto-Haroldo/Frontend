@@ -146,8 +146,8 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
 
   const stats = {
     total: analysis.length,
-    pending: analysis.filter((q) => q.status === "pending").length,
-    completed: analysis.filter((q) => q.status === "checked").length,
+    pending: analysis.filter((q) => q.status?.toUpperCase() === "PENDING").length,
+    completed: analysis.filter((q) => q.status?.toUpperCase() === "CHECKED").length,
     green: analysis.filter((q) => q.colorSemaforo === "verde").length,
     yellow: analysis.filter((q) => q.colorSemaforo === "amarillo").length,
     red: analysis.filter((q) => q.colorSemaforo === "rojo").length,

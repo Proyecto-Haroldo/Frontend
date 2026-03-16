@@ -73,7 +73,7 @@ function AnalysisReview() {
       conteo: analysis.conteo,
       timestamp: analysis.timeWhenSolved || new Date().toISOString(),
       categoria: analysis.categoria,
-      recomendacionUsuario: analysis.recomendacionInicial,
+      recomendacionUsuario: analysis.analisisIA,
       colorSemaforo: colorSemaforo
     };
   } else if (analysisIdFromUrl && aiRecommendationFromLS) {
@@ -304,7 +304,7 @@ function AnalysisReview() {
         variants={itemVariants}
       >
         <motion.div
-          className={`rounded-xl p-8 border ${currentStatus.bgColor} ${currentStatus.borderColor} w-full max-w-md`}
+          className="rounded-xl p-8 bg-base-200 shadow-md w-full max-w-md"
           variants={itemVariants}
           whileHover={{ scale: 1.01 }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
@@ -414,7 +414,7 @@ function AnalysisReview() {
               </motion.div>
 
               {/* Adviser comment (only after adviser has graded; pending analyses show AI text, not adviser) */}
-              {analysis?.contenidoRevision && analysis?.status === 'checked' && (
+              {analysis?.comentarioAsesor && analysis?.status?.toUpperCase() === 'CHECKED' && (
                 <motion.div
                   className="card bg-primary/5 border border-primary/20"
                   initial={{ y: 30, opacity: 0 }}
@@ -427,7 +427,7 @@ function AnalysisReview() {
                       Comentario del asesor
                     </h3>
                     <p className="text-base-content/80 text-justify whitespace-pre-wrap">
-                      {analysis.contenidoRevision}
+                      {analysis.comentarioAsesor}
                     </p>
                   </div>
                 </motion.div>

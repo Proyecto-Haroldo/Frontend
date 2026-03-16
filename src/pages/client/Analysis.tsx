@@ -54,12 +54,12 @@ function Analysis() {
   }, [userId]);
 
   const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'checked':
-      case 'completed':
+    switch (status?.toUpperCase()) {
+      case 'CHECKED':
+      case 'COMPLETED':
         return <CheckCircle className="h-5 w-5 text-success" />;
-      case 'in-progress':
-      case 'pending':
+      case 'IN-PROGRESS':
+      case 'PENDING':
         return <Clock className="h-5 w-5 text-warning" />;
       default:
         return <AlertCircle className="h-5 w-5 text-base-content/50" />;
@@ -67,12 +67,12 @@ function Analysis() {
   };
 
   const getStatusText = (status: string) => {
-    switch (status) {
-      case 'checked':
-      case 'completed':
+    switch (status?.toUpperCase()) {
+      case 'CHECKED':
+      case 'COMPLETED':
         return 'Completado';
-      case 'in-progress':
-      case 'pending':
+      case 'IN-PROGRESS':
+      case 'PENDING':
         return 'En Progreso';
       default:
         return 'Pendiente';
@@ -116,8 +116,8 @@ function Analysis() {
   const filteredAndSortedAnalysis = useMemo(() => {
     if (!analysis) return [];
     let list = [...analysis];
-    if (statusFilter === 'completed') list = list.filter(a => a.status === 'checked');
-    else if (statusFilter === 'incomplete') list = list.filter(a => a.status !== 'checked');
+    if (statusFilter === 'completed') list = list.filter(a => a.status?.toUpperCase() === 'CHECKED');
+    else if (statusFilter === 'incomplete') list = list.filter(a => a.status?.toUpperCase() !== 'CHECKED');
     if (categoryFilter) list = list.filter(a => a.categoria === categoryFilter);
     list.sort((a, b) => {
       const dateA = new Date(a.timeWhenSolved || 0).getTime();
@@ -240,7 +240,7 @@ function Analysis() {
               </div>
             )}
             {analysis && filteredAndSortedAnalysis.map((item, index) => {
-              const isChecked = item.status === 'checked';
+              const isChecked = item.status?.toUpperCase() === 'CHECKED';
               const status: AnalysisStatus = isChecked ? 'completed' : 'in-progress';
               const progress = calculateTotalProgress(isChecked);
 

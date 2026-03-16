@@ -179,8 +179,8 @@ function AnalysisManager({
   };
 
   const getStateBadge = (state: string) => {
-    switch (state) {
-      case "pending":
+    switch (state?.toUpperCase()) {
+      case "PENDING":
         return (
           <span className="badge badge-warning p-1 badge-sm gap-1 text-xs">
             <Clock className="h-3 w-3" />
@@ -188,8 +188,8 @@ function AnalysisManager({
             <span className="sm:hidden">Pend.</span>
           </span>
         );
-      case "checked":
-      case "completed":
+      case "CHECKED":
+      case "COMPLETED":
         return (
           <span className="badge badge-success p-1 badge-sm gap-1 text-xs">
             <CheckCircle className="h-3 w-3" />
@@ -229,7 +229,7 @@ function AnalysisManager({
           {/* Stoplight */}
           <div className="flex flex-col items-center justify-center space-y-6">
             <div className="text-center space-y-4">
-              <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full rounded-full text-sm font-medium border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}>
+              <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full text-sm font-medium border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}>
                 <StatusIcon className={`w-10 h-10 ${currentStatus.color}`} />
               </div>
               <div>
@@ -250,7 +250,7 @@ function AnalysisManager({
           <div className="rounded-xl p-8 bg-base-200 shadow-md">
             <h3 className="text-xl font-semibold mb-4 text-center">Resumen del Análisis</h3>
             <p className="text-base-content/80 text-sm leading-relaxed text-justify">
-              {analysis.recomendacionInicial || 'No disponible'}
+              {analysis.analisisIA || 'No disponible'}
             </p>
             <div className={`card p-4 bg-base-200 gap-2 mt-4 border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}>
               <div className={`badge text-sm font-semibold ${colorSemaforo === 'verde' ? 'badge-success' : colorSemaforo === 'amarillo' ? 'badge-warning' : 'badge-error'}`}>
@@ -305,13 +305,24 @@ function AnalysisManager({
             <div
               className="card w-full inline-block border p-4 mt-2 text-sm bg-primary/10 border-primary/50 text-justify max-h-59 overflow-y-auto"
               dangerouslySetInnerHTML={{
-                __html: formatAnalysisText(analysis.contenidoRevision)
+                __html: formatAnalysisText(analysis.resumenIA)
               }}
             />
-            {analysis.status === 'pending' && analysis.contenidoRevision && (
+            {analysis.status?.toUpperCase() === 'PENDING' && analysis.resumenIA && (
               <p className="text-xs text-base-content/50 mt-3">* Generado por IA hasta que un asesor revise.</p>
             )}
           </div>
+          
+          {analysis.comentarioAsesor && (
+            <div className='mt-4'>
+              <label className="text-sm font-medium text-base-content/70 flex flex-col">
+                Comentario del asesor
+              </label>
+              <div className="card w-full inline-block border p-4 mt-2 text-sm bg-warning/10 border-warning/50 text-justify max-h-59 overflow-y-auto">
+                <p className="text-base-content/80 whitespace-pre-wrap">{analysis.comentarioAsesor}</p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Respuestas del cuestionario */}
@@ -388,7 +399,7 @@ function AnalysisManager({
         </div>
 
         {/* Formulario de calificación (solo si está pendiente) */}
-        {analysis.status === 'pending' && (
+        {analysis.status?.toUpperCase() === 'PENDING' && (
           <div className="card bg-base-200 shadow-md p-6">
             <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-base-content/70" />
@@ -474,13 +485,13 @@ function AnalysisManager({
           </div>
         )}
 
-        {analysis.status === 'checked' && analysis.contenidoRevision && (
+        {analysis.status?.toUpperCase() === 'CHECKED' && analysis.comentarioAsesor && (
           <div className="card bg-base-200 shadow-md p-6 border border-base-200">
             <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-base-content/70" />
               Revisón enviada al cliente
             </h3>
-            <p className="text-sm text-base-content/80 whitespace-pre-wrap card border p-4 mt-2 bg-primary/10 border-primary/50">{analysis.contenidoRevision}</p>
+            <p className="text-sm text-base-content/80 whitespace-pre-wrap card border p-4 mt-2 bg-primary/10 border-primary/50">{analysis.comentarioAsesor}</p>
           </div>
         )}
 

@@ -1,6 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Mail,
   KeyRound,
@@ -18,6 +18,8 @@ import PasswordStrength from "../../shared/ui/validator/PasswordStrength";
 import { useAuth } from "../../shared/context/AuthContext";
 import HFIsotype from '../../../public/assets/HFIsotype';
 import ThemeToggle from "../../shared/ui/layout/theme/ThemeToggle";
+
+const loadingIcons = [Banknote, Wallet, PiggyBank, TrendingUp];
 
 const SignUp: React.FC = () => {
   const [form, setForm] = useState({
@@ -54,6 +56,27 @@ const SignUp: React.FC = () => {
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const { setAuth } = useAuth();
   const navigate = useNavigate();
+
+  const [loadingIconIndex, setLoadingIconIndex] = useState(0);
+
+  // Ensure auth page respects the last selected theme
+  useEffect(() => {
+    try {
+      const storedTheme = (localStorage.getItem('theme') as 'default' | 'light' | 'dark') || 'default';
+      document.documentElement.setAttribute('data-theme', storedTheme);
+    } catch {
+      // ignore storage errors
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!loading) return;
+    setLoadingIconIndex(0);
+    const interval = setInterval(() => {
+      setLoadingIconIndex(prev => prev + 1);
+    }, 400);
+    return () => clearInterval(interval);
+  }, [loading]);
 
   const calculatePasswordStrength = (password: string) => {
     if (!password) return 0;
@@ -542,15 +565,39 @@ const SignUp: React.FC = () => {
             )}
           </div>
 
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            type="submit"
-            className={`btn btn-primary w-full ${loading || !isPasswordValid ? "opacity-50" : ""}`}
-            disabled={loading || !isPasswordValid}
-          >
-            {loading ? "Registrando..." : "Registrarse"}
-          </motion.button>
+          <div className="relative">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              className={`btn btn-primary w-full ${loading || !isPasswordValid ? "opacity-50" : ""}`}
+              disabled={loading || !isPasswordValid}
+            >
+              {!loading && "Registrarse"}
+            </motion.button>
+
+            {loading && (
+              <div className="absolute inset-0 overflow-hidden rounded-btn pointer-events-none">
+                <AnimatePresence mode="sync">
+                  {(() => {
+                    const Icon = loadingIcons[loadingIconIndex % loadingIcons.length];
+                    return (
+                      <motion.div
+                        key={loadingIconIndex}
+                        initial={{ x: -40, opacity: 0, rotate: -10, scale: 0.8 }}
+                        animate={{ x: 420, opacity: 1, rotate: 10, scale: 1.1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 1, ease: 'linear' }}
+                        className="absolute inset-y-0 left-0 flex items-center"
+                      >
+                        <Icon className="w-6 h-6 text-primary" />
+                      </motion.div>
+                    );
+                  })()}
+                </AnimatePresence>
+              </div>
+            )}
+          </div>
         </motion.form>
 
         <motion.div
