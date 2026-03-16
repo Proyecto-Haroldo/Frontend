@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { fetchQuestionsByQuestionnaire, submitQuestionnaireAnswers } from '../../api/analysisApi';
-import type { QuestionnaireResult } from '../../shared/types/questionnaire';
+import { fetchQuestionsByQuestionnaire, submitIQuestionnaireAnswers } from '../../api/questionnairesApi';
+import type { IQuestionnaireResult } from '../../shared/types/questionnaire';
 import {
   ArrowLeft,
   ArrowRight,
@@ -127,13 +127,16 @@ const Questionnaire = () => {
     }
   }, [location, navigate]);
 
-  const currentQuestion = questions[currentQuestionIndex] || {
-    id: 0,
-    question: '',
-    questionType: 'open' as const,
-    keywords: []
-  };
-
+const currentQuestion = useMemo(
+  () =>
+    questions[currentQuestionIndex] || {
+      id: 0,
+      question: '',
+      questionType: 'open' as const,
+      keywords: []
+    },
+  [questions, currentQuestionIndex]
+);
 
   // Pre-calculate which keywords should be highlighted to ensure each appears only once
   const keywordAllocation = useMemo(() => {
@@ -229,7 +232,7 @@ const Questionnaire = () => {
 
         if (!category) throw new Error('Información de categoría no encontrada');
 
-        const questionnaireData: QuestionnaireResult = {
+        const questionnaireData: IQuestionnaireResult = {
           metadata: {
             category,
             clientType: 'N/A',
@@ -254,7 +257,7 @@ const Questionnaire = () => {
           return;
         }
 
-        const aiRecommendation = await submitQuestionnaireAnswers(questionnaireData, userId);
+        const aiRecommendation = await submitIQuestionnaireAnswers(questionnaireData, userId);
 
         // Store the full JSON returned by backend: { resumenUsuario, colorSemaforo }
         localStorage.setItem('aiRecommendation', JSON.stringify(aiRecommendation));

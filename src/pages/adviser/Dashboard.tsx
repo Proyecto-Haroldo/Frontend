@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { getAllAnalysis, getAllQuestionnaires } from "../../api/analysisApi";
+import { getAllAnalysis } from "../../api/analysisApi";
+import { getAllQuestionnaires } from "../../api/questionnairesApi";
 import { IAnalysis } from "../../core/models/analysis";
 import { IQuestionnaire } from "../../core/models/questionnaire";
 import { useAuth } from "../../shared/context/AuthContext";
 import { motion, AnimatePresence } from "motion/react";
 import { ClipboardList, ArrowLeft, FileText } from "lucide-react";
-import Questionnaire from "./manager/QuestionnaireManager";
-import Analysis from "./manager/AnalysisManager";
+import Questions from "../../shared/ui/template/TemplateQuestions";
+import AnalysisReview from "../../shared/ui/template/TemplateAnalysisReview";
 import HeaderStats from "../../shared/ui/components/headers/HeaderStats";
-import TableSearchQuestionnaires from "../../shared/ui/components/tables/TableSearchQuestionnaires";
-import TableSearchAnalysis from "../../shared/ui/components/tables/TableSearchAnalysis";
+import Analysis from "../../shared/ui/template/TemplateAnalysis";
+import Questionnaires from "../../shared/ui/template/TemplateQuestionnaires";
 
 function AdviserDashboard({ view: forcedView }: { view?: string }) {
   const navigate = useNavigate();
@@ -30,16 +31,16 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
   }, []);
 
   const [view, setView] = useState<
-    "selector" | "questionnaires" | "analysis" | "questionnaireManager" | "analysisManager"
+    "selector" | "questionnaires" | "analysis" | "questions" | "analysisReview"
   >(
     forcedView === "questionnaires"
       ? "questionnaires"
       : forcedView === "analysis"
         ? "analysis"
-        : forcedView === "analysisManager"
-          ? "analysisManager"
-          : forcedView === "questionnaireManager"
-            ? "questionnaireManager"
+        : forcedView === "analysisReview"
+          ? "analysisReview"
+          : forcedView === "questions"
+            ? "questions"
             : "selector"
   );
 
@@ -55,9 +56,9 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
 
     if (id) {
       if (path.includes("/analysis/")) {
-        setView("analysisManager");
+        setView("analysisReview");
       } else if (path.includes("/questionnaires/")) {
-        setView("questionnaireManager");
+        setView("questions");
       }
     } else {
       if (path === "/a" || path === "/a/") {
@@ -218,7 +219,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
                 </button>
               </div>
 
-              <TableSearchQuestionnaires
+              <Questionnaires
                 loading={loadingQuestionnaires}
                 error={errorQuestionnaires}
                 questionnaires={questionnaires}
@@ -243,7 +244,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
                 </button>
               </div>
 
-              <TableSearchAnalysis
+              <Analysis
                 loading={loadingAnalysis}
                 error={errorAnalysis}
                 analysis={analysis}
@@ -253,7 +254,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
           )}
 
           {/* ------------------ VISTA GESTOR DE CUESTIONARIOS (RUTA /a/questionnaire/:id) --------------------- */}
-          {view === "questionnaireManager" && (
+          {view === "questions" && (
             <div className="space-y-4">
               <button
                 onClick={() => {
@@ -265,12 +266,12 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
                 <ArrowLeft className="h-4 w-4" />
                 Volver
               </button>
-              <Questionnaire questionnaireId={Number(id)} />
+              <Questions questionnaireId={Number(id)} />
             </div>
           )}
 
           {/* ------------------ VISTA GESTOR DE ANÁLISIS (RUTA /a/analysis/:id) --------------------- */}
-          {view === "analysisManager" && (
+          {view === "analysisReview" && (
             <div className="space-y-4">
               <button
                 onClick={() => {
@@ -282,7 +283,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
                 <ArrowLeft className="h-4 w-4" />
                 Volver
               </button>
-              <Analysis
+              <AnalysisReview
                 analysisId={Number(id)}
                 onAnalysisUpdated={(updated) => {
                   setAnalysis((prev) =>

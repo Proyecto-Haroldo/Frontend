@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from 'motion/react';
 import { AlertTriangle } from "lucide-react";
 
-interface CardConfirmDeleteProps {
+interface DialogConfirmDeleteProps {
     title?: string;
     message: string;
     onConfirm: () => void;
@@ -12,7 +12,7 @@ interface CardConfirmDeleteProps {
     loading?: boolean;
 }
 
-const CardConfirmDelete: React.FC<CardConfirmDeleteProps> = ({
+const DialogConfirmDelete: React.FC<DialogConfirmDeleteProps> = ({
     title = "Confirmar acción",
     message,
     onConfirm,
@@ -61,4 +61,4 @@ const CardConfirmDelete: React.FC<CardConfirmDeleteProps> = ({
     );
 };
 
-export default CardConfirmDelete;
+export default DialogConfirmDelete;

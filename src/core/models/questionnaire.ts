@@ -7,7 +7,7 @@ export interface IQuestionnaire {
     categoryId: number;
 }
 
-export type Category = {
+export interface ICategory {
     id: number
     name: string
     description: string

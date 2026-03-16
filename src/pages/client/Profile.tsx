@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { User, Mail, Phone, Building2, Shield, Bell, Trash } from 'lucide-react';
 import { useAuth } from '../../shared/context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
-import { getUserById, deleteUserById } from '../../api/userApi';
+import { getUserById, deleteUserById } from '../../api/usersApi';
 import { IUser } from '../../core/models/user';
 import ModalEditUser from '../../shared/ui/components/modals/ModalEditUser';
-import CardConfirmDelete from '../../shared/ui/components/cards/CardConfirmDelete';
+import DialogConfirmDelete from '../../shared/ui/components/dialogs/DialogConfirmDelete';
 
 interface JwtPayload {
   sub: string; // email
@@ -190,7 +190,7 @@ function Profile() {
 
       {/* Modal de confirmación de eliminación */}
       {showDeleteConfirm && (
-        <CardConfirmDelete
+        <DialogConfirmDelete
           title="Eliminar cuenta"
           message="¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer."
           confirmText="Sí, eliminar"

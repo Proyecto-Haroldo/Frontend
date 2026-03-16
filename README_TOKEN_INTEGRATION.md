@@ -60,9 +60,9 @@ const response = await apiClient.post('/endpoint', data);
 
 ### Questionnaire Submission
 ```typescript
-import { submitQuestionnaireAnswers } from './api/questionnaireApi';
+import { submitIQuestionnaireAnswers } from './api/questionnaireApi';
 
-const response = await submitQuestionnaireAnswers(questionnaireData);
+const response = await submitIQuestionnaireAnswers(questionnaireData);
 ```
 
 ## Environment Variables

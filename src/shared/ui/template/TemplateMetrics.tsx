@@ -21,7 +21,7 @@ import {
 import { Bar, Pie, Line } from 'react-chartjs-2';
 import { useThemeColors } from '../../hooks/useThemeColors';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { normalizeUserRole } from '../../../api/userApi';
+import { normalizeUserRole } from '../../../api/usersApi';
 
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';

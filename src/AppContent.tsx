@@ -12,12 +12,12 @@ import Questionnaire from './pages/client/Questionnaire';
 import AnalysisReview from './pages/client/AnalysisReview';
 import Login from './pages/auth/Login';
 import SignUp from './pages/auth/SignUp';
-import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminProfile from './pages/admin/AdminProfile';
-import AdminReports from './pages/admin/AdminReports';
-import AdviserDashboard from './pages/adviser/AdviserDashboard';
-import AdviserProfile from './pages/adviser/AdviserProfile';
-import AdviserReports from './pages/adviser/AdviserReports';
+import AdminDashboard from './pages/admin/Dashboard';
+import AdminProfile from './pages/admin/Profile';
+import AdminReports from './pages/admin/Reports';
+import AdviserDashboard from './pages/adviser/Dashboard';
+import AdviserProfile from './pages/adviser/Profile';
+import AdviserReports from './pages/adviser/Reports';
 
 // AnimatedRoutes component wraps the nested Routes with AnimatePresence
 function AnimatedRoutes() {
@@ -112,9 +112,9 @@ function AppContent() {
                                 <Route path="" element={<AdminDashboard view="selector" />} />
                                 <Route path="users" element={<AdminDashboard view="users" />} />
                                 <Route path="questionnaires" element={<AdminDashboard view="questionnaires" />} />
-                                <Route path="questionnaires/:id" element={<AdminDashboard view="questionnaireOverview" />} />
+                                <Route path="questionnaires/:id" element={<AdminDashboard view="questions" />} />
                                 <Route path="analysis" element={<AdminDashboard view="analysis" />} />
-                                <Route path="analysis/:id" element={<AdminDashboard view="analysisOverview" />} />
+                                <Route path="analysis/:id" element={<AdminDashboard view="analysisReview" />} />
                                 <Route path="reports" element={<AdminReports />} />
                                 <Route path="profile" element={<AdminProfile />} />
                             </Routes>
@@ -158,9 +158,9 @@ function AppContent() {
                                 <Routes>
                                     <Route path="" element={<AdviserDashboard view="selector" />} />
                                     <Route path="questionnaires" element={<AdviserDashboard view="questionnaires" />} />
-                                    <Route path="questionnaires/:id" element={<AdviserDashboard view="questionnaireManager" />} />
+                                    <Route path="questionnaires/:id" element={<AdviserDashboard view="questions" />} />
                                     <Route path="analysis" element={<AdviserDashboard view="analysis" />} />
-                                    <Route path="analysis/:id" element={<AdviserDashboard view="analysisManager" />} />
+                                    <Route path="analysis/:id" element={<AdviserDashboard view="analysisReview" />} />
                                     <Route path="reports" element={<AdviserReports />} />
                                     <Route path="profile" element={<AdviserProfile />} />
                                 </Routes>

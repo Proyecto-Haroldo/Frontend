@@ -3,7 +3,7 @@ export interface Keyword {
     description: string;
 }
 
-export interface QuestionOption {
+export interface IOption {
     id: number;
     text: string;
 }
@@ -17,6 +17,6 @@ export interface IQuestion {
     question: string;
     questionType: QuestionType;
     questionnaireId?: number;
-    options: QuestionOption[];
+    options: IOption[];
     keywords: Keyword[];
 }

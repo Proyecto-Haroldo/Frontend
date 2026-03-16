@@ -1,25 +1,49 @@
 import { useState, useEffect } from 'react';
 import {
+  ChevronDown,
   Clock,
   CheckCircle,
   AlertTriangle,
   XCircle,
   User,
   Loader2,
+  MessageSquare,
+  Send
 } from 'lucide-react';
+import { motion } from 'motion/react';
 import { IAnalysis } from '../../../core/models/analysis';
-import { getAnalysisById, formatAnalysisText } from '../../../api/analysisApi';
+import { getAnalysisById, getAnalysisAnswers, setAnalysisGrade } from '../../../api/analysisApi';
+import { Stoplight } from '../components/stoplight/Stoplight';
+import type { QuestionAnswerDTO } from '../../types/analysis';
 import {
   ColorSemaforo,
   getRiskLevel,
   getRiskDescription,
-} from '../../../shared/types/analysis';
-import { Stoplight } from '../../../shared/ui/components/stoplight/Stoplight';
+} from '../../types/analysis';
+import { useAuth } from '../../context/AuthContext';
+import { formatAnalysisText } from '../../utils/formatAnalysisText';
 
-function AnalysisOverview({ analysisId }: { analysisId?: number }) {
+function TemplateAnalysisReview({
+  analysisId,
+  onAnalysisUpdated,
+}: {
+  analysisId?: number;
+  onAnalysisUpdated?: (analysis: IAnalysis) => void;
+}) {
+  const [showAnswers, setShowAnswers] = useState(true);
   const [analysis, setAnalysis] = useState<IAnalysis | null>(null);
+  const [answers, setAnswers] = useState<QuestionAnswerDTO[]>([]);
+  const [answersLoading, setAnswersLoading] = useState(false);
+  const [answersError, setAnswersError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [gradingComment, setGradingComment] = useState('');
+  const [gradingColor, setGradingColor] = useState<string>('');
+  const [isGrading, setIsGrading] = useState(false);
+  const [gradeError, setGradeError] = useState<string | null>(null);
+  const { role } = useAuth();
+
+  const isAdvisor = role === 3;
 
   // Fetch analysis
   useEffect(() => {
@@ -39,6 +63,28 @@ function AnalysisOverview({ analysisId }: { analysisId?: number }) {
     };
     fetchAnalysis();
   }, [analysisId]);
+
+  // Fetch questionnaire answers when analysis is loaded
+  useEffect(() => {
+    if (!analysisId || !analysis) return;
+    let cancelled = false;
+    setAnswersLoading(true);
+    setAnswersError(null);
+    getAnalysisAnswers(analysisId)
+      .then((data) => {
+        if (!cancelled) setAnswers(data);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setAnswers([]);
+          setAnswersError('No se pudieron cargar las respuestas del cuestionario.');
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setAnswersLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [analysisId, analysis, isAdvisor]);
 
   if (loading) {
     return (
@@ -137,11 +183,11 @@ function AnalysisOverview({ analysisId }: { analysisId?: number }) {
     }
   };
 
-  const getStateBadge = (state: string) => {
+  const getStatusBadge = (state: string) => {
     switch (state?.toUpperCase()) {
       case "PENDING":
         return (
-          <span className="badge badge-warning p-2 badge-sm gap-1 text-xs">
+          <span className="badge badge-warning p-1 badge-sm gap-1 text-xs">
             <Clock className="h-3 w-3" />
             <span className="hidden sm:inline">Pendiente</span>
             <span className="sm:hidden">Pend.</span>
@@ -150,7 +196,7 @@ function AnalysisOverview({ analysisId }: { analysisId?: number }) {
       case "CHECKED":
       case "COMPLETED":
         return (
-          <span className="badge badge-success p-2 badge-sm gap-1 text-xs">
+          <span className="badge badge-success p-1 badge-sm gap-1 text-xs">
             <CheckCircle className="h-3 w-3" />
             <span className="hidden sm:inline">Completado</span>
             <span className="sm:hidden">Comp.</span>
@@ -158,8 +204,9 @@ function AnalysisOverview({ analysisId }: { analysisId?: number }) {
         );
       default:
         return (
-          <span className="badge badge-neutral p-2 badge-sm text-xs">
-            Desconocido
+          <span className="badge badge-neutral p-1 badge-sm text-xs">
+            <span className="hidden sm:inline">Desconocido</span>
+            <span className="sm:hidden">Desc.</span>
           </span>
         );
     }
@@ -230,7 +277,7 @@ function AnalysisOverview({ analysisId }: { analysisId?: number }) {
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Estado</label>
-              <div>{getStateBadge(analysis.status)}</div>
+              <div>{getStatusBadge(analysis.status)}</div>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Cliente</label>
@@ -271,7 +318,7 @@ function AnalysisOverview({ analysisId }: { analysisId?: number }) {
               <p className="text-xs text-base-content/50 mt-3">* Generado por IA hasta que un asesor revise.</p>
             )}
           </div>
-          
+
           {analysis.comentarioAsesor && (
             <div className='mt-4'>
               <label className="text-sm font-medium text-base-content/70 flex flex-col">
@@ -284,9 +331,180 @@ function AnalysisOverview({ analysisId }: { analysisId?: number }) {
           )}
         </div>
 
+        {/* Respuestas del cuestionario */}
+        <div className="card bg-base-200 shadow-md">
+          <motion.div
+            className="card bg-base-200/50"
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.7, delay: 0.8, ease: "easeOut" }}
+          >
+            <div className="card-body">
+              <div className="collapse">
+                <input
+                  id="answers-toggle"
+                  name='answers-toggle'
+                  type="checkbox"
+                  checked={showAnswers}
+                  onChange={(e) => setShowAnswers(e.target.checked)}
+                />
+                <motion.div
+                  className="collapse-title flex items-center justify-center gap-2 cursor-pointer hover:bg-base-300/50 rounded-lg transition-all duration-300"
+                  onClick={() => setShowAnswers(!showAnswers)}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                >
+                  <motion.div
+                    className="transition-transform duration-300"
+                    animate={{ rotate: showAnswers ? 180 : 0 }}
+                  >
+                    <ChevronDown className="w-5 h-5" />
+                  </motion.div>
+
+                  <label htmlFor='answers-toggle' className="font-medium">
+                    {showAnswers ? "Ocultar" : "Ver"} Respuestas del Cuestionario
+                  </label>
+                </motion.div>
+
+                <div className="collapse-content">
+                  {showAnswers && (
+                    <div className="mt-4 space-y-4">
+                      {answersLoading ? (
+                        <div className="flex items-center gap-2 text-base-content/60">
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <span className="text-sm">Cargando respuestas...</span>
+                        </div>
+                      ) : answersError ? (
+                        <p className="text-error text-sm">{answersError}</p>
+                      ) : answers.length === 0 ? (
+                        <p className="text-base-content/60 text-sm">No hay respuestas guardadas para este análisis.</p>
+                      ) : (
+                        <ul className="space-y-3">
+                          {answers.map((a, idx) => (
+                            <motion.li
+                              key={a.questionId != null ? `q-${a.questionId}-${idx}` : idx}
+                              className="bg-base-100 rounded-lg p-4"
+                              initial={{ opacity: 0, y: 8 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: idx * 0.03 }}
+                            >
+                              <p className="text-sm font-medium text-base-content/80 mb-1">Pregunta {idx + 1}</p>
+                              <p className="text-base-content/90 mb-2">{a.questionText ?? ''}</p>
+                              <p className="text-sm text-primary font-medium">Respuesta:</p>
+                              <p className="text-sm text-base-content/80 whitespace-pre-wrap card border p-4 mt-2 bg-primary/10 border-primary/50">{a.answerText ?? ''}</p>
+                            </motion.li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Formulario de revisión (solo si está pendiente) */}
+        {isAdvisor && analysis.status?.toUpperCase() === 'PENDING' && (
+          <div className="card bg-base-200 shadow-md p-6">
+            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-base-content/70" />
+              Revisar análisis
+            </h3>
+            <p className="text-sm text-base-content/70 mb-4">
+              Escriba sus comentarios para el cliente y opcionalmente ajuste el semáforo. Al enviar, el análisis quedará marcado como revisado.
+            </p>
+            <hr className="text-accent/25 mx-4"></hr>
+            {gradeError && (
+              <div className="alert alert-error mb-4">
+                <XCircle className="h-5 w-5" />
+                <span>{gradeError}</span>
+              </div>
+            )}
+            <div className="space-y-4">
+              <div className="form-control">
+                <label className="label">
+                  <span className="text-sm my-4">* Comentario del asesor (obligatorio)</span>
+                </label>
+                <textarea
+                  className="textarea textarea-bordered w-full min-h-[120px]"
+                  placeholder="Ej.: Todo correcto. / Revise la sección 2 y proporcione más detalle..."
+                  value={gradingComment}
+                  onChange={(e) => setGradingComment(e.target.value)}
+                  disabled={isGrading}
+                />
+              </div>
+              <div className="form-control flex flex-col">
+                <label className="label">
+                  <span className="text-sm my-4">* Semáforo (opcional)</span>
+                </label>
+                <select
+                  className="select select-bordered w-full max-w-xs"
+                  title='stoplight-color'
+                  value={gradingColor}
+                  onChange={(e) => setGradingColor(e.target.value)}
+                  disabled={isGrading}
+                >
+                  <option value="">Mantener actual ({analysis.colorSemaforo})</option>
+                  <option value="verde">Verde</option>
+                  <option value="amarillo">Amarillo</option>
+                  <option value="rojo">Rojo</option>
+                </select>
+              </div>
+              <div className="flex justify-end">
+                <button
+                  className="btn btn-primary gap-2"
+                  disabled={!gradingComment.trim() || isGrading}
+                  onClick={async () => {
+                    setGradeError(null);
+                    setIsGrading(true);
+                    try {
+                      const updated = await setAnalysisGrade(analysis.analysisId, {
+                        contenidoRevision: gradingComment.trim(),
+                        colorSemaforo: gradingColor.trim() || undefined
+                      });
+                      setAnalysis(updated);
+                      onAnalysisUpdated?.(updated);
+                      setGradingComment('');
+                      setGradingColor('');
+                    } catch (e) {
+                      setGradeError(e instanceof Error ? e.message : 'Error al enviar la revisión.');
+                    } finally {
+                      setIsGrading(false);
+                    }
+                  }}
+                >
+                  {isGrading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Enviando...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5" />
+                      Enviar revisión
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Revisión enviada (solo si está completada) */}
+        {analysis.status?.toUpperCase() === 'CHECKED' && analysis.comentarioAsesor && (
+          <div className="card bg-base-200 shadow-md p-6 border border-base-200">
+            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-base-content/70" />
+              Revisón enviada al cliente
+            </h3>
+            <p className="text-sm text-base-content/80 whitespace-pre-wrap card border p-4 mt-2 bg-primary/10 border-primary/50">{analysis.comentarioAsesor}</p>
+          </div>
+        )}
+
       </div>
     </div>
   );
 }
 
-export default AnalysisOverview;
+export default TemplateAnalysisReview;

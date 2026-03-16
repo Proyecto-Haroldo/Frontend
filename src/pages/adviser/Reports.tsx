@@ -3,8 +3,9 @@ import { IAnalysis } from "../../core/models/analysis";
 import { IQuestionnaire } from "../../core/models/questionnaire";
 import { IUser } from "../../core/models/user";
 import { IQuestion } from "../../core/models/question";
-import { fetchQuestionsByQuestionnaire, getAllAnalysis, getAllQuestionnaires } from "../../api/analysisApi";
-import { getAllUsers } from "../../api/userApi";
+import { getAllAnalysis } from "../../api/analysisApi";
+import { fetchQuestionsByQuestionnaire, getAllQuestionnaires } from "../../api/questionnairesApi";
+import { getAllUsers } from "../../api/usersApi";
 import { X, Search, ClipboardList, Users, FileText } from "lucide-react";
 import TemplateMetrics from "../../shared/ui/template/TemplateMetrics";
 

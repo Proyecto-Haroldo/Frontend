@@ -18,10 +18,10 @@ import {
 } from 'lucide-react'
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { Link } from 'react-router-dom'
-import { getUserById } from '../../api/userApi'
+import { getUserById } from '../../api/usersApi'
 import { useAuth } from '../../shared/context/AuthContext'
-import { Category, IQuestionnaire } from '../../core/models/questionnaire'
-import { getQuestionnairesByCategory } from '../../api/analysisApi'
+import { ICategory, IQuestionnaire } from '../../core/models/questionnaire'
+import { getQuestionnairesByCategory } from '../../api/questionnairesApi'
 
 const categories = [
   {
@@ -75,7 +75,7 @@ const categories = [
 ]
 
 function Services() {
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(null)
   const [selectedQuestionnaire, setSelectedQuestionnaire] = useState<number | null>(null)
   const [currentView, setCurrentView] =
     useState<'categories' | 'questionnaires' | 'analysisForm'>('categories')
