@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { fetchQuestionsByCategory, submitQuestionnaireAnswers } from '../../api/analysisApi';
+import { fetchQuestionsByQuestionnaire, submitQuestionnaireAnswers } from '../../api/analysisApi';
 import type { QuestionnaireResult } from '../../shared/types/questionnaire';
 import {
   ArrowLeft,
@@ -105,14 +105,14 @@ const Questionnaire = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Fetch de preguntas según categoría
+  // Fetch de preguntas según cuestionario
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const category = params.get('category');
+    const questId = Number(params.get('id'));
 
-    if (category) {
+    if (questId) {
       setIsLoading(true);
-      fetchQuestionsByCategory(category)
+      fetchQuestionsByQuestionnaire(questId)
         .then(fetchedQuestions => {
           setQuestions(fetchedQuestions);
           setIsLoading(false);
@@ -431,7 +431,7 @@ const Questionnaire = () => {
     <AnimatePresence mode="wait">
       <motion.div
         key="questionnaire"
-        className="min-h-dvh bg-base-200 flex items-center justify-center p-4"
+        className="h-full bg-base-200 flex items-center justify-center"
         variants={pageVariants}
         initial="initial"
         animate="animate"

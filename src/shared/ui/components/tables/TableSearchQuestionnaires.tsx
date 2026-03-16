@@ -190,7 +190,7 @@ const TableSearchQuestionnaires: React.FC<TableSearchQuestionnairesProps> = ({
                                     <thead>
                                         <tr>
                                             <th>ID</th>
-                                            <th>Categoría</th>
+                                            <th>Detalles</th>
                                             <th>Creador</th>
                                             <th>ID Creador</th>
                                             <th>Acciones</th>
@@ -200,16 +200,25 @@ const TableSearchQuestionnaires: React.FC<TableSearchQuestionnairesProps> = ({
                                         {filteredQuestionnaires.map((q) => (
                                             <tr key={q.id}>
                                                 <td>{q.id}</td>
-                                                <td>{q.categoryName}</td>
+                                                <td>
+                                                    <div className="flex flex-col items-start justify-center">
+                                                        <h3 className="text-md font-bold">
+                                                            {q.title || "Sin definir"}
+                                                        </h3>
+                                                        <div className="flex capitalize text-base text-sm font-normal text-base-content/70">
+                                                            {q.categoryName}
+                                                        </div>
+                                                    </div>
+                                                </td>
                                                 <td>{q.creatorName}</td>
                                                 <td>{q.creatorId}</td>
                                                 <td>
                                                     <button
-                                                        className="btn btn-primary btn-xs gap-1"
+                                                        className="btn btn-info btn-xs gap-1"
                                                         onClick={() => handleViewDetails(q)}
                                                     >
                                                         <Eye className="h-3 w-3" />
-                                                        <p className="whitespace-nowrap">Ver detalles</p>
+                                                        <p className="whitespace-nowrap">Ver</p>
                                                     </button>
                                                 </td>
                                             </tr>
@@ -223,16 +232,22 @@ const TableSearchQuestionnaires: React.FC<TableSearchQuestionnairesProps> = ({
                                 {filteredQuestionnaires.map((q) => (
                                     <div key={q.id} className="card bg-base-200 p-4 space-y-2">
                                         <div className="flex justify-between items-start">
-                                            <div>
-                                                <h3 className="font-semibold text-sm">
-                                                    {q.creatorName}
-                                                </h3>
-                                                <p className="text-xs text-base-content/70">
-                                                    Categoría: {q.categoryName}
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                                                <span className="text-xs text-base-content/50">
+                                                    #{q.id}
+                                                </span>
+                                                <h1 className="text-sm font-bold capitalize">
+                                                    {q.title || "Sin definir"}
+                                                </h1>
+                                                <p className="inline text-base text-xs font-normal text-base-content/70">
+                                                    <strong>Categoría: </strong>{q.categoryName}
                                                 </p>
+                                                <div className="capitalize text-base text-xs font-normal text-base-content/70">
+                                                    <strong>Creador: </strong>{q.creatorName}
+                                                </div>
                                             </div>
                                             <button
-                                                className="btn btn-primary btn-xs gap-1"
+                                                className="btn btn-info btn-xs gap-1"
                                                 onClick={() => handleViewDetails(q)}
                                             >
                                                 <Eye className="h-3 w-3" />

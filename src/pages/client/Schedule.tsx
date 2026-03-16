@@ -24,7 +24,7 @@ function Schedule() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-8">Agendar Consulta</h1>
+      <h1 className="text-2xl font-semibold mb-6">Agendar Consulta</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Form */}
@@ -212,7 +212,7 @@ function Schedule() {
               <h2 className="card-title text-lg mb-4">Tipos de Reuniones</h2>
               <div className="space-y-4">
                 <div className="flex gap-3">
-                  <VideoIcon className="h-5 w-5 text-primary mt-1" />
+                  <VideoIcon className="h-10 w-10 text-primary mt-1" />
                   <div>
                     <h3 className="font-medium">Reunión Virtual</h3>
                     <p className="text-sm text-base-content/70">
@@ -221,7 +221,7 @@ function Schedule() {
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <MapPin className="h-5 w-5 text-primary mt-1" />
+                  <MapPin className="h-8 w-8 text-primary mt-1" />
                   <div>
                     <h3 className="font-medium">Reunión Presencial</h3>
                     <p className="text-sm text-base-content/70">
@@ -239,19 +239,19 @@ function Schedule() {
               <h2 className="card-title text-lg mb-4">Información Importante</h2>
               <div className="space-y-4">
                 <div className="flex gap-3">
-                  <Clock className="h-5 w-5 text-primary mt-1" />
+                  <Clock className="h-6 w-6 text-primary mt-1" />
                   <p className="text-sm text-base-content/70">
                     La duración estándar de una reunión es de 45 minutos.
                   </p>
                 </div>
                 <div className="flex gap-3">
-                  <Info className="h-5 w-5 text-primary mt-1" />
+                  <Info className="h-8 w-8 text-primary mt-1" />
                   <p className="text-sm text-base-content/70">
                     Puede reprogramar o cancelar su reunión con al menos 24 horas de anticipación.
                   </p>
                 </div>
                 <div className="flex gap-3">
-                  <Users className="h-5 w-5 text-primary mt-1" />
+                  <Users className="h-8 w-8 text-primary mt-1" />
                   <p className="text-sm text-base-content/70">
                     Le asignaremos un asesor especializado según el tema de su consulta.
                   </p>

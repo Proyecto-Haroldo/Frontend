@@ -51,12 +51,21 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
   *   Si no hay id y estábamos en el manager → volver a questionnaires o analysis
   */
   useEffect(() => {
+    const path = location.pathname;
+
     if (id) {
-      // Si la URL contiene "analysis", activamos el manager de análisis
-      if (location.pathname.includes("/analysis/")) {
+      if (path.includes("/analysis/")) {
         setView("analysisManager");
-      } else if (location.pathname.includes("/questionnaires/")) {
+      } else if (path.includes("/questionnaires/")) {
         setView("questionnaireManager");
+      }
+    } else {
+      if (path === "/a" || path === "/a/") {
+        setView("selector");
+      } else if (path.includes("/analysis")) {
+        setView("analysis");
+      } else if (path.includes("/questionnaires")) {
+        setView("questionnaires");
       }
     }
   }, [id, location.pathname]);
@@ -129,7 +138,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
         role={role}
       />
 
-      <hr className="text-accent/20 mx-4"></hr>
+      <hr className="text-accent/25 mx-4"></hr>
       <AnimatePresence mode="wait">
         <motion.div
           key={view}
@@ -139,149 +148,149 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
           transition={{ duration: 0.25 }}
           className="w-full"
         >
-        {view === "selector" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
-            {/* Card Cuestionarios */}
-            <motion.div
-              variants={cardVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              transition={{ duration: 0.4 }}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg overflow-visible"
-              onClick={() => {
-                navigate("/a/questionnaires");
-                setView("questionnaires");
-              }}
-            >
-              <div className="card-body flex flex-col items-center text-center space-y-2">
-                <FileText className="h-10 w-10 text-secondary" />
-                <h2 className="card-title text-lg md:text-xl">Cuestionarios</h2>
-                <p className="text-sm text-base-content/70">
-                  Gestiona los cuestionarios y sus categorías.
-                </p>
-              </div>
-            </motion.div>
-
-            {/* Card Análisis */}
-            <motion.div
-              variants={cardVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              transition={{ duration: 0.4 }}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg overflow-visible"
-              onClick={() => {
-                navigate("/a/analysis");
-                setView("analysis");
-              }}
-            >
-              <div className="card-body flex flex-col items-center text-center space-y-2">
-                <ClipboardList className="h-10 w-10 text-secondary" />
-                <h2 className="card-title text-lg md:text-xl">Análisis</h2>
-                <p className="text-sm text-base-content/70">
-                  Gestiona los análisis y analiza sus resultados.
-                </p>
-              </div>
-            </motion.div>
-          </div>
-        )}
-
-        {/* ------------------ VISTA CUESTIONARIOS --------------------- */}
-        {view === "questionnaires" && (
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <button
+          {view === "selector" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
+              {/* Card Cuestionarios */}
+              <motion.div
+                variants={cardVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ duration: 0.4 }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+                className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg overflow-visible"
                 onClick={() => {
-                  navigate("/a");
-                  setView("selector");
-                }
-                }
-                className="btn btn-outline btn-sm gap-2 text-base-content/50"
+                  navigate("/a/questionnaires");
+                  setView("questionnaires");
+                }}
               >
-                <ArrowLeft className="h-4 w-4" />
-                Volver
-              </button>
+                <div className="card-body flex flex-col items-center text-center space-y-1">
+                  <FileText className="h-10 w-10 text-primary" />
+                  <h2 className="card-title text-lg md:text-xl">Cuestionarios</h2>
+                  <p className="text-sm text-base-content/70">
+                    Gestiona los cuestionarios y sus categorías.
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Card Análisis */}
+              <motion.div
+                variants={cardVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ duration: 0.4 }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+                className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg overflow-visible"
+                onClick={() => {
+                  navigate("/a/analysis");
+                  setView("analysis");
+                }}
+              >
+                <div className="card-body flex flex-col items-center text-center space-y-1">
+                  <ClipboardList className="h-10 w-10 text-primary" />
+                  <h2 className="card-title text-lg md:text-xl">Análisis</h2>
+                  <p className="text-sm text-base-content/70">
+                    Gestiona los análisis y analiza sus resultados.
+                  </p>
+                </div>
+              </motion.div>
             </div>
+          )}
 
-            <TableSearchQuestionnaires
-              loading={loadingQuestionnaires}
-              error={errorQuestionnaires}
-              questionnaires={questionnaires}
-              role={role}
-            />
-          </div>
-        )}
+          {/* ------------------ VISTA CUESTIONARIOS --------------------- */}
+          {view === "questionnaires" && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <button
+                  onClick={() => {
+                    navigate("/a");
+                    setView("selector");
+                  }
+                  }
+                  className="btn btn-outline btn-sm gap-2 text-base-content/50"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Volver
+                </button>
+              </div>
 
-        {/* ------------------ VISTA ANÁLISIS (RUTA /a/analysis) --------------------- */}
-        {view === "analysis" && (
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
+              <TableSearchQuestionnaires
+                loading={loadingQuestionnaires}
+                error={errorQuestionnaires}
+                questionnaires={questionnaires}
+                role={role}
+              />
+            </div>
+          )}
+
+          {/* ------------------ VISTA ANÁLISIS (RUTA /a/analysis) --------------------- */}
+          {view === "analysis" && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <button
+                  onClick={() => {
+                    navigate("/a");
+                    setView("selector");
+                  }}
+                  className="btn btn-outline btn-sm gap-2 text-base-content/50"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Volver
+                </button>
+              </div>
+
+              <TableSearchAnalysis
+                loading={loadingAnalysis}
+                error={errorAnalysis}
+                analysis={analysis}
+                role={role}
+              />
+            </div>
+          )}
+
+          {/* ------------------ VISTA GESTOR DE CUESTIONARIOS (RUTA /a/questionnaire/:id) --------------------- */}
+          {view === "questionnaireManager" && (
+            <div className="space-y-4">
               <button
                 onClick={() => {
-                  navigate("/a");
-                  setView("selector");
+                  navigate("/a/questionnaires");
+                  setView("questionnaires");
                 }}
                 className="btn btn-outline btn-sm gap-2 text-base-content/50"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Volver
               </button>
+              <Questionnaire questionnaireId={Number(id)} />
             </div>
+          )}
 
-            <TableSearchAnalysis
-              loading={loadingAnalysis}
-              error={errorAnalysis}
-              analysis={analysis}
-              role={role}
-            />
-          </div>
-        )}
-
-        {/* ------------------ VISTA GESTOR DE CUESTIONARIOS (RUTA /a/questionnaire/:id) --------------------- */}
-        {view === "questionnaireManager" && (
-          <div className="space-y-4">
-            <button
-              onClick={() => {
-                navigate("/a/questionnaires");
-                setView("questionnaires");
-              }}
-              className="btn btn-outline btn-sm gap-2 text-base-content/50"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Volver
-            </button>
-            <Questionnaire questionnaireId={Number(id)} />
-          </div>
-        )}
-
-        {/* ------------------ VISTA GESTOR DE ANÁLISIS (RUTA /a/analysis/:id) --------------------- */}
-        {view === "analysisManager" && (
-          <div className="space-y-4">
-            <button
-              onClick={() => {
-                navigate("/a/analysis");
-                setView("analysis");
-              }}
-              className="btn btn-outline btn-sm gap-2 text-base-content/50"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Volver
-            </button>
-            <Analysis
-              analysisId={Number(id)}
-              onAnalysisUpdated={(updated) => {
-                setAnalysis((prev) =>
-                  prev.map((a) => (a.analysisId === updated.analysisId ? updated : a))
-                );
-              }}
-            />
-          </div>
-        )}
+          {/* ------------------ VISTA GESTOR DE ANÁLISIS (RUTA /a/analysis/:id) --------------------- */}
+          {view === "analysisManager" && (
+            <div className="space-y-4">
+              <button
+                onClick={() => {
+                  navigate("/a/analysis");
+                  setView("analysis");
+                }}
+                className="btn btn-outline btn-sm gap-2 text-base-content/50"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Volver
+              </button>
+              <Analysis
+                analysisId={Number(id)}
+                onAnalysisUpdated={(updated) => {
+                  setAnalysis((prev) =>
+                    prev.map((a) => (a.analysisId === updated.analysisId ? updated : a))
+                  );
+                }}
+              />
+            </div>
+          )}
         </motion.div>
       </AnimatePresence>
     </div>

@@ -273,6 +273,7 @@ const TableSearchAnalysis: React.FC<TableSearchAnalysisProps> = ({
                                 <table className="table table-zebra">
                                     <thead>
                                         <tr>
+                                            <th>ID</th>
                                             <th>Cliente</th>
                                             <th>Asesor</th>
                                             <th>Categoría</th>
@@ -285,6 +286,7 @@ const TableSearchAnalysis: React.FC<TableSearchAnalysisProps> = ({
                                     <tbody>
                                         {filteredAnalysis.map((a) => (
                                             <tr key={a.analysisId}>
+                                                <td>{a.analysisId}</td>
                                                 <td>{a.clientName}</td>
                                                 <td>{a.asesorName || 'Sin Asignar'}</td>
                                                 <td>{a.categoria}</td>
@@ -295,11 +297,11 @@ const TableSearchAnalysis: React.FC<TableSearchAnalysisProps> = ({
                                                 </td>
                                                 <td>
                                                     <button
-                                                        className="btn btn-primary btn-xs gap-1"
+                                                        className="btn btn-info btn-xs gap-1"
                                                         onClick={() => handleViewDetails(a)}
                                                     >
                                                         <Eye className="h-3 w-3" />
-                                                        <p className="whitespace-nowrap">Ver detalles</p>
+                                                        <p className="whitespace-nowrap">Ver</p>
                                                     </button>
                                                 </td>
                                             </tr>
@@ -315,24 +317,27 @@ const TableSearchAnalysis: React.FC<TableSearchAnalysisProps> = ({
                                         <div className="space-y-2">
                                             <div className="flex justify-between items-start">
                                                 <div className="flex-1 min-w-0">
-                                                    <h3 className="font-medium text-sm truncate">
+                                                    <span className="text-xs text-base-content/70 whitespace-nowrap">
+                                                        #{a.analysisId} · {new Date(a.timeWhenSolved).toLocaleDateString()}
+                                                    </span>
+                                                    <h3 className="text-md truncate font-bold">
                                                         {a.clientName}
                                                     </h3>
-                                                    <span className="badge badge-outline badge-sm text-xs mt-1">
-                                                        {a.categoria}
-                                                    </span>
+                                                    <h3 className="text-sm capitalize truncate font-normal text-xs">
+                                                        <strong>Categoría: </strong>{a.categoria}
+                                                    </h3>
+                                                    <h3 className="text-sm capitalize truncate font-normal text-xs">
+                                                        <strong>Asesor: </strong>{a.asesorName || "Sin Asignar"}
+                                                    </h3>
                                                 </div>
-                                                <div className="ml-2 flex-shrink-0">
+                                                <div className="flex-shrink-0">
                                                     {getStateBadge(a.status)}
                                                 </div>
                                             </div>
 
                                             <div className="flex justify-between items-center">
-                                                <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 flex-1 min-w-0">
+                                                <div className="flex-shrink-0">
                                                     {getColorBadge(a.colorSemaforo)}
-                                                    <span className="text-xs text-base-content/70 whitespace-nowrap">
-                                                        {new Date(a.timeWhenSolved).toLocaleDateString()}
-                                                    </span>
                                                 </div>
                                                 <button
                                                     className="btn btn-primary btn-xs gap-1 flex-shrink-0"

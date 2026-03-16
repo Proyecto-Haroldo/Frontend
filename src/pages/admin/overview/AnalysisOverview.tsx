@@ -5,10 +5,11 @@ import {
   AlertTriangle,
   XCircle,
   User,
-  Loader2
+  Loader2,
+  MessageSquare
 } from 'lucide-react';
 import { IAnalysis } from '../../../core/models/analysis';
-import { getAnalysisById } from '../../../api/analysisApi';
+import { getAnalysisById, formatAnalysisText } from '../../../api/analysisApi';
 import {
   ColorSemaforo,
   getRiskLevel,
@@ -208,14 +209,14 @@ function AnalysisOverview({ analysisId }: { analysisId?: number }) {
           {/* Summary */}
           <div className="rounded-xl p-8 bg-base-200 shadow-md">
             <h3 className="text-xl font-semibold mb-4 text-center">Resumen del Análisis</h3>
-            <p className="text-base-content/80 leading-relaxed text-justify">
+            <p className="text-base-content/80 text-sm leading-relaxed text-justify">
               {analysis.recomendacionInicial || 'No disponible'}
             </p>
-            <div className={`card p-4 bg-base-100 gap-2 mt-4 border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}>
-              <div className={`badge text-sm ${colorSemaforo === 'verde' ? 'badge-success' : colorSemaforo === 'amarillo' ? 'badge-warning' : 'badge-error'}`}>
+            <div className={`card p-4 bg-base-200 gap-2 mt-4 border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}>
+              <div className={`badge text-sm font-semibold ${colorSemaforo === 'verde' ? 'badge-success' : colorSemaforo === 'amarillo' ? 'badge-warning' : 'badge-error'}`}>
                 {getRiskLevel(colorSemaforo)}
               </div>
-              <span className="text-base-content/80 text-sm">{getRiskDescription(colorSemaforo)}</span>
+              <span className="text-base-content/80 text-sm">Este cliente ya ha respondido <strong>#{analysis.conteo} cuestionarios.</strong> {getRiskDescription(colorSemaforo)}</span>
             </div>
           </div>
         </div>
@@ -234,15 +235,15 @@ function AnalysisOverview({ analysisId }: { analysisId?: number }) {
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Cliente</label>
-              <p className='text-sm'>{analysis.clientName}</p>
+              <p className='text-sm capitalize'>{analysis.clientName}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Asesor</label>
-              <p className="flex items-center gap-2 text-sm"><User className="h-4 w-4 text-base-content/60" /> {analysis.asesorName || 'Sin Asignar'}</p>
+              <p className="flex items-center gap-2 text-sm capitalize"><User className="h-4 w-4 text-base-content/60" /> {analysis.asesorName || 'Sin Asignar'}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Categoría</label>
-              <p className='text-sm'>{analysis.categoria}</p>
+              <p className='text-sm capitalize'>{analysis.categoria}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Fecha de Resolución</label>
@@ -254,27 +255,35 @@ function AnalysisOverview({ analysisId }: { analysisId?: number }) {
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Nivel de Riesgo</label>
-              <p className='text-sm'>{colorSemaforo}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-base-content/70">Recomendación Inicial</label>
-              <p className="card border text-sm p-4 mt-2 bg-primary/10 border-primary/50 rounded text-justify max-h-59 overflow-y-auto">{analysis.recomendacionInicial || 'No disponible'}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-base-content/70">
-                {analysis.status === 'checked' ? 'Revisión del asesor' : 'Análisis inicial (IA)'}
-              </label>
-              <p className="card border p-4 mt-2 text-sm bg-primary/10 border-primary/50 rounded text-justify max-h-59 overflow-y-auto">{analysis.contenidoRevision || 'No disponible'}</p>
-              {analysis.status === 'pending' && analysis.contenidoRevision && (
-                <p className="text-xs text-base-content/50 mt-3">* Generado por IA hasta que un asesor revise.</p>
-              )}
-            </div>
-            <div>
-              <label className="text-sm font-medium text-base-content/70">Conteo</label>
-              <p className='text-sm'>{analysis.conteo}</p>
+              <p className='text-sm capitalize'>{colorSemaforo}</p>
             </div>
           </div>
+          <div className='mt-4'>
+            <label className="text-sm font-medium text-base-content/70 flex flex-col">
+              Análisis inicial (IA)
+            </label>
+            <div
+              className="card w-full inline-block border p-4 mt-2 text-sm bg-primary/10 border-primary/50 text-justify max-h-59 overflow-y-auto"
+              dangerouslySetInnerHTML={{
+                __html: formatAnalysisText(analysis.contenidoRevision)
+              }}
+            />
+            {analysis.status === 'pending' && analysis.contenidoRevision && (
+              <p className="text-xs text-base-content/50 mt-3">* Generado por IA hasta que un asesor revise.</p>
+            )}
+          </div>
         </div>
+
+        {analysis.status === 'checked' && analysis.contenidoRevision && (
+          <div className="card bg-base-200 shadow-md p-6 border border-base-200">
+            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-base-content/70" />
+              Revisón enviada al cliente
+            </h3>
+            <p className="text-sm text-base-content/80 whitespace-pre-wrap card border p-4 mt-2 bg-primary/10 border-primary/50">{analysis.contenidoRevision}</p>
+          </div>
+        )}
+
       </div>
     </div>
   );
