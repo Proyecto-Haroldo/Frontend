@@ -5,9 +5,10 @@ export interface IAnalysis {
     timeWhenSolved: string;
     timeWhenChecked: string;
     status: string;
-    recomendacionInicial: string;
+    analisisIA: string;
     colorSemaforo: string;
-    contenidoRevision: string;
+    resumenIA: string;
+    comentarioAsesor: string;
     conteo: number;
     categoria: string;
 }

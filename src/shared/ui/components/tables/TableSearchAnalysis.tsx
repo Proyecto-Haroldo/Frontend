@@ -26,11 +26,11 @@ const TableSearchAnalysis: React.FC<TableSearchAnalysisProps> = ({
     const filterAnalysis = useCallback(() => {
         let filtered = analysis;
 
-        // Filtro por estado (backend uses "pending" / "checked")
+        // Filtro por estado (backend uses "PENDING" / "CHECKED")
         if (filter === "pending") {
-            filtered = filtered.filter((a) => a.status === "pending");
+            filtered = filtered.filter((a) => a.status?.toUpperCase() === "PENDING");
         } else if (filter === "completed") {
-            filtered = filtered.filter((a) => a.status === "checked");
+            filtered = filtered.filter((a) => a.status?.toUpperCase() === "CHECKED");
         }
 
         // Filtro por búsqueda
@@ -51,8 +51,8 @@ const TableSearchAnalysis: React.FC<TableSearchAnalysisProps> = ({
     }, [filterAnalysis]);
 
     const getStateBadge = (state: string) => {
-        switch (state) {
-            case "pending":
+        switch (state?.toUpperCase()) {
+            case "PENDING":
                 return (
                     <span className="badge badge-warning p-2 badge-sm gap-1 text-xs">
                         <Clock className="h-3 w-3" />
@@ -60,8 +60,8 @@ const TableSearchAnalysis: React.FC<TableSearchAnalysisProps> = ({
                         <span className="sm:hidden">Pend.</span>
                     </span>
                 );
-            case "checked":
-            case "completed":
+            case "CHECKED":
+            case "COMPLETED":
                 return (
                     <span className="badge badge-success p-2 badge-sm gap-1 text-xs">
                         <CheckCircle className="h-3 w-3" />
