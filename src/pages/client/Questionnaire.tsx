@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { fetchQuestionsByQuestionnaire, submitIQuestionnaireAnswers } from '../../api/questionnairesApi';
+import { fetchQuestionsByQuestionnaire, getQuestionnaireById, submitIQuestionnaireAnswers } from '../../api/questionnairesApi';
 import type { IQuestionnaireResult } from '../../shared/types/questionnaire';
 import {
   ArrowLeft,
@@ -98,7 +98,9 @@ const Questionnaire = () => {
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const [isComplete, setIsComplete] = useState(false);
   const [questions, setQuestions] = useState<IQuestion[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [questionnaireId, setQuestionnaireId] = useState<number | null>(null);
+  const [categoryName, setCategoryName] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { userId } = useAuth();
@@ -111,15 +113,16 @@ const Questionnaire = () => {
     const questId = Number(params.get('id'));
 
     if (questId) {
-      setIsLoading(true);
+      setQuestionnaireId(questId);
+      setLoading(true);
       fetchQuestionsByQuestionnaire(questId)
         .then(fetchedQuestions => {
           setQuestions(fetchedQuestions);
-          setIsLoading(false);
+          setLoading(false);
         })
         .catch(err => {
           setError('Error al cargar las preguntas');
-          setIsLoading(false);
+          setLoading(false);
           console.error('Error fetching questions:', err);
         });
     } else {
@@ -127,16 +130,36 @@ const Questionnaire = () => {
     }
   }, [location, navigate]);
 
-const currentQuestion = useMemo(
-  () =>
-    questions[currentQuestionIndex] || {
-      id: 0,
-      question: '',
-      questionType: 'open' as const,
-      keywords: []
-    },
-  [questions, currentQuestionIndex]
-);
+  useEffect(() => {
+    if (questionnaireId == null) return;
+
+    const params = new URLSearchParams(location.search);
+    const categoryParam = params.get('category');
+
+    if (categoryParam?.trim()) {
+      setCategoryName(categoryParam);
+      return;
+    }
+
+    getQuestionnaireById(questionnaireId)
+      .then((q) => {
+        if (q?.categoryName) setCategoryName(q.categoryName);
+      })
+      .catch((err) => {
+        console.error('Error fetching questionnaire category:', err);
+      });
+  }, [questionnaireId, location.search]);
+
+  const currentQuestion = useMemo(
+    () =>
+      questions[currentQuestionIndex] || {
+        id: 0,
+        question: '',
+        questionType: 'OPEN' as const,
+        keywords: []
+      },
+    [questions, currentQuestionIndex]
+  );
 
   // Pre-calculate which keywords should be highlighted to ensure each appears only once
   const keywordAllocation = useMemo(() => {
@@ -189,10 +212,10 @@ const currentQuestion = useMemo(
   const isLastQuestion =
     questions.length > 0 ? currentQuestionIndex === questions.length - 1 : false;
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-dvh bg-base-200 flex items-center justify-center p-4">
-        <div className="card w-full max-w-2xl bg-base-100 shadow-xl p-6">
+        <div className="card w-full container bg-base-100 shadow-xl p-6">
           <div className="card-body items-center text-center">
             <span className="loading loading-spinner loading-lg text-primary"></span>
             <p className="mt-4">Cargando cuestionario...</p>
@@ -205,7 +228,7 @@ const currentQuestion = useMemo(
   if (error) {
     return (
       <div className="min-h-dvh bg-base-200 flex items-center justify-center p-4">
-        <div className="card w-full max-w-2xl bg-base-100 shadow-xl p-6">
+        <div className="card w-full container bg-base-100 shadow-xl p-6">
           <div className="card-body items-center text-center">
             <div className="alert alert-error mb-6">
               <AlertCircle className="h-6 w-6" />
@@ -227,12 +250,12 @@ const currentQuestion = useMemo(
     } else {
       try {
         setIsSubmitting(true);
-        const params = new URLSearchParams(location.search);
-        const category = params.get('category');
+        const category = categoryName?.trim();
 
         if (!category) throw new Error('Información de categoría no encontrada');
 
         const questionnaireData: IQuestionnaireResult = {
+          userId: userId,
           metadata: {
             category,
             clientType: 'N/A',
@@ -241,7 +264,7 @@ const currentQuestion = useMemo(
           answers: questions.map(question => ({
             questionId: question.id,
             questionTitle: question.question,
-            answer: question.questionType === 'open'
+            answer: question.questionType === 'OPEN'
               ? answers[question.id] || []
               : (answers[question.id] || []).map(
                 id => question.options?.find(opt => String(opt.id) === String(id))?.text || String(id)
@@ -287,7 +310,7 @@ const currentQuestion = useMemo(
 
   const renderQuestionInput = () => {
     switch (currentQuestion.questionType) {
-      case 'open':
+      case 'OPEN':
         return (
           <textarea
             className="textarea textarea-bordered w-full h-32"
@@ -297,7 +320,7 @@ const currentQuestion = useMemo(
           />
         );
 
-      case 'single':
+      case 'SINGLE':
         return (
           <div className="space-y-2">
             {currentQuestion.options?.map(option => (
@@ -328,7 +351,7 @@ const currentQuestion = useMemo(
           </div>
         );
 
-      case 'multiple':
+      case 'MULTIPLE':
         return (
           <div className="space-y-2">
             {currentQuestion.options?.map(option => (
@@ -372,8 +395,8 @@ const currentQuestion = useMemo(
 
   if (isComplete) {
     return (
-      <div className="min-h-dvh bg-base-200 flex items-center justify-center p-4">
-        <div className="card w-full max-w-2xl bg-base-100 shadow-xl p-6">
+      <div className="min-h-[calc(100dvh-4rem)] bg-base-200 flex items-center justify-center p-4">
+        <div className="card w-full container bg-base-100 shadow-xl p-6">
           <div className="card-body items-center text-center">
             <div className="mb-6">
               <CheckCircle2 className="h-16 w-16 text-success mx-auto" />
@@ -389,11 +412,11 @@ const currentQuestion = useMemo(
                 Volver al Inicio
               </button>
               <button
-                onClick={() => navigate('/c/analysis-review?id=1')}
+                onClick={() => navigate('/c/analysis')}
                 className="btn btn-outline gap-2"
               >
                 <FileText className="h-5 w-5" />
-                Ver análisis
+                Ir a Mis Análisis
               </button>
             </div>
           </div>
@@ -407,13 +430,13 @@ const currentQuestion = useMemo(
       <AnimatePresence mode="wait">
         <motion.div
           key="submitting"
-          className="min-h-dvh bg-base-200 flex items-center justify-center p-4"
+          className="min-h-[calc(100dvh-4rem)] bg-base-200 flex items-center justify-center p-4"
           variants={pageVariants}
           initial="initial"
           animate="animate"
           exit="exit"
         >
-          <div className="card w-full max-w-2xl bg-base-100 shadow-xl">
+          <div className="card w-full container bg-base-100 shadow-xl">
             <div className="card-body items-center text-center">
               <div className="mb-6">
                 <Loader2 className="h-16 w-16 text-primary animate-spin mx-auto" />
@@ -434,13 +457,13 @@ const currentQuestion = useMemo(
     <AnimatePresence mode="wait">
       <motion.div
         key="questionnaire"
-        className="h-full bg-base-200 flex items-center justify-center"
+        className="min-h-[calc(100dvh-4rem)] bg-base-200 flex items-center justify-center"
         variants={pageVariants}
         initial="initial"
         animate="animate"
         exit="exit"
       >
-        <div className="card w-full max-w-4xl bg-base-100 shadow-xl">
+        <div className="card w-full container bg-base-100 shadow-xl">
           <div className="card-body">
             {/* Progress Bar */}
             <div className="w-full bg-base-200 rounded-full h-2.5 mb-6">

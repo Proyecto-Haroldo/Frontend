@@ -1,22 +1,15 @@
 import { useState } from 'react';
-import ITMLogo from '../../../../../public/assets/ITMLogo';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import type { Variants } from 'motion/react';
-import ThemeToggle from '../theme/ThemeToggle';
 import {
-  Home,
-  ChartColumnIncreasing,
-  Briefcase,
-  Calendar,
-  FileText,
-  User,
-  LogOut,
-  Menu,
-  X,
+  Home, ChartColumnIncreasing, Briefcase,
+  Calendar, FileText, User, LogOut, Menu, X,
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { BarChart } from 'lucide-react';
+import type { Variants } from 'motion/react';
+import ThemeToggle from '../theme/ThemeToggle';
+import ITMLogo from '../../../../../public/assets/ITMLogo';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -61,12 +54,12 @@ function Navbar() {
     return [];
   };
 
-  const navItems = getNavItems();
-
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
+
+  const navItems = getNavItems();
 
   // Animation variants
   const overlayVariants: Variants = {
@@ -184,8 +177,7 @@ function Navbar() {
           <span className="font-normal text-sm text-[var(--color-navbar)] tracking-[4px]">CONSULTORÍA</span>
         </motion.div>
 
-        <div className="space-y-2 overflow-y-auto pr-2"
-          style={{ maxHeight: 'calc(100dvh - 220px)' }}>
+        <div className="space-y-2 overflow-y-auto pr-2 max-h-[calc(100dvh - 220px)]">
           {navItems.map((item, index) => (
             <motion.div
               key={item.path}
@@ -260,8 +252,7 @@ function Navbar() {
           <span className="font-normal text-sm tracking-[4px] text-[var(--color-navbar)]">CONSULTORÍA</span>
         </motion.div>
 
-        <div className="space-y-2 overflow-y-auto pr-2"
-          style={{ maxHeight: 'calc(100dvh - 220px)' }}>
+        <div className="space-y-2 overflow-y-auto pr-2 max-h-[calc(100dvh - 220px)]">
           {navItems.map((item, index) => (
             <motion.div
               key={item.path}

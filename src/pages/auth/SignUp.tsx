@@ -12,6 +12,9 @@ import {
   TrendingUp,
   IdCard,
   Building2,
+  User,
+  Phone,
+  Globe,
 } from "lucide-react";
 import { register } from "../../api/authApi";
 import PasswordStrength from "../../shared/ui/validator/PasswordStrength";
@@ -29,6 +32,8 @@ const SignUp: React.FC = () => {
     cedulaOrNIT: "",
     legalName: "",
     sector: "",
+    phone: "",
+    network: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -43,6 +48,8 @@ const SignUp: React.FC = () => {
     cedulaOrNIT?: string;
     legalName?: string;
     sector?: string;
+    phone?: string;
+    network?: string;
   }>({});
   const [touched, setTouched] = useState({
     email: false,
@@ -51,6 +58,8 @@ const SignUp: React.FC = () => {
     cedulaOrNIT: false,
     legalName: false,
     sector: false,
+    phone: false,
+    network: false,
   });
 
   const passwordInputRef = useRef<HTMLInputElement>(null);
@@ -337,7 +346,7 @@ const SignUp: React.FC = () => {
               </span>
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
                 <Mail className="h-5 w-5 text-base-content/50" />
               </div>
               <input
@@ -346,6 +355,7 @@ const SignUp: React.FC = () => {
                 title="email"
                 value={form.email}
                 onChange={handleChange}
+                placeholder="Ingresa tu correo electrónico"
                 className={`input input-bordered w-full pl-10 ${(touched.email && !form.email) || validationErrors.email ? "input-error" : ""}`}
                 disabled={loading}
                 required
@@ -368,7 +378,7 @@ const SignUp: React.FC = () => {
             </label>
             <div className="join w-full">
               <div className="relative flex-1">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
                   <KeyRound className="h-5 w-5 text-base-content/50" />
                 </div>
                 <input
@@ -386,7 +396,7 @@ const SignUp: React.FC = () => {
                       ? "input-success"
                       : ""
                     }`}
-                  placeholder="Mínimo 8 caracteres"
+                  placeholder="Mínimo 8 caractéres"
                   disabled={loading}
                   required
                   minLength={8}
@@ -430,7 +440,7 @@ const SignUp: React.FC = () => {
             </label>
             <div className="join w-full">
               <div className="relative flex-1">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
                   <KeyRound className="h-5 w-5 text-base-content/50" />
                 </div>
                 <input
@@ -449,6 +459,7 @@ const SignUp: React.FC = () => {
                       : ""
                     }`}
                   disabled={loading}
+                  placeholder="Mínimo 8 caractéres"
                   required
                   minLength={8}
                 />
@@ -476,44 +487,14 @@ const SignUp: React.FC = () => {
           </div>
 
           <div className="form-control">
-            <label htmlFor="cedulaOrNIT" className="label">
-              <span className="label-text text-base-content/70">
-                Cédula o NIT
-              </span>
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <IdCard className="h-5 w-5 text-base-content/50" />
-              </div>
-              <input
-                type="text"
-                title="cedulaOrNIT"
-                name="cedulaOrNIT"
-                value={form.cedulaOrNIT}
-                onChange={handleChange}
-                className={`input input-bordered w-full pl-10 ${(touched.cedulaOrNIT && !form.cedulaOrNIT) || validationErrors.cedulaOrNIT ? "input-error" : ""}`}
-                disabled={loading}
-                required
-              />
-            </div>
-            {validationErrors.cedulaOrNIT && (
-              <label className="label">
-                <span className="label-text-alt text-error">
-                  {validationErrors.cedulaOrNIT}
-                </span>
-              </label>
-            )}
-          </div>
-
-          <div className="form-control">
             <label htmlFor="legalName" className="label">
               <span className="label-text text-base-content/70">
                 Nombre Legal
               </span>
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Building2 className="h-5 w-5 text-base-content/50" />
+              <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
+                <User className="h-5 w-5 text-base-content/50" />
               </div>
               <input
                 type="text"
@@ -523,6 +504,7 @@ const SignUp: React.FC = () => {
                 onChange={handleChange}
                 className={`input input-bordered w-full pl-10 ${(touched.legalName && !form.legalName) || validationErrors.legalName ? "input-error" : ""}`}
                 disabled={loading}
+                placeholder="Ej: John Doe"
                 required
               />
             </div>
@@ -536,13 +518,44 @@ const SignUp: React.FC = () => {
           </div>
 
           <div className="form-control">
+            <label htmlFor="cedulaOrNIT" className="label">
+              <span className="label-text text-base-content/70">
+                Cédula o NIT
+              </span>
+            </label>
+            <div className="relative flex-1">
+              <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
+                <IdCard className="h-5 w-5 text-base-content/50" />
+              </div>
+              <input
+                type="text"
+                title="cedulaOrNIT"
+                name="cedulaOrNIT"
+                value={form.cedulaOrNIT}
+                onChange={handleChange}
+                className={`input input-bordered w-full pl-10 ${(touched.cedulaOrNIT && !form.cedulaOrNIT) || validationErrors.cedulaOrNIT ? "input-error" : ""}`}
+                disabled={loading}
+                placeholder="Solo números"
+                required
+              />
+            </div>
+            {validationErrors.cedulaOrNIT && (
+              <label className="label">
+                <span className="label-text-alt text-error">
+                  {validationErrors.cedulaOrNIT}
+                </span>
+              </label>
+            )}
+          </div>
+
+          <div className="form-control">
             <label htmlFor="sector" className="label">
               <span className="label-text text-base-content/70">
                 Sector
               </span>
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
                 <Building2 className="h-5 w-5 text-base-content/50" />
               </div>
               <input
@@ -553,6 +566,7 @@ const SignUp: React.FC = () => {
                 onChange={handleChange}
                 className={`input input-bordered w-full pl-10 ${(touched.sector && !form.sector) || validationErrors.sector ? "input-error" : ""}`}
                 disabled={loading}
+                placeholder="Ej: Educación"
                 required
               />
             </div>
@@ -560,6 +574,67 @@ const SignUp: React.FC = () => {
               <label className="label">
                 <span className="label-text-alt text-error">
                   {validationErrors.sector}
+                </span>
+              </label>
+            )}
+          </div>
+
+          <div className="form-control">
+            <label htmlFor="sector" className="label">
+              <span className="label-text text-base-content/70">
+                LinkedIn
+              </span>
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
+                <Globe className="h-5 w-5 text-base-content/50" />
+              </div>
+              <input
+                type="text"
+                title="network"
+                name="network"
+                value={form.network}
+                onChange={handleChange}
+                className={`input input-bordered w-full pl-10 ${(touched.network && !form.network) || validationErrors.network ? "input-error" : ""}`}
+                disabled={loading}
+                placeholder="Ej: https://www.linkedin.com/in/usuario/"
+              />
+            </div>
+            {validationErrors.network && (
+              <label className="label">
+                <span className="label-text-alt text-error">
+                  {validationErrors.network}
+                </span>
+              </label>
+            )}
+          </div>
+
+          <div className="form-control">
+            <label htmlFor="phone" className="label">
+              <span className="label-text text-base-content/70">
+                Teléfono
+              </span>
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
+                <Phone className="h-5 w-5 text-base-content/50" />
+              </div>
+              <input
+                type="text"
+                title="phone"
+                name="phone"
+                value={form.phone}
+                onChange={handleChange}
+                className={`input input-bordered w-full pl-10 ${(touched.phone && !form.phone) || validationErrors.phone ? "input-error" : ""}`}
+                disabled={loading}
+                placeholder="Ej: 321 456 7890"
+                required
+              />
+            </div>
+            {validationErrors.phone && (
+              <label className="label">
+                <span className="label-text-alt text-error">
+                  {validationErrors.phone}
                 </span>
               </label>
             )}
@@ -617,14 +692,14 @@ const SignUp: React.FC = () => {
 
 
       {/* Footer */}
-      <footer className='w-full text-center flex flex-col items-center justify-center'>
+      <footer className='text-base-content/50 w-full text-center flex flex-col items-center justify-center'>
         <div className="p-6 pb-4">
           <ThemeToggle />
         </div>
         <hr className="text-accent/30 w-[80%] max-w-100 m-0" />
         <div className='mt-6 mb-2 sm:mb-0 flex flex-col-reverse sm:flex-col gap-1'>
-          <p className='text-xs sm:text-sm text-accent/30'>© {new Date().getFullYear()} Haroldo Finanzas. Todos los derechos reservados.</p>
-          <p className='text-xs sm:text-sm text-accent/30'>Institución Universitaria ITM. Colombia.</p>
+          <p className='text-xs sm:text-sm'>© {new Date().getFullYear()} Haroldo Finanzas. Todos los derechos reservados.</p>
+          <p className='text-xs sm:text-sm'>Institución Universitaria ITM. Colombia.</p>
         </div>
       </footer>
     </div>

@@ -74,7 +74,7 @@ const Login: React.FC = () => {
     setLoading(true);
     try {
       const res = await login({ email, password });
-      setAuth(res.token, res.role.id, res.id);  
+      setAuth(res.token, res.role.id, res.id);
 
       const role = res?.role.id;
 
@@ -184,7 +184,7 @@ const Login: React.FC = () => {
                 <span className="label-text text-base-content/70">Correo Electrónico</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail className="h-5 w-5 text-base-content/50" />
                 </div>
                 <input
@@ -214,7 +214,7 @@ const Login: React.FC = () => {
               </label>
               <div className="join w-full">
                 <div className="relative flex-1">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
                     <KeyRound className="h-5 w-5 text-base-content/50" />
                   </div>
                   <input
@@ -276,7 +276,7 @@ const Login: React.FC = () => {
                         animate={{ x: 420, opacity: 1, rotate: 10, scale: 1.1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 1, ease: 'linear' }}
-                        className="absolute inset-y-0 left-0 flex items-center"
+                        className="absolute inset-y-0 z-2 left-0 flex items-center"
                       >
                         <Icon className="w-6 h-6 text-primary" />
                       </motion.div>
@@ -304,14 +304,14 @@ const Login: React.FC = () => {
       </motion.div>
 
       {/* Footer */}
-      <footer className='w-full text-center flex flex-col items-center justify-center'>
+      <footer className='text-base-content/50 w-full text-center flex flex-col items-center justify-center'>
         <div className="p-6 pb-4">
           <ThemeToggle />
         </div>
         <hr className="text-accent/30 w-[80%] max-w-100 m-0" />
         <div className='mt-6 mb-2 sm:mb-0 flex flex-col-reverse sm:flex-col gap-1'>
-          <p className='text-xs sm:text-sm text-accent/30'>© {new Date().getFullYear()} Haroldo Finanzas. Todos los derechos reservados.</p>
-          <p className='text-xs sm:text-sm text-accent/30'>Institución Universitaria ITM. Colombia.</p>
+          <p className='text-xs sm:text-sm'>© {new Date().getFullYear()} Haroldo Finanzas. Todos los derechos reservados.</p>
+          <p className='text-xs sm:text-sm'>Institución Universitaria ITM. Colombia.</p>
         </div>
       </footer>
     </div>

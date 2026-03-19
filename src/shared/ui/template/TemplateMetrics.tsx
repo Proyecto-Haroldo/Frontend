@@ -16,7 +16,7 @@ import {
     Tooltip,
     Legend,
     Filler,
-    Title,
+    Title
 } from 'chart.js';
 import { Bar, Pie, Line } from 'react-chartjs-2';
 import { useThemeColors } from '../../hooks/useThemeColors';
@@ -90,31 +90,31 @@ const baseChartOptions: any = {
 };
 
 const TemplateMetricsSkeleton: React.FC = () => {
-    const { highlight } = useThemeColors();
+    const { base } = useThemeColors();
 
     return (
-        <SkeletonTheme baseColor={highlight} highlightColor={highlight}>
+        <SkeletonTheme baseColor={base} highlightColor={base}>
             <div className="w-full box-border">
                 <div className="relative w-full overflow-hidden">
-                    <div className="flex flex-col gap-5 p-5 px-3">
-                        <div className="flex w-full gap-4">
+                    <div className="flex flex-col gap-5">
+                        <div className="flex w-full gap-4 bg-base-100 w-full shadow-xl rounded-[18px] box-border flex gap-4 p-4 pb-8">
                             <div className="w-full flex flex-col gap-3">
-                                <Skeleton height={180} style={{ width: '100%' }} />
-                                <div style={{ width: '70%' }}>
-                                    <Skeleton height={22} />
+                                <Skeleton height={204} style={{ width: '100%', borderRadius: '14px' }} />
+                                <div className='w-7/10'>
+                                    <Skeleton height={28} />
                                 </div>
-                                <div style={{ width: '95%' }}>
-                                    <Skeleton count={2} />
+                                <div className='w-95/100'>
+                                    <Skeleton height={20} />
                                 </div>
                             </div>
                             {Array.from({ length: 2 }).map((_, i) => (
                                 <div key={i} className="w-full hidden md:flex flex-col gap-3">
-                                    <Skeleton height={180} style={{ width: '100%' }} />
-                                    <div style={{ width: '70%' }}>
-                                        <Skeleton height={22} />
+                                    <Skeleton height={204} style={{ width: '100%', borderRadius: '14px' }} />
+                                    <div className='w-7/10'>
+                                        <Skeleton height={28} />
                                     </div>
-                                    <div style={{ width: '95%' }}>
-                                        <Skeleton count={2} />
+                                    <div className='w-95/100'>
+                                        <Skeleton height={20} />
                                     </div>
                                 </div>
                             ))}
@@ -155,7 +155,7 @@ function MetricCardShell({
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35 }}
-            className="bg-base-200 w-[80vw] shadow-[0_6px_18px_rgba(16,24,40,0.06)] rounded-[18px] p-[18px] box-border flex flex-col gap-3 md:w-[30vw] max-w-[544px] md:p-4"
+            className="bg-base-200 w-[80vw] shadow-xl rounded-[18px] box-border flex flex-col gap-3 md:w-[30vw] max-w-[544px] p-4"
         >
             <div className="h-[180px] w-full rounded-xl overflow-hidden flex items-center justify-center md:h-[200px]">
                 {chart}
@@ -248,7 +248,7 @@ export default function TemplateMetrics({
 
             // 2) Por Categoría (barra)
             const byCategoryMap: Record<string, number> = {};
-            analysis.forEach((a) => (byCategoryMap[a.categoria] = (byCategoryMap[a.categoria] || 0) + 1));
+            analysis.forEach((a) => (byCategoryMap[a.categoryName] = (byCategoryMap[a.categoryName] || 0) + 1));
             const byCategoryLabels = Object.keys(byCategoryMap);
             const byCategoryValues = byCategoryLabels.map((l) => byCategoryMap[l]);
 
@@ -457,7 +457,7 @@ export default function TemplateMetrics({
     }
 
     return (
-        <div className="card bg-base-100 p-4 pe-0 w-full box-border">
+        <div className="card bg-base-100 p-4 pe-0 pt-0 w-full box-border">
             <div className="relative w-full overflow-hidden">
                 {/* Botones de Navegación */}
                 <button

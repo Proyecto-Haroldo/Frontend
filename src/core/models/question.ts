@@ -8,7 +8,7 @@ export interface IOption {
     text: string;
 }
 
-export type QuestionType = 'open' | 'single' | 'multiple';
+export type QuestionType = 'OPEN' | 'SINGLE' | 'MULTIPLE';
 
 export interface IQuestion {
     id: number;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import {
   Plus,
@@ -63,21 +63,17 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
   }, [questionnaireId]);
 
   // Fetch questions when questionnaire ID is available
-  useEffect(() => {
-    if (questionnaireId) {
-      fetchQuestions();
-    }
-  }, [questionnaireId]);
-
-  const fetchQuestions = async () => {
+  const fetchQuestions = useCallback(async () => {
     if (!questionnaireId) return;
 
     try {
       setLoading(true);
       setError(null);
       const data = await fetchQuestionsByQuestionnaire(questionnaireId);
+
       // Sort by ID ascending
       const sortedData = [...data].sort((a, b) => a.id - b.id);
+
       setQuestions(sortedData);
       setFilteredQuestions(sortedData);
     } catch (err) {
@@ -86,7 +82,13 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [questionnaireId]);
+
+  useEffect(() => {
+    if (questionnaireId) {
+      fetchQuestions();
+    }
+  }, [questionnaireId, fetchQuestions]);
 
   // Filter questions by question text and maintain ID sort
   useEffect(() => {
@@ -119,7 +121,7 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
     setEditingQuestion({
       id: 0,
       question: '',
-      questionType: 'open',
+      questionType: 'OPEN',
       options: [],
       keywords: []
     });
@@ -162,7 +164,7 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
       return;
     }
 
-    if ((editingQuestion.questionType === 'single' || editingQuestion.questionType === 'multiple')
+    if ((editingQuestion.questionType === 'SINGLE' || editingQuestion.questionType === 'MULTIPLE')
       && (!editingQuestion.options || editingQuestion.options.length < 2)) {
       setError('Las preguntas de opción múltiple deben tener al menos 2 opciones');
       return;
@@ -272,7 +274,7 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
               Gestor de Preguntas
               {questionnaire && (
                 <div className="flex mt-2 gap-2 capitalize text-base text-md font-normal text-base-content/70">
-                  {questionnaire.title || "Sin definir"}
+                  {questionnaire.title || "Sin determinar"}
                   <div className={`badge font-semibold text-sm badge-md transition-all duration-300 badge-primary`}>
                     #{questionnaire.id}
                   </div>
@@ -373,9 +375,9 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
                             </td>
                             <td>
                               <span className="badge badge-outline border-0 bg-base-content/30 text-xs badge-sm">
-                                {question.questionType === 'open' && 'Abierta'}
-                                {question.questionType === 'single' && 'Única'}
-                                {question.questionType === 'multiple' && 'Múltiple'}
+                              {question.questionType === 'OPEN' && 'Abierta'}
+                              {question.questionType === 'SINGLE' && 'Única'}
+                              {question.questionType === 'MULTIPLE' && 'Múltiple'}
                               </span>
                             </td>
                             <td className="text-center">
@@ -428,9 +430,9 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1 flex-wrap">
                               <span className="badge badge-outline border-0 bg-base-content/30 text-xs badge-sm">
-                                {question.questionType === 'open' && 'Abierta'}
-                                {question.questionType === 'single' && 'Única'}
-                                {question.questionType === 'multiple' && 'Múltiple'}
+                                {question.questionType === 'OPEN' && 'Abierta'}
+                                {question.questionType === 'SINGLE' && 'Única'}
+                                {question.questionType === 'MULTIPLE' && 'Múltiple'}
                               </span>
                               {question.options && question.options.length > 0 && (
                                 <span className="text-xs text-base-content/50">
@@ -515,15 +517,15 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
                 </label>
 
                 <div className="input input-bordered w-full flex items-center bg-base-200">
-                  {viewingQuestion.questionType === 'open' && 'Abierta'}
-                  {viewingQuestion.questionType === 'single' && 'Opción Única'}
-                  {viewingQuestion.questionType === 'multiple' && 'Opción Múltiple'}
+                  {viewingQuestion.questionType === 'OPEN' && 'Abierta'}
+                  {viewingQuestion.questionType === 'SINGLE' && 'Opción Única'}
+                  {viewingQuestion.questionType === 'MULTIPLE' && 'Opción Múltiple'}
                 </div>
               </div>
 
               {/* Options */}
-              {(viewingQuestion.questionType === 'single' ||
-                viewingQuestion.questionType === 'multiple') && (
+              {(viewingQuestion.questionType === 'SINGLE' ||
+                viewingQuestion.questionType === 'MULTIPLE') && (
                   <div className="form-control">
                     <label className="label">
                       <span className="label-text">Opciones</span>
@@ -604,15 +606,15 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
                     })
                   }
                 >
-                  <option value="open">Abierta</option>
-                  <option value="single">Opción Única</option>
-                  <option value="multiple">Opción Múltiple</option>
+                  <option value="OPEN">Abierta</option>
+                  <option value="SINGLE">Opción Única</option>
+                  <option value="MULTIPLE">Opción Múltiple</option>
                 </select>
               </div>
 
               {/* Options for single/multiple */}
-              {(editingQuestion.questionType === 'single' ||
-                editingQuestion.questionType === 'multiple') && (
+              {(editingQuestion.questionType === 'SINGLE' ||
+                editingQuestion.questionType === 'MULTIPLE') && (
                   <div className="form-control">
                     <label className="label" htmlFor='options'>
                       <span className="label-text">Opciones</span>

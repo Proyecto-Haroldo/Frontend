@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronDown,
@@ -19,95 +19,24 @@ import {
 } from '../../shared/types/analysis';
 import { Stoplight } from '../../shared/ui/components/stoplight/Stoplight';
 import { IAnalysis } from '../../core/models/analysis';
-import { getAnalysisAnswers } from '../../api/analysisApi';
+import { getAnalysisAnswers, getAnalysisById } from '../../api/analysisApi';
 import type { QuestionAnswerDTO } from '../../shared/types/analysis';
-import type { IQuestionnaireAnswer } from '../../shared/types/questionnaire';
 
 function AnalysisReview() {
   const navigate = useNavigate();
-  const location = useLocation();
   const [showAnswers, setShowAnswers] = useState(false);
   const [apiAnswers, setApiAnswers] = useState<QuestionAnswerDTO[] | null>(null);
   const [answersLoading, setAnswersLoading] = useState(false);
+  const [answersError, setAnswersError] = useState<string | null>(null);
   const [searchParams] = useSearchParams();
 
   // Get analysis data from navigation state
-  const analysis = location.state?.analysis as IAnalysis | undefined;
+  const [analysis, setAnalysis] = useState<IAnalysis | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Fallback: get analysis ID from URL params for direct navigation
   const analysisIdFromUrl = searchParams.get('id');
-
-  // For backward compatibility with localStorage (questionnaire completion flow)
-  const aiRecommendationFromLS = localStorage.getItem('aiRecommendation');
-  const questionnaireDataFromLS = localStorage.getItem('questionnaireData');
-  const parsedQuestionnaireFromLS = (() => {
-    if (!questionnaireDataFromLS) return null;
-    try {
-      const parsed = JSON.parse(questionnaireDataFromLS) as { answers?: IQuestionnaireAnswer[] } | null;
-      return parsed?.answers ? parsed : null;
-    } catch {
-      return null;
-    }
-  })();
-
-  let analysisData: {
-    id: string;
-    conteo: number;
-    timestamp: string;
-    categoria: string;
-    recomendacionUsuario: string;
-    colorSemaforo: ColorSemaforo
-  } | null = null;
-
-  if (analysis) {
-    // Primary: Use data from navigation state
-    // Normalize colorSemaforo to ensure it's a valid ColorSemaforo value
-    const rawColor = String(analysis.colorSemaforo || 'amarillo').toLowerCase();
-    let colorSemaforo: ColorSemaforo = 'amarillo';
-    if (rawColor === 'rojo' || rawColor === 'red') colorSemaforo = 'rojo';
-    else if (rawColor === 'amarillo' || rawColor === 'yellow') colorSemaforo = 'amarillo';
-    else if (rawColor === 'verde' || rawColor === 'green') colorSemaforo = 'verde';
-
-    analysisData = {
-      id: analysis.analysisId.toString(),
-      conteo: analysis.conteo,
-      timestamp: analysis.timeWhenSolved || new Date().toISOString(),
-      categoria: analysis.categoria,
-      recomendacionUsuario: analysis.analisisIA,
-      colorSemaforo: colorSemaforo
-    };
-  } else if (analysisIdFromUrl && aiRecommendationFromLS) {
-    // Fallback for direct URL navigation with localStorage data
-    let resumenUsuario = 'Basado en sus respuestas, hemos identificado áreas clave para mejorar su salud financiera...';
-    let colorSemaforo: ColorSemaforo = 'amarillo';
-
-    try {
-      const parsed = JSON.parse(aiRecommendationFromLS);
-      if (parsed && typeof parsed === 'object' && 'resumenUsuario' in parsed && 'colorSemaforo' in parsed) {
-        const resumenField = (parsed as any).resumenUsuario;
-        resumenUsuario = typeof resumenField === 'string' ? resumenField : JSON.stringify(resumenField);
-        const rawColor = String((parsed as any).colorSemaforo || colorSemaforo).toLowerCase();
-        if (rawColor === 'rojo' || rawColor === 'red') colorSemaforo = 'rojo';
-        else if (rawColor === 'amarillo' || rawColor === 'yellow') colorSemaforo = 'amarillo';
-        else if (rawColor === 'verde' || rawColor === 'green') colorSemaforo = 'verde';
-      } else {
-        resumenUsuario = aiRecommendationFromLS;
-      }
-    } catch {
-      resumenUsuario = aiRecommendationFromLS;
-    }
-
-    const parsedIQuestionnaireData = questionnaireDataFromLS ? JSON.parse(questionnaireDataFromLS) : null;
-
-    analysisData = {
-      id: analysisIdFromUrl,
-      conteo: 1, // Default to 1 for legacy localStorage data
-      timestamp: parsedIQuestionnaireData?.metadata?.timestamp || new Date().toISOString(),
-      categoria: parsedIQuestionnaireData?.metadata?.category || 'General',
-      recomendacionUsuario: resumenUsuario,
-      colorSemaforo: colorSemaforo
-    };
-  }
 
   // Status configuration
   const statusConfig: Record<ColorSemaforo, {
@@ -141,32 +70,112 @@ function AnalysisReview() {
   };
 
   // If no analysis data is available, redirect to analysis page
-  useEffect(() => {
-    if (!analysisData) {
-      navigate('/c/analysis');
-    }
-  }, [analysisData, navigate]);
+useEffect(() => {
+  if (!analysisIdFromUrl) {
+    navigate('/c/analysis');
+    return;
+  }
+
+  let isMounted = true;
+  setLoading(true);
+
+  getAnalysisById(Number(analysisIdFromUrl))
+    .then((data) => {
+      if (isMounted) {
+        setAnalysis(data);
+      }
+    })
+    .catch((e: unknown) => {
+      console.error('Failed to load analysis', e);
+
+      if (isMounted) {
+        if (e instanceof Error) {
+          setError(`No se pudo cargar el análisis: ${e.message}`);
+        } else {
+          setError('No se pudo cargar el análisis');
+        }
+
+        navigate('/c/analysis');
+      }
+    })
+    .finally(() => {
+      if (isMounted) {
+        setLoading(false);
+      }
+    });
+
+  return () => {
+    isMounted = false;
+  };
+}, [analysisIdFromUrl, navigate]);
 
   // Fetch questionnaire answers from API when viewing an analysis from state
   useEffect(() => {
-    if (!analysis?.analysisId) return;
+    if (!analysis) return;
+
     let cancelled = false;
     setAnswersLoading(true);
     setApiAnswers(null);
+    setAnswersError(null);
+
     getAnalysisAnswers(analysis.analysisId)
       .then((data) => {
-        if (!cancelled) setApiAnswers(data);
+        if (!cancelled) {
+          setApiAnswers(data);
+        }
       })
-      .catch(() => {
-        if (!cancelled) setApiAnswers([]);
+      .catch((e: unknown) => {
+        if (!cancelled) {
+          console.error('Error loading answers', e);
+          setApiAnswers([]);
+          setAnswersError(
+            e instanceof Error
+              ? `No se pudieron cargar las respuestas: ${e.message}`
+              : 'No se pudieron cargar las respuestas del cuestionario.'
+          );
+        }
       })
       .finally(() => {
         if (!cancelled) setAnswersLoading(false);
       });
-    return () => { cancelled = true; };
-  }, [analysis?.analysisId]);
 
-  if (!analysisData) {
+    return () => {
+      cancelled = true;
+    };
+  }, [analysis]);
+
+  if (loading) {
+    return (
+      <div className="min-h-dvh bg-base-200 flex items-center justify-center p-4">
+        <div className="card w-full container bg-base-100 shadow-xl p-6">
+          <div className="card-body items-center text-center">
+            <span className="loading loading-spinner loading-lg text-primary"></span>
+            <p className="mt-4">Cargando análisis...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center bg-base-200 p-4">
+        <div className="card w-full max-w-lg bg-base-100 shadow-xl text-center">
+          <div className="card-body">
+            <div className="w-16 h-16 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <XCircle className="h-8 w-8 text-error" />
+            </div>
+            <h2 className="text-xl font-bold mb-2">Ups, ha ocurrido un error!</h2>
+            <p className="text-base-content/70">
+              {error}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!analysis) {
     return (
       <div className="min-h-dvh bg-base-200 flex items-center justify-center p-4">
         <div className="card w-full max-w-lg bg-base-100 shadow-xl">
@@ -193,22 +202,20 @@ function AnalysisReview() {
     );
   }
 
-  const currentStatus = statusConfig[analysisData.colorSemaforo];
+  const currentStatus = statusConfig[analysis.colorSemaforo];
   const StatusIcon = currentStatus.icon;
 
-  // Unified list for the Answers Section: from API when available, else from localStorage
-  const displayAnswers: { questionText: string; answerText: string }[] =
-    analysis && apiAnswers !== null
-      ? apiAnswers.map((a) => ({
-        questionText: a.questionText ?? '',
-        answerText: a.answerText ?? ''
-      }))
-      : (parsedQuestionnaireFromLS?.answers ?? []).map((a) => ({
-        questionText: a.questionTitle ?? '',
-        answerText: Array.isArray(a.answer) ? a.answer.filter(Boolean).join(', ') : String(a.answer ?? '')
-      }));
-  const hasAnswersFromApi = Boolean(analysis?.analysisId);
-  const showAnswersLoading = hasAnswersFromApi && answersLoading;
+  // Unified list for the Answers Section from API
+  const displayAnswers =
+    apiAnswers?.map((a) => ({
+      questionText: a.questionText ?? '',
+      answerText: Array.isArray(a.answerText)
+        ? a.answerText.filter(Boolean).join(', ')
+        : String(a.answerText ?? '')
+    })) ?? [];
+
+  const hasAnswers = (apiAnswers?.length ?? 0) > 0;
+  const showAnswersLoading = hasAnswers && answersLoading;
 
   const formatDate = (timestamp: string) => {
     try {
@@ -294,7 +301,7 @@ function AnalysisReview() {
           className="flex justify-center"
           variants={itemVariants}
         >
-          <Stoplight color={analysisData.colorSemaforo} animated />
+          <Stoplight color={analysis.colorSemaforo} animated />
         </motion.div>
       </motion.div>
 
@@ -304,14 +311,14 @@ function AnalysisReview() {
         variants={itemVariants}
       >
         <motion.div
-          className="rounded-xl p-8 bg-base-200 shadow-md w-full max-w-md"
+          className="rounded-xl p-8 bg-base-200 shadow-md w-full"
           variants={itemVariants}
           whileHover={{ scale: 1.01 }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
         >
           <h3 className="text-xl font-semibold mb-4 text-center">Resumen del Análisis</h3>
           <p className="text-base-content/80 leading-relaxed text-justify">
-            {analysisData.recomendacionUsuario}
+            {analysis.resumenIA}
           </p>
         </motion.div>
       </motion.div>
@@ -325,7 +332,7 @@ function AnalysisReview() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="max-w-6xl mx-auto space-y-8">
+      <div className="container mx-auto space-y-8">
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             {/* Header */}
@@ -347,10 +354,10 @@ function AnalysisReview() {
               <div className="flex items-center gap-4 text-base-content/60 text-sm">
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  {formatDate(analysisData.timestamp)} - {formatTime(analysisData.timestamp)}
+                  {formatDate(analysis.timeWhenSolved)} - {formatTime(analysis.timeWhenSolved)}
                 </div>
                 <div className="badge badge-outline">
-                  ID: {analysisData.id}
+                  ID: {analysis.analysisId}
                 </div>
               </div>
             </motion.div>
@@ -371,10 +378,10 @@ function AnalysisReview() {
                 transition={{ duration: 0.6, delay: 0.3, type: "spring", stiffness: 200 }}
               >
                 <h1 className="text-3xl font-bold mb-2">
-                  Análisis {formatAnalysisTitle(analysisData.categoria, analysisData.conteo)}
+                  Análisis {formatAnalysisTitle(analysis.categoryName, analysis.conteo)}
                 </h1>
                 <p className="text-base-content/60">
-                  Análisis personalizado de su situación
+                  {analysis.questionnaireTitle || "Sin determinar"}
                 </p>
               </motion.div>
 
@@ -401,13 +408,13 @@ function AnalysisReview() {
                 <div className="card-body">
                   <h3 className="card-title text-lg">Nivel de Riesgo</h3>
                   <div className={`card p-4 bg-base-200 gap-2 mt-2 border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}>
-                    <div className={`badge font-semibold text-sm badge-lg transition-all duration-300 ${analysisData.colorSemaforo === 'verde' ? 'badge-success' :
-                      analysisData.colorSemaforo === 'amarillo' ? 'badge-warning' : 'badge-error'
+                    <div className={`badge font-semibold text-sm badge-lg transition-all duration-300 ${analysis.colorSemaforo === 'verde' ? 'badge-success' :
+                      analysis.colorSemaforo === 'amarillo' ? 'badge-warning' : 'badge-error'
                       }`}>
-                      {getRiskLevel(analysisData.colorSemaforo)}
+                      {getRiskLevel(analysis.colorSemaforo)}
                     </div>
                     <span className="text-base-content/80">
-                      {getRiskDescription(analysisData.colorSemaforo)}
+                      {getRiskDescription(analysis.colorSemaforo)}
                     </span>
                   </div>
                 </div>
@@ -484,6 +491,11 @@ function AnalysisReview() {
                                 animate={{ opacity: 1 }}
                               />
                               <span>Cargando respuestas...</span>
+                            </div>
+                          ) : answersError ? (
+                            <div className="text-center py-8 text-error">
+                              <AlertTriangle className="h-12 w-12 mx-auto mb-3 opacity-80" />
+                              <p>{answersError}</p>
                             </div>
                           ) : displayAnswers.length === 0 ? (
                             <div className="text-center py-8 text-base-content/60">

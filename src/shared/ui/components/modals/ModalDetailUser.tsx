@@ -39,7 +39,7 @@ const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error
     const categoryData = useMemo(() => {
         const counts: Record<string, number> = {};
         analysis.forEach((q) => {
-            const category = q.categoria || "Sin categoría";
+            const category = q.categoryName || "Sin categoría";
             counts[category] = (counts[category] || 0) + (q.conteo || 0);
         });
         return counts;
@@ -195,7 +195,7 @@ const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error
                                             </h3>
                                         </div>
                                         <small className="text-base-content/60">
-                                            Visualiza el estado actual de los cuestionarios completados, pendientes y en progreso.
+                                            Visualiza el estado actual de los cuestionarios completados, pendientes y en revisión.
                                         </small>
                                     </div>
                                     <div className="flex justify-center items-center">

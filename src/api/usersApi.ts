@@ -19,7 +19,7 @@ const mapRoleNameToRoleObject = (roleName: string) => {
   }
 
   // Mantener guion bajo
-  const key = normalized.replace(/[^a-z0-9_]/g, '');
+  const key = normalized.replaceAll(/[^a-z0-9_]/g, '');
 
   // Mapa final
   const nameToIdMap: Record<string, number> = {
