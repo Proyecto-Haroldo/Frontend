@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { getUserAnalysis } from '../../api/analysisApi';
 import {
-  formatAnalysisTitle,
   calculateTotalProgress,
   type AnalysisStatus
 } from '../../shared/types/analysis';
@@ -57,12 +56,12 @@ function Analysis() {
     switch (status?.toUpperCase()) {
       case 'CHECKED':
       case 'COMPLETED':
-        return <CheckCircle className="h-5 w-5 text-success" />;
+        return <CheckCircle className="min-h-5 min-w-5 max-h-5 max-w-5 text-success" />;
       case 'IN-PROGRESS':
       case 'PENDING':
-        return <Clock className="h-5 w-5 text-warning" />;
+        return <Clock className="min-h-5 min-w-5 max-h-5 max-w-5 text-warning" />;
       default:
-        return <AlertCircle className="h-5 w-5 text-base-content/50" />;
+        return <AlertCircle className="min-h-5 min-w-5 max-h-5 max-w-5 text-base-content/50" />;
     }
   };
 
@@ -73,7 +72,7 @@ function Analysis() {
         return 'Completado';
       case 'IN-PROGRESS':
       case 'PENDING':
-        return 'En Progreso';
+        return 'En revisión';
       default:
         return 'Pendiente';
     }
@@ -82,13 +81,13 @@ function Analysis() {
   const getSeverityIcon = (color: IAnalysis['colorSemaforo']) => {
     switch (color) {
       case 'verde':
-        return <CheckCircle className="h-4 w-4 text-success" />;
+        return <CheckCircle className="min-h-4 min-w-4 max-h-4 max-w-4 text-success" />;
       case 'amarillo':
-        return <AlertTriangle className="h-4 w-4 text-warning" />;
+        return <AlertTriangle className="min-h-4 min-w-4 max-h-4 max-w-4 text-warning" />;
       case 'rojo':
-        return <XCircle className="h-4 w-4 text-error" />;
+        return <XCircle className="min-h-4 min-w-4 max-h-4 max-w-4 text-error" />;
       default:
-        return <AlertCircle className="h-4 w-4 text-base-content/50" />;
+        return <AlertCircle className="min-h-4 min-w-4 max-h-4 max-w-4 text-base-content/50" />;
     }
   };
 
@@ -102,14 +101,12 @@ function Analysis() {
   };
 
   const handleAnalysisClick = (item: IAnalysis) => {
-    navigate('/c/analysis-review', {
-      state: { analysis: item, analysisId: item.analysisId }
-    });
+    navigate(`/c/analysis-review?id=${item.analysisId}`);
   };
 
   const categories = useMemo(() => {
     if (!analysis) return [];
-    const set = new Set(analysis.map(a => a.categoria).filter(Boolean));
+    const set = new Set(analysis.map(a => a.categoryName).filter(Boolean));
     return Array.from(set).sort((a, b) => a.localeCompare(b));
   }, [analysis]);
 
@@ -118,7 +115,7 @@ function Analysis() {
     let list = [...analysis];
     if (statusFilter === 'completed') list = list.filter(a => a.status?.toUpperCase() === 'CHECKED');
     else if (statusFilter === 'incomplete') list = list.filter(a => a.status?.toUpperCase() !== 'CHECKED');
-    if (categoryFilter) list = list.filter(a => a.categoria === categoryFilter);
+    if (categoryFilter) list = list.filter(a => a.categoryName === categoryFilter);
     list.sort((a, b) => {
       const dateA = new Date(a.timeWhenSolved || 0).getTime();
       const dateB = new Date(b.timeWhenSolved || 0).getTime();
@@ -130,168 +127,182 @@ function Analysis() {
   const analysisLength = filteredAndSortedAnalysis.length;
 
   return (
-  <div className='h-full flex items-center justify-center'>
-    <div className="space-y-6 container">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <h1 className="text-2xl font-semibold">Mis análisis</h1>
-      </div>
+    <div className='h-full flex items-center justify-center'>
+      <div className="space-y-6 container">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <h1 className="text-2xl font-semibold">Mis Análisis</h1>
+        </div>
 
-      {analysis && analysis.length > 0 && (
-        <div className="card bg-base-100 shadow-sm border border-base-200">
-          <div className="card-body p-4">
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="flex items-center gap-2 text-sm font-medium text-base-content/70">
-                <Filter className="h-4 w-4" />
-                Filtros
-              </span>
-              <select
-                className="select select-bordered select-sm w-full max-w-[10rem]"
-                value={statusFilter}
-                onChange={e => setStatusFilter(e.target.value as StatusFilter)}
-                title="Estado"
-              >
-                <option value="all">Todos los estados</option>
-                <option value="completed">Completados</option>
-                <option value="incomplete">En progreso</option>
-              </select>
-              <select
-                className="select select-bordered select-sm w-full max-w-[10rem]"
-                value={dateSort}
-                onChange={e => setDateSort(e.target.value as DateSort)}
-                title="Orden por fecha"
-              >
-                <option value="newest">Más recientes</option>
-                <option value="oldest">Más antiguos</option>
-              </select>
-              {categories.length > 0 && (
+        {analysis && analysis.length > 0 && (
+          <div className="card bg-base-100 shadow-sm border border-base-200">
+            <div className="card-body p-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="flex items-center gap-2 text-sm font-medium text-base-content/70">
+                  <Filter className="h-4 w-4" />
+                  Filtros
+                </span>
                 <select
-                  className="select select-bordered select-sm w-full max-w-[12rem]"
-                  value={categoryFilter}
-                  onChange={e => setCategoryFilter(e.target.value)}
-                  title="Categoría"
+                  className="select select-bordered select-sm w-full max-w-[10rem]"
+                  value={statusFilter}
+                  onChange={e => setStatusFilter(e.target.value as StatusFilter)}
+                  title="Estado"
                 >
-                  <option value="">Todas las categorías</option>
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
+                  <option value="all">Todos los estados</option>
+                  <option value="completed">Completados</option>
+                  <option value="incomplete">En revisión</option>
                 </select>
-              )}
-              {(statusFilter !== 'all' || categoryFilter || dateSort !== 'newest') && (
-                <button
-                  type="button"
-                  className="btn btn-ghost btn-sm"
-                  onClick={() => {
-                    setStatusFilter('all');
-                    setCategoryFilter('');
-                    setDateSort('newest');
-                  }}
+                <select
+                  className="select select-bordered select-sm w-full max-w-[10rem]"
+                  value={dateSort}
+                  onChange={e => setDateSort(e.target.value as DateSort)}
+                  title="Orden por fecha"
                 >
-                  Limpiar
-                </button>
+                  <option value="newest">Más recientes</option>
+                  <option value="oldest">Más antiguos</option>
+                </select>
+                {categories.length > 0 && (
+                  <select
+                    className="select select-bordered select-sm w-full max-w-[12rem]"
+                    value={categoryFilter}
+                    onChange={e => setCategoryFilter(e.target.value)}
+                    title="Categoría"
+                  >
+                    <option value="">Todas las categorías</option>
+                    {categories.map(cat => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {(statusFilter !== 'all' || categoryFilter || dateSort !== 'newest') && (
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-sm"
+                    onClick={() => {
+                      setStatusFilter('all');
+                      setCategoryFilter('');
+                      setDateSort('newest');
+                    }}
+                  >
+                    Limpiar
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="card bg-base-100 shadow-sm">
+          <div className="card-body p-0">
+            <div>
+              {error && (
+                <div className="flex flex-col items-center justify-center py-16">
+                  <div className="alert alert-error max-w-md">
+                    <AlertCircle className="h-6 w-6" />
+                    <span>{error}</span>
+                  </div>
+                </div>
               )}
+              {!analysis && !error && (
+                <div className="flex flex-col items-center justify-center py-16">
+                  <span className="loading loading-spinner loading-lg text-primary mb-4"></span>
+                  <p className="text-base-content/60">Cargando análisis...</p>
+                </div>
+              )}
+              {analysis && analysis.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-16">
+                  <div className="text-center">
+                    <FileText className="h-16 w-16 mx-auto text-base-content/30 mb-4" />
+                    <p className="text-lg font-medium text-base-content/60 mb-2">No hay análisis disponibles.</p>
+                    <p className="text-sm text-base-content/40">Complete un cuestionario para ver su primer análisis.</p>
+                  </div>
+                </div>
+              )}
+              {analysis && filteredAndSortedAnalysis.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-12 text-base-content/60">
+                  <Filter className="h-12 w-12 mb-2 opacity-50" />
+                  <p>No hay análisis que coincidan con los filtros.</p>
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-sm mt-2"
+                    onClick={() => {
+                      setStatusFilter('all');
+                      setCategoryFilter('');
+                      setDateSort('newest');
+                    }}
+                  >
+                    Limpiar filtros
+                  </button>
+                </div>
+              )}
+              {analysis && filteredAndSortedAnalysis.map((item, index) => {
+                const isChecked = item.status?.toUpperCase() === 'CHECKED';
+                const status: AnalysisStatus = isChecked ? 'completed' : 'in-progress';
+                const progress = calculateTotalProgress(isChecked);
+
+                return (
+                  <>
+                    <div
+                      key={item.analysisId}
+                      className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 hover:bg-base-200/70 transition-colors cursor-pointer ${index !== analysisLength - 1 ? 'border-b border-base-200' : ''}`}
+                      onClick={() => handleAnalysisClick(item)}
+                    >
+                      <div className='flex gap-4'>
+                        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <FileText className="h-5 w-5 text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0>">
+                          <div className="flex flex-col gap-1">
+                            <p className="text-xs text-base-content/70">Análisis #{item.analysisId} · {formatDate(item?.timeWhenSolved || new Date().toISOString())}</p>
+
+                            <div className="flex gap-2 w-full items-start justify-start min-w-0">
+                              <h3 className="font-medium flex-1 min-w-0 truncate sm:max-w-[40vw] md:max-w-[25vw] lg:max-w-[35vw] xl:max-w-[45vw]">
+                                {item.questionnaireTitle || "Sin determinar"}
+                              </h3>
+                              <div className="flex-shrink-0">
+                                {getSeverityIcon(item.colorSemaforo)}
+                              </div>
+                            </div>
+
+                            <span className="rounded-full w-fit text-center badge-outline border-0 bg-base-content/30 text-xs badge-sm">
+                              {item.categoryName}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-4 flex-wrap-reverse justify-end">
+                        <div className="text-right w-25 flex flex-col items-end justify-end">
+                          <div className="flex items-center gap-2 justify-start w-full mb-1">
+                            <p className="text-sm font-medium">{getStatusText(status)}</p>
+                            {getStatusIcon(status)}
+                          </div>
+                          <div className="flex items-center gap-2 justify-start w-full">
+                            <progress className="progress progress-primary w-full" value={progress} max="100" />
+                            <span className="text-sm text-base-content/70">{progress}%</span>
+                          </div>
+                        </div>
+                        <button
+                          className="btn btn-info btn-sm"
+                          title="Ver análisis"
+                          onClick={e => {
+                            e.stopPropagation();
+                            handleAnalysisClick(item);
+                          }}
+                        >
+                          <ArrowRight className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
+                    <hr className="text-base-300 mx-4"></hr>
+                  </>
+                );
+              })}
             </div>
           </div>
         </div>
-      )}
-
-      <div className="card bg-base-100 shadow-sm">
-        <div className="card-body p-0">
-          <div>
-            {error && (
-              <div className="flex flex-col items-center justify-center py-16">
-                <div className="alert alert-error max-w-md">
-                  <AlertCircle className="h-6 w-6" />
-                  <span>{error}</span>
-                </div>
-              </div>
-            )}
-            {!analysis && !error && (
-              <div className="flex flex-col items-center justify-center py-16">
-                <span className="loading loading-spinner loading-lg text-primary mb-4"></span>
-                <p className="text-base-content/60">Cargando análisis...</p>
-              </div>
-            )}
-            {analysis && analysis.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-16">
-                <div className="text-center">
-                  <FileText className="h-16 w-16 mx-auto text-base-content/30 mb-4" />
-                  <p className="text-lg font-medium text-base-content/60 mb-2">No hay análisis disponibles.</p>
-                  <p className="text-sm text-base-content/40">Complete un cuestionario para ver su primer análisis.</p>
-                </div>
-              </div>
-            )}
-            {analysis && filteredAndSortedAnalysis.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-12 text-base-content/60">
-                <Filter className="h-12 w-12 mb-2 opacity-50" />
-                <p>No hay análisis que coincidan con los filtros.</p>
-                <button
-                  type="button"
-                  className="btn btn-ghost btn-sm mt-2"
-                  onClick={() => {
-                    setStatusFilter('all');
-                    setCategoryFilter('');
-                    setDateSort('newest');
-                  }}
-                >
-                  Limpiar filtros
-                </button>
-              </div>
-            )}
-            {analysis && filteredAndSortedAnalysis.map((item, index) => {
-              const isChecked = item.status?.toUpperCase() === 'CHECKED';
-              const status: AnalysisStatus = isChecked ? 'completed' : 'in-progress';
-              const progress = calculateTotalProgress(isChecked);
-
-              return (
-                <div
-                  key={item.analysisId}
-                  className={`flex items-center gap-4 p-6 hover:bg-base-200/70 transition-colors cursor-pointer ${index !== analysisLength - 1 ? 'border-b border-base-200' : ''}`}
-                  onClick={() => handleAnalysisClick(item)}
-                >
-                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                    <FileText className="h-5 w-5 text-primary" />
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-medium">Análisis {formatAnalysisTitle(item.categoria, item.conteo)}</h3>
-                      {getSeverityIcon(item.colorSemaforo)}
-                      <span className="badge badge-ghost badge-sm text-base-content/60">{item.categoria}</span>
-                    </div>
-                    <p className="text-sm text-base-content/70">{formatDate(item?.timeWhenSolved || new Date().toISOString())}</p>
-                  </div>
-
-                  <div className="flex items-center gap-4 shrink-0">
-                    <div className="text-right">
-                      <div className="flex items-center gap-2 justify-end mb-1">
-                        <p className="text-sm font-medium">{getStatusText(status)}</p>
-                        {getStatusIcon(status)}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <progress className="progress progress-primary w-16" value={progress} max="100" />
-                        <span className="text-sm text-base-content/70">{progress}%</span>
-                      </div>
-                    </div>
-                    <button
-                      className="btn btn-info btn-sm"
-                      title="Ver análisis"
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleAnalysisClick(item);
-                      }}
-                    >
-                      <ArrowRight className="h-5 w-5" />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
       </div>
-    </div>
     </div>
   );
 }

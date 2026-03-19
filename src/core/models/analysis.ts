@@ -1,3 +1,5 @@
+import { ColorSemaforo } from "../../shared/types/analysis";
+
 export interface IAnalysis {
     analysisId: number;
     asesorName: string;
@@ -6,9 +8,10 @@ export interface IAnalysis {
     timeWhenChecked: string;
     status: string;
     analisisIA: string;
-    colorSemaforo: string;
+    colorSemaforo: ColorSemaforo;
     resumenIA: string;
     comentarioAsesor: string;
     conteo: number;
-    categoria: string;
+    categoryName: string;
+    questionnaireTitle: string;
 }

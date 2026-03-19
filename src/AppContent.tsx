@@ -20,7 +20,7 @@ import AdviserProfile from './pages/adviser/Profile';
 import AdviserReports from './pages/adviser/Reports';
 
 // AnimatedRoutes component wraps the nested Routes with AnimatePresence
-function AnimatedRoutes() {
+function AnimatedRoutes({ role }: { role: number | null }) {
     const location = useLocation();
     const pageVariants = {
         initial: { opacity: 0, y: 20 },
@@ -32,29 +32,84 @@ function AnimatedRoutes() {
         exit: { opacity: 0, y: -20, transition: { duration: 0.2 } }
     };
 
-    return (
-        <AnimatePresence mode="wait">
-            <motion.div
-                key={location.pathname}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={pageVariants}
-                className="w-full"
-            >
-                {/* Ojo: rutas relativas, no empiezan con / */}
-                <Routes location={location}>
-                    <Route path="" element={<Home />} />
-                    <Route path="services" element={<Services />} />
-                    <Route path="schedule" element={<Schedule />} />
-                    <Route path="analysis" element={<Analysis />} />
-                    <Route path="profile" element={<Profile />} />
-                    <Route path="questionnaire" element={<Questionnaire />} />
-                    <Route path="analysis-review" element={<AnalysisReview />} />
-                </Routes>
-            </motion.div>
-        </AnimatePresence>
-    );
+    if (role === 1) {
+        return (
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={location.pathname}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    variants={pageVariants}
+                    className="w-full"
+                >
+                    {/* Ojo: rutas relativas, no empiezan con / */}
+                    <Routes location={location}>
+                        <Route path="" element={<AdminDashboard view="selector" />} />
+                        <Route path="users" element={<AdminDashboard view="users" />} />
+                        <Route path="questionnaires" element={<AdminDashboard view="questionnaires" />} />
+                        <Route path="questionnaires/:id" element={<AdminDashboard view="questions" />} />
+                        <Route path="analysis" element={<AdminDashboard view="analysis" />} />
+                        <Route path="analysis/:id" element={<AdminDashboard view="analysisReview" />} />
+                        <Route path="reports" element={<AdminReports />} />
+                        <Route path="profile" element={<AdminProfile />} />
+                    </Routes>
+                </motion.div>
+            </AnimatePresence>
+        );
+    }
+
+    if (role === 2) {
+        return (
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={location.pathname}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    variants={pageVariants}
+                    className="w-full"
+                >
+                    {/* Ojo: rutas relativas, no empiezan con / */}
+                    <Routes location={location}>
+                        <Route path="" element={<Home />} />
+                        <Route path="services" element={<Services />} />
+                        <Route path="schedule" element={<Schedule />} />
+                        <Route path="analysis" element={<Analysis />} />
+                        <Route path="profile" element={<Profile />} />
+                        <Route path="questionnaire" element={<Questionnaire />} />
+                        <Route path="analysis-review" element={<AnalysisReview />} />
+                    </Routes>
+                </motion.div>
+            </AnimatePresence>
+        );
+    }
+
+    if (role === 3) {
+        return (
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={location.pathname}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    variants={pageVariants}
+                    className="w-full"
+                >
+                    {/* Ojo: rutas relativas, no empiezan con / */}
+                    <Routes location={location}>
+                        <Route path="" element={<AdviserDashboard view="selector" />} />
+                        <Route path="questionnaires" element={<AdviserDashboard view="questionnaires" />} />
+                        <Route path="questionnaires/:id" element={<AdviserDashboard view="questions" />} />
+                        <Route path="analysis" element={<AdviserDashboard view="analysis" />} />
+                        <Route path="analysis/:id" element={<AdviserDashboard view="analysisReview" />} />
+                        <Route path="reports" element={<AdviserReports />} />
+                        <Route path="profile" element={<AdviserProfile />} />
+                    </Routes>
+                </motion.div>
+            </AnimatePresence>
+        );
+    }
 }
 
 // ProtectedRoute to check auth & roles
@@ -108,16 +163,20 @@ function AppContent() {
                     <div className="min-h-dvh bg-base-200 flex flex-col md:flex-row font-family">
                         <Navbar />
                         <main className="flex-1 p-4 md:p-8 md:ml-64 pt-20 md:pt-8">
-                            <Routes>
-                                <Route path="" element={<AdminDashboard view="selector" />} />
-                                <Route path="users" element={<AdminDashboard view="users" />} />
-                                <Route path="questionnaires" element={<AdminDashboard view="questionnaires" />} />
-                                <Route path="questionnaires/:id" element={<AdminDashboard view="questions" />} />
-                                <Route path="analysis" element={<AdminDashboard view="analysis" />} />
-                                <Route path="analysis/:id" element={<AdminDashboard view="analysisReview" />} />
-                                <Route path="reports" element={<AdminReports />} />
-                                <Route path="profile" element={<AdminProfile />} />
-                            </Routes>
+                            {isFirstMount ? (
+                                <Routes>
+                                    <Route path="" element={<AdminDashboard view="selector" />} />
+                                    <Route path="users" element={<AdminDashboard view="users" />} />
+                                    <Route path="questionnaires" element={<AdminDashboard view="questionnaires" />} />
+                                    <Route path="questionnaires/:id" element={<AdminDashboard view="questions" />} />
+                                    <Route path="analysis" element={<AdminDashboard view="analysis" />} />
+                                    <Route path="analysis/:id" element={<AdminDashboard view="analysisReview" />} />
+                                    <Route path="reports" element={<AdminReports />} />
+                                    <Route path="profile" element={<AdminProfile />} />
+                                </Routes>
+                            ) : (
+                                <AnimatedRoutes role={role} />
+                            )}
                         </main>
                     </div>
                 </ProtectedRoute>
@@ -140,7 +199,7 @@ function AppContent() {
                                     <Route path="analysis-review" element={<AnalysisReview />} />
                                 </Routes>
                             ) : (
-                                <AnimatedRoutes />
+                                <AnimatedRoutes role={role} />
                             )}
                         </main>
                     </div>
@@ -155,15 +214,19 @@ function AppContent() {
                         <div className="min-h-dvh bg-base-200 flex flex-col md:flex-row font-family">
                             <Navbar />
                             <main className="flex-1 p-4 md:p-8 md:ml-64 pt-20 md:pt-8">
-                                <Routes>
-                                    <Route path="" element={<AdviserDashboard view="selector" />} />
-                                    <Route path="questionnaires" element={<AdviserDashboard view="questionnaires" />} />
-                                    <Route path="questionnaires/:id" element={<AdviserDashboard view="questions" />} />
-                                    <Route path="analysis" element={<AdviserDashboard view="analysis" />} />
-                                    <Route path="analysis/:id" element={<AdviserDashboard view="analysisReview" />} />
-                                    <Route path="reports" element={<AdviserReports />} />
-                                    <Route path="profile" element={<AdviserProfile />} />
-                                </Routes>
+                                {isFirstMount ? (
+                                    <Routes>
+                                        <Route path="" element={<AdviserDashboard view="selector" />} />
+                                        <Route path="questionnaires" element={<AdviserDashboard view="questionnaires" />} />
+                                        <Route path="questionnaires/:id" element={<AdviserDashboard view="questions" />} />
+                                        <Route path="analysis" element={<AdviserDashboard view="analysis" />} />
+                                        <Route path="analysis/:id" element={<AdviserDashboard view="analysisReview" />} />
+                                        <Route path="reports" element={<AdviserReports />} />
+                                        <Route path="profile" element={<AdviserProfile />} />
+                                    </Routes>
+                                ) : (
+                                    <AnimatedRoutes role={role} />
+                                )}
                             </main>
                         </div>
                     </ProtectedRoute>

@@ -1,13 +1,13 @@
 export interface MultipleOptionQuestionAnswer {
-  optionanswerid: number;
-  answertext: string;
-  question: string;
+    optionanswerid: number;
+    answertext: string;
+    question: string;
 }
 
 export interface AnswersOfQuestionnaire {
-  answerId: number;
-  question: string;
-  answerText: string;
+    answerId: number;
+    question: string;
+    answerText: string;
 }
 
 export type AnalysisStatus = 'completed' | 'in-progress' | 'pending';
@@ -37,10 +37,12 @@ export const getRiskDescription = (color: ColorSemaforo): string => {
     return 'Su situación requiere atención inmediata.'; // rojo
 };
 
-// Format analysis display name with counter
-export const formatAnalysisTitle = (categoria: string, conteo: number): string => {
-    const formattedCategory = categoria.charAt(0).toUpperCase() + categoria.slice(1).replace(/-/g, ' ');
-    return conteo > 1 ? `${formattedCategory} #${conteo}` : formattedCategory;
+// Format analysis display name with id
+export const formatAnalysisTitle = (category: string, id: number): string => {
+    const formattedTitle =
+        category.charAt(0).toUpperCase() + category.slice(1);
+
+    return `#${id} - ${formattedTitle}`;
 };
 
 // Calculate total progress when assessor review is available

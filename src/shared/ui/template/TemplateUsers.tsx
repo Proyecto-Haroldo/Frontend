@@ -250,7 +250,7 @@ const TemplateUsers: React.FC<TemplateUsersProps> = ({
             {/* Tabla de usuarios */}
             <div className="card bg-base-100 shadow-sm border border-base-200">
                 <div className="card-body p-3 md:p-6">
-                    <h2 className="card-title mb-4 text-lg">Usuarios</h2>
+                    <h2 className="card-title mb-2 lg:mb-4 text-lg">Usuarios</h2>
 
                     <div className="hidden lg:block overflow-x-auto">
                         <table className="table table-zebra">

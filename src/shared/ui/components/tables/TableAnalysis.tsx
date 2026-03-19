@@ -76,7 +76,7 @@ const TableAnalysis: React.FC<TableAnalysisProps> = ({
     return (
         <div className="card bg-base-100 shadow-sm border border-base-200">
             <div className="card-body p-3 md:p-6">
-                <h2 className="card-title mb-4 text-lg">Análisis realizados</h2>
+                <h2 className="card-title mb-2 lg:mb-4 text-lg">Análisis</h2>
 
                 {analysis.length > 0 ? (
                     <>
@@ -88,6 +88,7 @@ const TableAnalysis: React.FC<TableAnalysisProps> = ({
                                         <th>ID</th>
                                         <th>Cliente</th>
                                         <th>Asesor</th>
+                                        <th>Cuestionario</th>
                                         <th>Categoría</th>
                                         <th>Estado</th>
                                         <th>Riesgo</th>
@@ -101,7 +102,10 @@ const TableAnalysis: React.FC<TableAnalysisProps> = ({
                                             <td>{a.analysisId}</td>
                                             <td>{a.clientName}</td>
                                             <td>{a.asesorName || 'Sin Asignar'}</td>
-                                            <td>{a.categoria}</td>
+                                            <td>{a.questionnaireTitle}</td>
+                                            <td>
+                                                <span className="card h-auto badge-outline text-center border-0 bg-base-content/30 text-xs badge-sm">{a.categoryName}</span>
+                                            </td>
                                             <td>{getStatusBadge(a.status)}</td>
                                             <td>{getColorBadge(a.colorSemaforo)}</td>
                                             <td>
@@ -136,7 +140,10 @@ const TableAnalysis: React.FC<TableAnalysisProps> = ({
                                                     {a.clientName}
                                                 </h3>
                                                 <h3 className="text-sm capitalize truncate font-normal text-xs">
-                                                    <strong>Categoría: </strong>{a.categoria}
+                                                    <strong>Cuestionario: </strong>{a.questionnaireTitle}
+                                                </h3>
+                                                <h3 className="text-sm capitalize truncate font-normal text-xs">
+                                                    <strong>Categoría: </strong>{a.categoryName}
                                                 </h3>
                                                 <h3 className="text-sm capitalize truncate font-normal text-xs">
                                                     <strong>Asesor: </strong>{a.asesorName || "Sin Asignar"}

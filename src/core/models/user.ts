@@ -1,4 +1,4 @@
-export type ClientType = "persona" | "empresa";
+export type ClientType = "PERSONA" | "EMPRESA";
 
 export type UserStatus = "AUTHORIZED" | "UNAUTHORIZED";
 
@@ -19,4 +19,5 @@ export interface IUser {
   status?: UserStatus;
   phone?: string;
   address?: string;
+  network?: string;
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
-import { motion, AnimatePresence } from "motion/react"
+import { motion } from "motion/react"
 import {
   ArrowRight,
   ChevronLeft,
@@ -16,8 +16,7 @@ import {
   AlertTriangle,
   Loader2
 } from 'lucide-react'
-import { useNavigate, useSearchParams } from "react-router-dom"
-import { Link } from 'react-router-dom'
+import { useNavigate, Link, useSearchParams } from "react-router-dom"
 import { getUserById } from '../../api/usersApi'
 import { useAuth } from '../../shared/context/AuthContext'
 import { ICategory, IQuestionnaire } from '../../core/models/questionnaire'
@@ -28,49 +27,49 @@ const categories = [
     id: 1,
     title: 'Estrategia',
     description: 'Planificación estratégica para el crecimiento sostenible',
-    icon: <Lightbulb className="h-10 w-10 text-primary" />
+    icon: <Lightbulb className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
   },
   {
     id: 2,
     title: 'Contabilidad',
     description: 'Gestión contable y cumplimiento normativo',
-    icon: <Calculator className="h-10 w-10 text-primary" />
+    icon: <Calculator className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
   },
   {
     id: 5,
     title: 'Costos',
     description: 'Estructuración y análisis de costos operativos',
-    icon: <BarChart2 className="h-10 w-10 text-primary" />
+    icon: <BarChart2 className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
   },
   {
     id: 7,
     title: 'Finanzas Corporativas',
     description: 'Estrategias financieras para crecimiento empresarial',
-    icon: <LineChart className="h-10 w-10 text-primary" />
+    icon: <LineChart className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
   },
   {
     id: 3,
-    title: 'Toma de Decisiones Financieras Operativas',
+    title: 'Decisiones Operativas',
     description: 'Estrategias financieras para crecimiento empresarial',
-    icon: <DollarSign className="h-10 w-10 text-primary" />
+    icon: <DollarSign className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
   },
   {
     id: 4,
     title: 'Tributación',
     description: 'Optimización fiscal y cumplimiento tributario',
-    icon: <FileText className="h-10 w-10 text-primary" />
+    icon: <FileText className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
   },
   {
     id: 6,
     title: 'Presupuestos',
     description: 'Planificación presupuestaria para objetivos futuros',
-    icon: <ClipboardList className="h-10 w-10 text-primary" />
+    icon: <ClipboardList className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
   },
   {
     id: 8,
     title: 'Proyectos de Inversión',
     description: 'Inversiones para mantener e incrementar el valor de la empresa',
-    icon: <BanknoteArrowUp className="h-10 w-10 text-primary" />
+    icon: <BanknoteArrowUp className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
   }
 ]
 
@@ -213,7 +212,7 @@ function Services() {
       x: direction === 'forward' ? -100 : 100,
       opacity: 0,
       transition: {
-        duration: 0.3
+        duration: 0.6
       }
     })
   };
@@ -228,28 +227,35 @@ function Services() {
   };
 
   const renderCategories = () => (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <h2 className="text-2xl mb-2 mt-0 font-semibold text-start">
         Nuestros Servicios
       </h2>
-      <p className="text-start text-sm text-base-content/70">
+      <p className="text-start text-sm text-base-content/70 pb-2">
         Selecciona una categoría para comenzar. Cada módulo cuenta con cuestionarios que te permitirán conocer tu situación financiera con análisis personalizados.
       </p>
-      <hr className="text-accent/25 mx-4" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <hr className="text-accent/25 mx-4 pt-2" />
+      <motion.div
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 2xl:gap-6"
+        key={currentView}
+        custom={direction}
+        variants={pageVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+      >
         {categories.map(category => (
-
           <motion.button
             key={category.id}
             onClick={() => handleCategorySelect(category.id)}
-            className="card bg-base-100 shadow-sm cursor-pointer"
+            className="card bg-base-100 shadow-sm cursor-pointer 2xl:aspect-[3/2] flex flex-col items-center justify-center"
             variants={cardVariants}
             whileHover="hover"
             layout
           >
-            <div className="card-body items-center text-center p-4">
+            <div className="flex flex-col items-center justify-center text-center p-6 2xl:p-8">
               <motion.div
-                className="mb-3"
+                className="mb-3 2xl:mb-5"
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 transition={{
                   type: "spring",
@@ -260,17 +266,17 @@ function Services() {
                 {category.icon}
               </motion.div>
 
-              <h3 className="card-title text-lg">
+              <h3 className="card-title text-lg 2xl:text-2xl 2xl:mb-4">
                 {category.title}
               </h3>
 
-              <p className="text-sm text-base-content/70">
+              <p className="text-sm text-base-content/70 2xl:text-lg">
                 {category.description}
               </p>
             </div>
           </motion.button>
         ))}
-      </div>
+      </motion.div>
     </div>
   )
 
@@ -279,82 +285,97 @@ function Services() {
       <h2 className="text-2xl mb-2 mt-0 font-semibold text-start">
         {selectedCategory?.name}
       </h2>
-      <p className="text-start text-sm text-base-content/70">
+      <p className="text-start text-sm text-base-content/70 pb-2">
         {selectedCategory?.description}. Busca y selecciona un cuestionario de este módulo.
       </p>
+
       <hr className="text-accent/25 mx-4" />
-      <button
-        onClick={handleBackToCategories}
-        className="btn btn-outline btn-xs gap-2 text-base-content/50"
+
+      <motion.div
+        key={currentView}
+        custom={direction}
+        variants={pageVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        className='space-y-5'
       >
-        <ChevronLeft className="h-4 w-4" /> Volver
-      </button>
+        <button
+          onClick={handleBackToCategories}
+          className="btn btn-outline btn-xs gap-2 text-base-content/50 mt-2"
+        >
+          <ChevronLeft className="h-4 w-4" /> Volver
+        </button>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-base-content/50 z-10" />
-        <input
-          type="text"
-          placeholder="Buscar cuestionario por creador o título..."
-          className="input input-bordered w-full pl-10 text-sm"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-base-content/50 z-10" />
+          <input
+            type="text"
+            placeholder="Buscar cuestionario por creador o título..."
+            className="input input-bordered w-full pl-10 text-sm"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
 
-      <div className="card bg-base-100 shadow-sm">
-        <div className="card-body p-0">
-          {loadingQuestionnaires && (
-            <div className="container mx-auto space-y-6 overflow-hidden">
-              <div className="flex items-center justify-center">
-                <div className="card w-full bg-base-100 shadow-sm border border-base-200">
-                  <div className="card-body items-center text-center">
-                    <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
-                    <p className="mt-4">Cargando cuestionarios...</p>
+        <div className="card bg-base-100 shadow-sm">
+          <div className="card-body p-0">
+            {loadingQuestionnaires && (
+              <div className="container mx-auto space-y-6 overflow-hidden">
+                <div className="flex items-center justify-center">
+                  <div className="card w-full bg-base-100 shadow-sm border border-base-200">
+                    <div className="card-body items-center text-center">
+                      <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
+                      <p className="mt-4">Cargando cuestionarios...</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {errorQuestionnaires && (
-            <div className="container mx-auto p-3">
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="alert alert-error shadow-lg"
-              >
-                <AlertCircle className="h-5 w-5" />
-                {errorQuestionnaires}
-              </motion.div>
-            </div>
-          )}
-
-          {!loadingQuestionnaires && filteredQuestionnaires.map((item, index) => (
-            <div
-              key={item.id}
-              className={`flex items-center gap-4 p-6 hover:bg-base-200/70 transition-colors cursor-pointer ${index !== filteredQuestionnaires.length - 1
-                ? 'border-b border-base-200'
-                : ''
-                }`}
-              onClick={() => handleQuestionnaireClick(item)}
-            >
-
-              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <FileText className="h-5 w-5 text-primary" />
+            {errorQuestionnaires && (
+              <div className="container mx-auto p-3">
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="alert alert-error shadow-lg"
+                >
+                  <AlertCircle className="h-5 w-5" />
+                  {errorQuestionnaires}
+                </motion.div>
               </div>
-              <div className="flex-1">
-                <h3 className="font-medium">
-                  {item.title || "Sin definir"}
-                </h3>
-                <p className="text-sm text-base-content/70">
-                  Creado por {item.creatorName}
-                </p>
-              </div>
-              <ArrowRight className="h-5 w-5 text-base-content/40" />
-            </div>
-          ))}
+            )}
+
+            {!loadingQuestionnaires && filteredQuestionnaires.map((item, index) => (
+              <>
+                <div
+                  key={item.id}
+                  className={`flex items-center gap-4 p-6 hover:bg-base-200/70 transition-colors cursor-pointer ${index !== filteredQuestionnaires.length - 1
+                    ? 'border-b border-base-200'
+                    : ''
+                    }`}
+                  onClick={() => handleQuestionnaireClick(item)}
+                >
+
+                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <FileText className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-medium break-all">
+                      {item.title || "Sin determinar"}
+                    </h3>
+                    <p className="text-sm text-base-content/70">
+                      Creado por {item.creatorName}
+                    </p>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-base-content/40" />
+                </div>
+                <hr className="text-base-300 mx-4"></hr>
+              </>
+            ))}
+          </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 
@@ -394,12 +415,15 @@ function Services() {
 
   const renderAnalysisForm = () => (
     <motion.div
-      className="card bg-base-100 shadow-sm"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      className="card shadow-sm min-h-[calc(100dvh-4rem)] flex justify-center"
+      key={currentView}
+      custom={direction}
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
     >
-      <div className="card-body space-y-6">
+      <div className="bg-base-100 card p-8 space-y-6 flex-none">
         <div className="p-0 mb-4">
           <button
             onClick={handleBackToQuestionnaires}
@@ -410,13 +434,13 @@ function Services() {
         </div>
 
         {/* Header Section */}
-        <div className="space-y-2">
+        <div className="space-y-1">
           <h2 className="card-title text-xl">
-            {clientType === 'persona' ? 'Análisis Personal' : 'Análisis Empresarial'}
+            {clientType === 'PERSONA' ? 'Cuestionario Personal' : 'Cuestionario Empresarial'}
           </h2>
 
           <p className="text-sm md:text-base text-base-content/70">
-            {clientType === 'persona'
+            {clientType === 'PERSONA'
               ? 'Complete el siguiente cuestionario para ayudarnos a entender mejor su situación financiera personal y objetivos.'
               : 'Responda las siguientes preguntas para permitirnos evaluar la situación actual de su empresa y sus necesidades.'}
           </p>
@@ -436,7 +460,7 @@ function Services() {
         >
           {/* Note: clientType parameter removed for now but may be needed in the future for filtering */}
           <Link
-            to={`/c/questionnaire?id=${selectedQuestionnaire}`}
+            to={`/c/questionnaire?id=${selectedQuestionnaire}&category=${encodeURIComponent(selectedCategory?.name ?? '')}`}
             className={`btn btn-primary gap-2 ${!policyAccepted ? 'btn-disabled' : ''}`}
             tabIndex={policyAccepted ? 0 : -1}
           >
@@ -449,22 +473,11 @@ function Services() {
   )
 
   return (
-    <div className="min-h-dvh flex items-start justify-center overflow-hidden">
-      <div className="mx-auto max-w-5xl w-full space-y-6 md:space-y-8">
-        <AnimatePresence mode="wait" custom={direction}>
-          <motion.div
-            key={currentView}
-            custom={direction}
-            variants={pageVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-          >
-            {currentView === 'categories' && renderCategories()}
-            {currentView === 'questionnaires' && renderQuestionnairesList()}
-            {currentView === 'analysisForm' && renderAnalysisForm()}
-          </motion.div>
-        </AnimatePresence>
+    <div className="min-h-[calc(100dvh-4rem)] flex items-start justify-center overflow-hidden">
+      <div className="mx-auto container w-full space-y-6 md:space-y-8">
+        {currentView === 'categories' && renderCategories()}
+        {currentView === 'questionnaires' && renderQuestionnairesList()}
+        {currentView === 'analysisForm' && renderAnalysisForm()}
       </div>
     </div>
   )

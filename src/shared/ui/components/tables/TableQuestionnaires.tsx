@@ -25,7 +25,7 @@ const TableQuestionnaires: React.FC<TableQuestionnairesProps> = ({
     return (
         <div className="card bg-base-100 shadow-sm border border-base-200">
             <div className="card-body p-3 md:p-6">
-                <h2 className="card-title mb-4 text-lg">Cuestionarios</h2>
+                <h2 className="card-title mb-2 lg:mb-4 text-lg">Cuestionarios</h2>
 
                 {questionnaires.length > 0 ? (
                     <>
@@ -48,9 +48,9 @@ const TableQuestionnaires: React.FC<TableQuestionnairesProps> = ({
                                             <td>
                                                 <div className="flex flex-col items-start justify-center">
                                                     <h3 className="text-md font-bold">
-                                                        {q.title || "Sin definir"}
+                                                        {q.title || "Sin determinar"}
                                                     </h3>
-                                                    <div className="flex capitalize text-base text-sm font-normal text-base-content/70">
+                                                    <div className="flex mt-2 capitalize text-base text-xs font-normal card h-auto badge-outline text-center border-0 bg-base-content/30 badge-sm">
                                                         {q.categoryName}
                                                     </div>
                                                 </div>
@@ -82,7 +82,7 @@ const TableQuestionnaires: React.FC<TableQuestionnairesProps> = ({
                                                 #{q.id}
                                             </span>
                                             <h1 className="text-sm font-bold capitalize">
-                                                {q.title || "Sin definir"}
+                                                {q.title || "Sin determinar"}
                                             </h1>
                                             <p className="inline text-base text-xs font-normal text-base-content/70">
                                                 <strong>Categoría: </strong>{q.categoryName}

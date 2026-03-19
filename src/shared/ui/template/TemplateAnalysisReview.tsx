@@ -256,13 +256,13 @@ function TemplateAnalysisReview({
           <div className="rounded-xl p-8 bg-base-200 shadow-md">
             <h3 className="text-xl font-semibold mb-4 text-center">Resumen del Análisis</h3>
             <p className="text-base-content/80 text-sm leading-relaxed text-justify">
-              {analysis.analisisIA || 'No disponible'}
+              {analysis.resumenIA || 'No disponible'}
             </p>
             <div className={`card p-4 bg-base-200 gap-2 mt-4 border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}>
               <div className={`badge text-sm font-semibold ${colorSemaforo === 'verde' ? 'badge-success' : colorSemaforo === 'amarillo' ? 'badge-warning' : 'badge-error'}`}>
                 {getRiskLevel(colorSemaforo)}
               </div>
-              <span className="text-base-content/80 text-sm">Este cliente ya ha respondido <strong>#{analysis.conteo} cuestionarios.</strong> {getRiskDescription(colorSemaforo)}</span>
+              <span className="text-base-content/80 text-sm">Este cliente ya ha respondido <strong>#{analysis.conteo} {analysis.conteo === 1 ? "cuestionario" : "cuestionarios"}.</strong> {getRiskDescription(colorSemaforo)}</span>
             </div>
           </div>
         </div>
@@ -289,7 +289,7 @@ function TemplateAnalysisReview({
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Categoría</label>
-              <p className='text-sm capitalize'>{analysis.categoria}</p>
+              <p className='text-sm capitalize'>{analysis.categoryName}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-base-content/70">Fecha de Resolución</label>
@@ -306,15 +306,21 @@ function TemplateAnalysisReview({
           </div>
           <div className='mt-4'>
             <label className="text-sm font-medium text-base-content/70 flex flex-col">
+              Cuestionario
+            </label>
+            <p className='text-sm'>{analysis.questionnaireTitle}</p>
+          </div>
+          <div className='mt-4'>
+            <label className="text-sm font-medium text-base-content/70 flex flex-col">
               Análisis inicial (IA)
             </label>
             <div
               className="card w-full inline-block border p-4 mt-2 text-sm bg-primary/10 border-primary/50 text-justify max-h-59 overflow-y-auto"
               dangerouslySetInnerHTML={{
-                __html: formatAnalysisText(analysis.resumenIA)
+                __html: formatAnalysisText(analysis.analisisIA)
               }}
             />
-            {analysis.status?.toUpperCase() === 'PENDING' && analysis.resumenIA && (
+            {analysis.status?.toUpperCase() === 'PENDING' && analysis.analisisIA && (
               <p className="text-xs text-base-content/50 mt-3">* Generado por IA hasta que un asesor revise.</p>
             )}
           </div>

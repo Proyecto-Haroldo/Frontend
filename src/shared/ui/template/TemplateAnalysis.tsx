@@ -37,7 +37,7 @@ const TemplateAnalysis: React.FC<TemplateAnalysisProps> = ({
             filtered = filtered.filter(
                 (q) =>
                     q.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    q.categoria.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    q.categoryName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                     q.asesorName.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }

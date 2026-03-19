@@ -7,13 +7,13 @@ import type { IQuestionnaireResult } from '../shared/types/questionnaire';
 const normalizeQuestionType = (value?: string): QuestionType => {
     switch (value?.toLowerCase()) {
         case 'single':
-            return 'single';
+            return 'SINGLE';
         case 'multiple':
-            return 'multiple';
+            return 'MULTIPLE';
         case 'open':
-            return 'open';
+            return 'OPEN';
         default:
-            return 'open';
+            return 'OPEN';
     }
 };
 

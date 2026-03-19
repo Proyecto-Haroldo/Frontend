@@ -19,6 +19,7 @@ export interface IQuestionnaireAnswer {
 }
 
 export interface IQuestionnaireResult {
+  userId: number | null;
   metadata: IQuestionnaireMetadata;
   answers: IQuestionnaireAnswer[];
 }

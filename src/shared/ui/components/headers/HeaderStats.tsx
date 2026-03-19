@@ -37,20 +37,20 @@ const HeaderStatsSkeleton: React.FC = () => {
     const { base, highlight } = useThemeColors();
 
     return (
-        <div className="container mx-auto space-y-4 md:space-y-6">
+        <div className="container mx-auto space-y-4 md:space-y-5">
             {/* Header */}
             <SkeletonTheme baseColor={highlight} highlightColor={highlight}>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <h1 className="text-2xl font-semibold">Panel Administrativo</h1>
 
-                    {/* BEFORE MD */}
-                    <div className="inline w-full md:hidden">
+                    {/* BEFORE SM */}
+                    <div className="inline w-full sm:hidden">
                         <Skeleton className="w-full" height={32} borderRadius={16} style={{ marginBottom: "8px" }} />
                         <Skeleton className="w-full" height={32} borderRadius={16} />
                     </div>
 
-                    {/* MD AND UP */}
-                    <div className="hidden md:flex items-center justify-end gap-4 w-[105px]">
+                    {/* SM AND UP */}
+                    <div className="hidden sm:flex items-center justify-end gap-4 w-[105px]">
                         <Skeleton width={105} height={32} borderRadius={16} />
                         <Skeleton width={105} height={32} borderRadius={16} />
                     </div>
@@ -125,11 +125,7 @@ const HeaderStats: React.FC<HeaderStatsProps> = ({
     const navigate = useNavigate();
     const uniqueClients = new Set(analysis.map((q) => q.clientName)).size;
 
-    if (loading) {
-        return (
-            <HeaderStatsSkeleton />
-        );
-    }
+    if (loading) return <HeaderStatsSkeleton />;
 
     if (error) {
         return (
@@ -149,7 +145,7 @@ const HeaderStats: React.FC<HeaderStatsProps> = ({
     }
 
     return (
-        <div className="container mx-auto space-y-4 md:space-y-6">
+        <div className="container mx-auto space-y-4 md:space-y-5">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <h1 className="text-2xl font-semibold">Panel Administrativo</h1>
