@@ -18,6 +18,7 @@ import AdminReports from './pages/admin/Reports';
 import AdviserDashboard from './pages/adviser/Dashboard';
 import AdviserProfile from './pages/adviser/Profile';
 import AdviserReports from './pages/adviser/Reports';
+import QuestionnaireResults from './pages/client/QuestionnaireResults';
 
 // AnimatedRoutes component wraps the nested Routes with AnimatePresence
 function AnimatedRoutes({ role }: { role: number | null }) {
@@ -75,10 +76,11 @@ function AnimatedRoutes({ role }: { role: number | null }) {
                         <Route path="" element={<Home />} />
                         <Route path="services" element={<Services />} />
                         <Route path="schedule" element={<Schedule />} />
-                        <Route path="analysis" element={<Analysis />} />
                         <Route path="profile" element={<Profile />} />
-                        <Route path="questionnaire" element={<Questionnaire />} />
-                        <Route path="analysis-review" element={<AnalysisReview />} />
+                        <Route path="analysis" element={<Analysis />} />
+                        <Route path="analysis/review/:id" element={<AnalysisReview />} />
+                        <Route path="questionnaire/:id" element={<Questionnaire />} />
+                        <Route path="questionnaire/results/:id" element={<QuestionnaireResults />} />
                     </Routes>
                 </motion.div>
             </AnimatePresence>
@@ -193,10 +195,11 @@ function AppContent() {
                                     <Route path="" element={<Home />} />
                                     <Route path="services" element={<Services />} />
                                     <Route path="schedule" element={<Schedule />} />
-                                    <Route path="analysis" element={<Analysis />} />
                                     <Route path="profile" element={<Profile />} />
-                                    <Route path="questionnaire" element={<Questionnaire />} />
-                                    <Route path="analysis-review" element={<AnalysisReview />} />
+                                    <Route path="analysis" element={<Analysis />} />
+                                    <Route path="analysis/review/:id" element={<AnalysisReview />} />
+                                    <Route path="questionnaire/:id" element={<Questionnaire />} />
+                                    <Route path="questionnaire/results/:id" element={<QuestionnaireResults />} />
                                 </Routes>
                             ) : (
                                 <AnimatedRoutes role={role} />

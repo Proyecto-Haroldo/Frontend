@@ -14,7 +14,7 @@ import { getUserAnalysis } from '../../api/analysisApi';
 import {
   calculateTotalProgress,
   type AnalysisStatus
-} from '../../shared/types/analysis';
+} from '../../core/types/analysis';
 import { useAuth } from '../../shared/context/AuthContext';
 import { IAnalysis } from '../../core/models/analysis';
 
@@ -101,7 +101,7 @@ function Analysis() {
   };
 
   const handleAnalysisClick = (item: IAnalysis) => {
-    navigate(`/c/analysis-review?id=${item.analysisId}`);
+    navigate(`/c/analysis/review/${item.analysisId}`);
   };
 
   const categories = useMemo(() => {

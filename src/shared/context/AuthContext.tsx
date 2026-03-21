@@ -58,6 +58,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = useCallback(() => {
     setAuth(null, null, null);
+
+    localStorage.removeItem('questionnaireData');
+    localStorage.removeItem('aiRecommendation');
   }, [setAuth]);
 
   // Sync token with API client
@@ -72,7 +75,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setTimeout>;
 
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));

@@ -460,7 +460,7 @@ function Services() {
         >
           {/* Note: clientType parameter removed for now but may be needed in the future for filtering */}
           <Link
-            to={`/c/questionnaire?id=${selectedQuestionnaire}&category=${encodeURIComponent(selectedCategory?.name ?? '')}`}
+            to={`/c/questionnaire/${selectedQuestionnaire}`}
             className={`btn btn-primary gap-2 ${!policyAccepted ? 'btn-disabled' : ''}`}
             tabIndex={policyAccepted ? 0 : -1}
           >

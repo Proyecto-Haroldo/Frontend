@@ -1,4 +1,4 @@
-import { IQuestion, QuestionType } from "../../core/models/question";
+import { IQuestion, QuestionType } from "../models/question";
 
 export interface IQuestionnaireData {
   id: string;
@@ -9,6 +9,7 @@ export interface IQuestionnaireMetadata {
   category: string;
   clientType: string;
   timestamp: string;
+  title: string;
 }
 
 export interface IQuestionnaireAnswer {
@@ -19,7 +20,6 @@ export interface IQuestionnaireAnswer {
 }
 
 export interface IQuestionnaireResult {
-  userId: number | null;
   metadata: IQuestionnaireMetadata;
   answers: IQuestionnaireAnswer[];
 }
