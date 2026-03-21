@@ -2,7 +2,7 @@ import { apiClient } from "./apiClient";
 import { IQuestion, QuestionType } from "../core/models/question";
 import { IQuestionnaire } from "../core/models/questionnaire";
 import { IRecommendationAI, IWebAnswer } from '../core/models/answers';
-import type { IQuestionnaireResult } from '../shared/types/questionnaire';
+import type { IQuestionnaireResult } from '../core/types/questionnaire';
 
 const normalizeQuestionType = (value?: string): QuestionType => {
     switch (value?.toLowerCase()) {
@@ -109,13 +109,13 @@ export const deleteQuestionnaire = async (id: number): Promise<void> => {
 // ---------------------- WEB ANSWERS ----------------------
 
 export const submitIQuestionnaireAnswers = async (
+    userId: number,
     questionnaireData: IQuestionnaireResult,
-    userId: number
 ): Promise<IRecommendationAI> => {
 
     const payload: IWebAnswer = {
-        questionnaireData,
-        userId,
+        userId: userId,
+        questionnaireData: questionnaireData
     };
 
     try {

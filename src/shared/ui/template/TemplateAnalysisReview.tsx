@@ -14,12 +14,12 @@ import { motion } from 'motion/react';
 import { IAnalysis } from '../../../core/models/analysis';
 import { getAnalysisById, getAnalysisAnswers, setAnalysisGrade } from '../../../api/analysisApi';
 import { Stoplight } from '../components/stoplight/Stoplight';
-import type { QuestionAnswerDTO } from '../../types/analysis';
+import type { QuestionAnswerDTO } from '../../../core/types/analysis';
 import {
   ColorSemaforo,
   getRiskLevel,
   getRiskDescription,
-} from '../../types/analysis';
+} from '../../../core/types/analysis';
 import { useAuth } from '../../context/AuthContext';
 import { formatAnalysisText } from '../../utils/formatAnalysisText';
 

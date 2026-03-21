@@ -1,4 +1,4 @@
-import { ColorSemaforo } from "../../shared/types/analysis";
+import { ColorSemaforo } from "../types/analysis";
 
 export interface IAnalysis {
     analysisId: number;

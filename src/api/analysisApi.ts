@@ -1,6 +1,6 @@
 import { apiClient } from './apiClient';
 import { IAnalysis } from '../core/models/analysis';
-import type { QuestionAnswerDTO, GradeRequest } from '../shared/types/analysis';
+import type { QuestionAnswerDTO, GradeRequest } from '../core/types/analysis';
 
 export const getAllAnalysis = async (): Promise<IAnalysis[]> => {
     try {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronDown,
@@ -16,11 +16,11 @@ import {
   getRiskLevel,
   getRiskDescription,
   formatAnalysisTitle
-} from '../../shared/types/analysis';
+} from '../../core/types/analysis';
 import { Stoplight } from '../../shared/ui/components/stoplight/Stoplight';
 import { IAnalysis } from '../../core/models/analysis';
 import { getAnalysisAnswers, getAnalysisById } from '../../api/analysisApi';
-import type { QuestionAnswerDTO } from '../../shared/types/analysis';
+import type { QuestionAnswerDTO } from '../../core/types/analysis';
 
 function AnalysisReview() {
   const navigate = useNavigate();
@@ -28,15 +28,14 @@ function AnalysisReview() {
   const [apiAnswers, setApiAnswers] = useState<QuestionAnswerDTO[] | null>(null);
   const [answersLoading, setAnswersLoading] = useState(false);
   const [answersError, setAnswersError] = useState<string | null>(null);
-  const [searchParams] = useSearchParams();
 
-  // Get analysis data from navigation state
+  // Get analysis data from navigation
+  const { id } = useParams();
+  const analysisId = Number(id);
+
   const [analysis, setAnalysis] = useState<IAnalysis | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Fallback: get analysis ID from URL params for direct navigation
-  const analysisIdFromUrl = searchParams.get('id');
 
   // Status configuration
   const statusConfig: Record<ColorSemaforo, {
@@ -70,44 +69,44 @@ function AnalysisReview() {
   };
 
   // If no analysis data is available, redirect to analysis page
-useEffect(() => {
-  if (!analysisIdFromUrl) {
-    navigate('/c/analysis');
-    return;
-  }
+  useEffect(() => {
+    if (!analysisId) {
+      navigate('/c/analysis');
+      return;
+    }
 
-  let isMounted = true;
-  setLoading(true);
+    let isMounted = true;
+    setLoading(true);
 
-  getAnalysisById(Number(analysisIdFromUrl))
-    .then((data) => {
-      if (isMounted) {
-        setAnalysis(data);
-      }
-    })
-    .catch((e: unknown) => {
-      console.error('Failed to load analysis', e);
-
-      if (isMounted) {
-        if (e instanceof Error) {
-          setError(`No se pudo cargar el análisis: ${e.message}`);
-        } else {
-          setError('No se pudo cargar el análisis');
+    getAnalysisById(analysisId)
+      .then((data) => {
+        if (isMounted) {
+          setAnalysis(data);
         }
+      })
+      .catch((e: unknown) => {
+        console.error('Failed to load analysis', e);
 
-        navigate('/c/analysis');
-      }
-    })
-    .finally(() => {
-      if (isMounted) {
-        setLoading(false);
-      }
-    });
+        if (isMounted) {
+          if (e instanceof Error) {
+            setError(`No se pudo cargar el análisis: ${e.message}`);
+          } else {
+            setError('No se pudo cargar el análisis');
+          }
 
-  return () => {
-    isMounted = false;
-  };
-}, [analysisIdFromUrl, navigate]);
+          navigate('/c/analysis');
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [analysisId, navigate]);
 
   // Fetch questionnaire answers from API when viewing an analysis from state
   useEffect(() => {
@@ -193,7 +192,7 @@ useEffect(() => {
             <div className="card-actions">
               <button onClick={() => navigate('/c/analysis')} className="btn btn-primary gap-2">
                 <ArrowLeft className="h-4 w-4" />
-                Volver a análisis
+                Volver a Análisis
               </button>
             </div>
           </div>
@@ -378,7 +377,7 @@ useEffect(() => {
                 transition={{ duration: 0.6, delay: 0.3, type: "spring", stiffness: 200 }}
               >
                 <h1 className="text-3xl font-bold mb-2">
-                  Análisis {formatAnalysisTitle(analysis.categoryName, analysis.conteo)}
+                  Análisis {formatAnalysisTitle(analysis.categoryName, analysis.analysisId)}
                 </h1>
                 <p className="text-base-content/60">
                   {analysis.questionnaireTitle || "Sin determinar"}
@@ -459,7 +458,6 @@ useEffect(() => {
                     />
                     <motion.div
                       className="collapse-title flex items-center justify-center gap-2 cursor-pointer hover:bg-base-300/50 rounded-lg transition-all duration-300"
-                      onClick={() => setShowAnswers(!showAnswers)}
                       whileHover={{ scale: 1.01 }}
                       whileTap={{ scale: 0.99 }}
                     >

@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { fetchQuestionsByQuestionnaire, getQuestionnaireById, submitIQuestionnaireAnswers } from '../../api/questionnairesApi';
-import type { IQuestionnaireResult } from '../../shared/types/questionnaire';
+import { useNavigate, useParams } from 'react-router-dom';
+import { fetchQuestionsByQuestionnaire, getQuestionnaireById, submitIQuestionnaireAnswers, } from '../../api/questionnairesApi';
+import type { IQuestionnaireResult } from '../../core/types/questionnaire';
 import {
   ArrowLeft,
   ArrowRight,
@@ -14,6 +14,9 @@ import {
 } from 'lucide-react';
 import { IQuestion } from '../../core/models/question';
 import { useAuth } from '../../shared/context/AuthContext';
+import { IQuestionnaire } from '../../core/models/questionnaire';
+import { getUserById } from '../../api/usersApi';
+import { ClientType } from '../../core/models/user';
 
 const pageVariants = {
   initial: {
@@ -98,22 +101,20 @@ const Questionnaire = () => {
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const [isComplete, setIsComplete] = useState(false);
   const [questions, setQuestions] = useState<IQuestion[]>([]);
-  const [questionnaireId, setQuestionnaireId] = useState<number | null>(null);
-  const [categoryName, setCategoryName] = useState<string | null>(null);
+  const [questionnaire, setQuestionnaire] = useState<IQuestionnaire | null>(null);
+  const [clientType, setClientType] = useState<ClientType | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { userId } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
+
+  const { id } = useParams();
+  const questId = Number(id);
 
   // Fetch de preguntas según cuestionario
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const questId = Number(params.get('id'));
-
     if (questId) {
-      setQuestionnaireId(questId);
       setLoading(true);
       fetchQuestionsByQuestionnaire(questId)
         .then(fetchedQuestions => {
@@ -128,27 +129,33 @@ const Questionnaire = () => {
     } else {
       navigate('/c/services');
     }
-  }, [location, navigate]);
+  }, [navigate, questId]);
 
   useEffect(() => {
-    if (questionnaireId == null) return;
+    if (questId == null) return;
 
-    const params = new URLSearchParams(location.search);
-    const categoryParam = params.get('category');
-
-    if (categoryParam?.trim()) {
-      setCategoryName(categoryParam);
-      return;
-    }
-
-    getQuestionnaireById(questionnaireId)
+    getQuestionnaireById(questId)
       .then((q) => {
-        if (q?.categoryName) setCategoryName(q.categoryName);
+        setQuestionnaire(q);
       })
       .catch((err) => {
         console.error('Error fetching questionnaire category:', err);
       });
-  }, [questionnaireId, location.search]);
+  }, [questId]);
+
+  useEffect(() => {
+    if (userId == null) return;
+
+    getUserById(userId)
+      .then((u) => {
+        if (u.clientType) {
+          setClientType(u.clientType);
+        }
+      })
+      .catch((err) => {
+        console.error('Error fetching client type from user:', err);
+      });
+  }, [userId]);
 
   const currentQuestion = useMemo(
     () =>
@@ -209,6 +216,7 @@ const Questionnaire = () => {
 
   const progress =
     questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
+
   const isLastQuestion =
     questions.length > 0 ? currentQuestionIndex === questions.length - 1 : false;
 
@@ -250,15 +258,15 @@ const Questionnaire = () => {
     } else {
       try {
         setIsSubmitting(true);
-        const category = categoryName?.trim();
+        const category = questionnaire?.categoryName?.trim();
 
         if (!category) throw new Error('Información de categoría no encontrada');
 
         const questionnaireData: IQuestionnaireResult = {
-          userId: userId,
           metadata: {
             category,
-            clientType: 'N/A',
+            title: questionnaire?.title?.trim() || "Sin Determinar",
+            clientType: clientType || "N/A",
             timestamp: new Date().toISOString()
           },
           answers: questions.map(question => ({
@@ -280,7 +288,7 @@ const Questionnaire = () => {
           return;
         }
 
-        const aiRecommendation = await submitIQuestionnaireAnswers(questionnaireData, userId);
+        const aiRecommendation = await submitIQuestionnaireAnswers(userId, questionnaireData);
 
         // Store the full JSON returned by backend: { resumenUsuario, colorSemaforo }
         localStorage.setItem('aiRecommendation', JSON.stringify(aiRecommendation));
@@ -412,11 +420,11 @@ const Questionnaire = () => {
                 Volver al Inicio
               </button>
               <button
-                onClick={() => navigate('/c/analysis')}
+                onClick={() => navigate(`/c/questionnaire/results/${questId}`)}
                 className="btn btn-outline gap-2"
               >
                 <FileText className="h-5 w-5" />
-                Ir a Mis Análisis
+                Ver Análisis
               </button>
             </div>
           </div>

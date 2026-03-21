@@ -1,4 +1,4 @@
-import { IQuestionnaireResult } from "../../shared/types/questionnaire";
+import { IQuestionnaireResult } from "../types/questionnaire";
 
 export interface IWebAnswer {
     userId: number;

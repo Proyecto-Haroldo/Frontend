@@ -1,8 +1,5 @@
 import { apiClient } from './apiClient';
-import {
-  LoginRequest, LoginResponse,
-  RegisterRequest, RegisterResponse
-} from '../core/dto/auth';
+import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from '../core/types/auth';
 
 function getMessageFromResponse(response: { status: number; data?: unknown }): string | null {
   if (typeof response.data === 'string' && response.data.trim()) {

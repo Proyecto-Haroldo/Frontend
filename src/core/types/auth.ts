@@ -1,3 +1,5 @@
+import { UserStatus } from "../models/user";
+
 export interface LoginRequest {
     email: string;
     password: string;
@@ -9,20 +11,31 @@ export interface RegisterRequest {
     cedulaOrNIT: string;
     legalName: string;
     clientType: string;
-    role: { id: number };
+    role: {
+        id: number
+    };
     sector: string;
+    phone: string;
+    network: string;
+    status: UserStatus;
 }
 
 export interface LoginResponse {
     token: string;
-    role: { id: number, name: string };
+    role: {
+        id: number,
+        name: string
+    };
     id: number;
     message?: string;
 }
 
 export interface RegisterResponse {
     token: string;
-    role: { id: number, name: string };
+    role: {
+        id: number,
+        name: string
+    };
     id: number;
     message?: string;
 }

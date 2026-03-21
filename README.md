@@ -214,32 +214,22 @@ _P.S: Estas credenciales solo deben usarse para motivos de demo/testeo. No utili
 │   │   ├── apiClient.ts
 │   │   └── anyApi.ts
 │   ├── /core
-│   │   └── /models
+│   │   ├── /models
+│   │   └── /types
 │   ├── /pages
 │   │   ├── /admin
 │   │   ├── /adviser
 │   │   ├── /auth
 │   │   └── /client
 │   ├── /shared
-│   │   ├── /hooks
 │   │   ├── /context
-│   │   ├── /types
+│   │   ├── /hooks
+│   │   ├── /utils
 │   │   └── /ui
 │   │       ├── /components
 │   │       ├── /layout
-│   │       ├── /validator
-│   │       └── /template
-│   ├── /core
-│   │   ├── /dto
-│   │   └── /models
-│   ├── /features/any
-│   │   ├── /types
-│   │   ├── /hooks
-│   │   ├── /components
-│   │   └── anySlice.ts
-│   ├── /lib
-│   │   ├── /utils
-│   │   └── store.ts
+│   │       ├── /template
+│   │       └── /validator
 │   ├── App.tsx
 │   ├── AppContent.tsx
 │   ├── index.css
@@ -248,7 +238,11 @@ _P.S: Estas credenciales solo deben usarse para motivos de demo/testeo. No utili
 ├── .env*
 ├── .gitignore
 ├── .dockerignore
+├── vite.config.ts
+├── tsconfig.json
 ├── package.json
+├── vercel.json
+├── index.html
 ├── Dockerfile
 ├── README.md
 └── ...

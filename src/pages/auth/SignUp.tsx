@@ -179,6 +179,9 @@ const SignUp: React.FC = () => {
         clientType: "persona",
         role: { id: 2 },
         sector: form.sector,
+        phone: form.phone,
+        network: form.network,
+        status: "AUTHORIZED"
       });
 
       setAuth(res.token, res.role.id, res.id);

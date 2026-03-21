@@ -1,8 +1,6 @@
 import { IUser } from "../core/models/user";
 import { apiClient } from "./apiClient";
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 // Helper function to map role name to role object
 const mapRoleNameToRoleObject = (roleName: string) => {
 
@@ -55,36 +53,37 @@ const transformUser = (user: any): IUser => ({
 });
 
 export const normalizeUserRole = (value?: number): string => {
-    switch (value) {
-        case 1:
-            return 'Admin';
-        case 2:
-            return 'Cliente';
-        case 3:
-            return 'Asesor';
-        default:
-            return 'N/A';
-    }
+  switch (value) {
+    case 1:
+      return 'Admin';
+    case 2:
+      return 'Cliente';
+    case 3:
+      return 'Asesor';
+    default:
+      return 'N/A';
+  }
 };
 
 export async function getUserByEmail(email: string, token: string) {
   try {
-    const response = await fetch(`${API_URL}/users/email/${encodeURIComponent(email)}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (!response.ok) {
-      // If endpoint doesn't exist (404), return empty user
-      if (response.status === 404) {
-        return { legalName: '' } as IUser;
+    const response = await apiClient.get<IUser>(
+      `/users/email/${encodeURIComponent(email)}`,
+      {
+        headers: { Authorization: `Bearer ${token}` }
       }
-      throw new Error('No se pudo obtener el usuario');
+    );
+
+    return transformUser(response.data);
+
+  } catch (error: any) {
+    // Si el endpoint responde 404, devolver usuario vacío
+    if (error.response?.status === 404) {
+      return { legalName: '' } as IUser;
     }
-    const user = await response.json();
-    return transformUser(user);
-  } catch (error) {
-    console.error('Error in getUserByEmail, endpoint might not exist:', error);
-    // Return empty user object to prevent crashes
-    return { legalName: '' } as IUser;
+
+    console.error('Error fetching user by email:', error);
+    throw new Error('No se pudo obtener el usuario');
   }
 }
 
