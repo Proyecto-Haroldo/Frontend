@@ -75,7 +75,6 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
     try {
       setLoadingAnalysis(true);
       const data = await getAllAnalysis();
-      console.log(data);
       setAnalysis(data);
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -224,6 +223,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
                 error={errorQuestionnaires}
                 questionnaires={questionnaires}
                 role={role}
+                onQuestionnairesChange={fetchQuestionnaires}
               />
             </div>
           )}

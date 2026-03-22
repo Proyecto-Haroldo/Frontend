@@ -176,7 +176,7 @@ const SignUp: React.FC = () => {
         password: form.password,
         cedulaOrNIT: form.cedulaOrNIT,
         legalName: form.legalName,
-        clientType: "persona",
+        clientType: "PERSONA",
         role: { id: 2 },
         sector: form.sector,
         phone: form.phone,

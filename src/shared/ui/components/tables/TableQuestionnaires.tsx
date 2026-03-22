@@ -1,18 +1,22 @@
 import React from "react";
-import { Eye } from "lucide-react";
+import { Eye, Edit } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { IQuestionnaire } from "../../../../core/models/questionnaire";
 
 interface TableQuestionnairesProps {
     questionnaires: IQuestionnaire[];
     role: number | null;
+    onEditQuestionnaire?: (questionnaire: IQuestionnaire) => void;
 }
 
 const TableQuestionnaires: React.FC<TableQuestionnairesProps> = ({
     questionnaires,
-    role
+    role,
+    onEditQuestionnaire
 }) => {
     const navigate = useNavigate();
+
+    const isAdmin = role === 1;
 
     const handleViewDetails = (questionnaire: IQuestionnaire) => {
         if (role === 3) {
@@ -58,13 +62,25 @@ const TableQuestionnaires: React.FC<TableQuestionnairesProps> = ({
                                             <td>{q.creatorName}</td>
                                             <td>{q.creatorId}</td>
                                             <td>
-                                                <button
-                                                    className="btn btn-info btn-xs gap-1"
-                                                    onClick={() => handleViewDetails(q)}
-                                                >
-                                                    <Eye className="h-3 w-3" />
-                                                    <p className="whitespace-nowrap">Ver</p>
-                                                </button>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        className="btn btn-info btn-xs gap-1"
+                                                        onClick={() => handleViewDetails(q)}
+                                                    >
+                                                        <Eye className="h-3 w-3" />
+                                                        <p className="whitespace-nowrap">Ver</p>
+                                                    </button>
+                                                    
+                                                    {isAdmin && onEditQuestionnaire && (
+                                                        <button
+                                                            className="btn btn-warning btn-xs gap-1"
+                                                            onClick={() => onEditQuestionnaire(q)}
+                                                        >
+                                                            <Edit className="h-3 w-3" />
+                                                            <p className="whitespace-nowrap">Editar</p>
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
@@ -91,13 +107,25 @@ const TableQuestionnaires: React.FC<TableQuestionnairesProps> = ({
                                                 <strong>Creador: </strong>{q.creatorName}
                                             </div>
                                         </div>
-                                        <button
-                                            className="btn btn-info btn-xs gap-1"
-                                            onClick={() => handleViewDetails(q)}
-                                        >
-                                            <Eye className="h-3 w-3" />
-                                            Ver
-                                        </button>
+                                        <div className="flex gap-1">
+                                            <button
+                                                className="btn btn-info btn-xs gap-1"
+                                                onClick={() => handleViewDetails(q)}
+                                            >
+                                                <Eye className="h-3 w-3" />
+                                                Ver
+                                            </button>
+                                            
+                                            {isAdmin && onEditQuestionnaire && (
+                                                <button
+                                                    className="btn btn-warning btn-xs gap-1"
+                                                    onClick={() => onEditQuestionnaire(q)}
+                                                >
+                                                    <Edit className="h-3 w-3" />
+                                                    Editar
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             ))}

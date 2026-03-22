@@ -1,6 +1,6 @@
 import { apiClient } from "./apiClient";
 import { IQuestion, QuestionType } from "../core/models/question";
-import { IQuestionnaire } from "../core/models/questionnaire";
+import { IQuestionnaire, ICategory, ICategoryDTO, mapCategoryFromDTO } from "../core/models/questionnaire";
 import { IRecommendationAI, IWebAnswer } from '../core/models/answers';
 import type { IQuestionnaireResult } from '../core/types/questionnaire';
 
@@ -184,5 +184,55 @@ export const deleteQuestion = async (id: number): Promise<void> => {
     } catch (error) {
         console.error('Error deleting question:', error);
         throw new Error('Error al eliminar la pregunta');
+    }
+};
+
+// ---------------------- CATEGORIES ----------------------
+export const getAllCategories = async (): Promise<ICategory[]> => {
+    try {
+        const response = await apiClient.get<ICategoryDTO[]>('/categories');
+        return response.data.map(mapCategoryFromDTO);
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        throw new Error('Error al obtener las categorías');
+    }
+};
+
+export const getCategoryById = async (id: number): Promise<ICategory> => {
+    try {
+        const response = await apiClient.get<ICategoryDTO>(`/categories/${id}`);
+        return mapCategoryFromDTO(response.data);
+    } catch (error) {
+        console.error('Error fetching category by id:', error);
+        throw new Error('Error al obtener la categoría por id');
+    }
+};
+
+export const createCategory = async (category: Partial<ICategoryDTO>): Promise<ICategory> => {
+    try {
+        const response = await apiClient.post<ICategoryDTO>('/categories', category);
+        return mapCategoryFromDTO(response.data);
+    } catch (error) {
+        console.error('Error creating category:', error);
+        throw new Error('Error al crear la categoría');
+    }
+};
+
+export const updateCategory = async (id: number, category: Partial<ICategoryDTO>): Promise<ICategory> => {
+    try {
+        const response = await apiClient.put<ICategoryDTO>(`/categories/${id}`, category);
+        return mapCategoryFromDTO(response.data);
+    } catch (error) {
+        console.error('Error updating category:', error);
+        throw new Error('Error al actualizar la categoría');
+    }
+};
+
+export const deleteCategory = async (id: number): Promise<void> => {
+    try {
+        await apiClient.delete(`/categories/${id}`);
+    } catch (error) {
+        console.error('Error deleting category:', error);
+        throw new Error('Error al eliminar la categoría');
     }
 };
