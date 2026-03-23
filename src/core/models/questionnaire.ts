@@ -8,8 +8,8 @@ export interface IQuestionnaire {
 }
 
 export interface ICategoryDTO {
-    categoryid: number;
-    category: string;
+    categoryId: number; 
+    title: string;
     description: string;
     decimalvalue: number;
     questionnaires: any[];
@@ -24,14 +24,14 @@ export interface ICategory {
 // API → Frontend
 export const mapCategoryFromDTO = (apiCategory: ICategoryDTO): ICategory => {
     return {
-        id: apiCategory.categoryid,
-        name: apiCategory.category,
+        id: apiCategory.categoryId,    
+        name: apiCategory.title,
         description: apiCategory.description
     };
 };
 
 // Frontend → API
 export const mapCategoryToDTO = (category: ICategory): Partial<ICategoryDTO> => ({
-    category: category.name,
+    title: category.name,
     description: category.description,
 });
