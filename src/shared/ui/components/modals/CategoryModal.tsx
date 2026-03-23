@@ -43,6 +43,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
             setLoading(true);
             setError(null);
             const data = await getAllCategories();
+            console.log('Categories:', data);
             setCategories(data);
         } catch (err) {
             console.error('Error fetching categories:', err);
