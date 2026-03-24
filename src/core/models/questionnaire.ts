@@ -8,7 +8,7 @@ export interface IQuestionnaire {
 }
 
 export interface ICategoryDTO {
-    categoryId: number; 
+    categoryid: number; 
     title: string;
     description: string;
     decimalvalue: number;
@@ -24,7 +24,7 @@ export interface ICategory {
 // API → Frontend
 export const mapCategoryFromDTO = (apiCategory: ICategoryDTO): ICategory => {
     return {
-        id: apiCategory.categoryId,    
+        id: apiCategory.categoryid,    
         name: apiCategory.title,
         description: apiCategory.description
     };

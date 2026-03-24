@@ -191,7 +191,6 @@ export const deleteQuestion = async (id: number): Promise<void> => {
 export const getAllCategories = async (): Promise<ICategory[]> => {
     try {
         const response = await apiClient.get<ICategoryDTO[]>('/categories');
-        console.log('Categories API response:', response.data);
         return response.data.map(mapCategoryFromDTO);
     } catch (error) {
         console.error('Error fetching categories:', error);
