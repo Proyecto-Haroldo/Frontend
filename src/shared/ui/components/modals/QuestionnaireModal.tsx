@@ -299,11 +299,15 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
                         <select
                             className="select select-bordered w-full"
                             value={formData.categoryId || ''}
-                            onChange={(e) => setFormData({
-                                ...formData,
-                                categoryId: Number(e.target.value),
-                                categoryName: categories.find(c => c.id === Number(e.target.value))?.name || '',
-                            })}
+                            onChange={(e) => {
+                                const selectedCategoryId = Number(e.target.value) || 0;
+                                const selectedCategory = categories.find(c => c.id === selectedCategoryId);
+                                setFormData({
+                                    ...formData,
+                                    categoryId: selectedCategoryId,
+                                    categoryName: selectedCategory?.name || '',
+                                });
+                            }}
                         >
                             <option value="">Seleccione una categoría</option>
                             {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
