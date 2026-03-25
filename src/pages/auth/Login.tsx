@@ -181,7 +181,7 @@ const Login: React.FC = () => {
           <div className="space-y-4">
             <div className="form-control">
               <label htmlFor='email' className="label">
-                <span className="label-text text-base-content/70">Correo Electrónico</span>
+                <span className="label-text text-base-content/70 mb-1">Correo Electrónico</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
@@ -210,7 +210,7 @@ const Login: React.FC = () => {
 
             <div className="form-control">
               <label htmlFor='password' className="label">
-                <span className="label-text text-base-content/70">Contraseña</span>
+                <span className="label-text text-base-content/70 mb-1">Contraseña</span>
               </label>
               <div className="join w-full">
                 <div className="relative flex-1">

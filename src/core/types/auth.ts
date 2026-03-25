@@ -11,13 +11,18 @@ export interface RegisterRequest {
     cedulaOrNIT: string;
     legalName: string;
     clientType: string;
-    role: {
-        id: number
-    };
     sector: string;
     phone: string;
     network: string;
     status: UserStatus;
+    role: {
+        id: number
+    };
+    specialities: {
+        categoryId: number;
+        title: string;
+        description: string;
+    }[];
 }
 
 export interface LoginResponse {
