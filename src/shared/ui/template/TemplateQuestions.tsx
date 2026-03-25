@@ -267,16 +267,16 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
   return (
     <div className="container mx-auto space-y-6 overflow-hidden">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 flex-wrap">
-        <div className="w-full">
+      <div className="card bg-base-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 flex-wrap">
+        <div className="w-full p-3 md:p-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <h1 className="text-xl sm:text-2xl font-semibold">
-              Gestor de Preguntas
+            <h1 className="text-lg sm:text-xl font-semibold">
+              Gestor de Cuestionario
               {questionnaire && (
-                <div className="flex mt-2 gap-2 capitalize text-base text-md font-normal text-base-content/70">
+                <div className="flex mt-1 gap-2 capitalize text-base text-sm font-normal text-base-content/70">
                   {questionnaire.title || "Sin determinar"}
-                  <div className={`badge font-semibold text-sm badge-md transition-all duration-300 badge-primary`}>
-                    #{questionnaire.id}
+                  <div className={`badge font-semibold text-xs badge-md transition-all duration-300 badge-primary`}>
+                    # {questionnaire.id}
                   </div>
                 </div>
               )}

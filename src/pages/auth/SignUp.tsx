@@ -17,14 +17,28 @@ import {
   Globe,
 } from "lucide-react";
 import { register } from "../../api/authApi";
-import PasswordStrength from "../../shared/ui/validator/PasswordStrength";
 import { useAuth } from "../../shared/context/AuthContext";
+import PasswordStrength from "../../shared/ui/validator/PasswordStrength";
+import SelectCategories from "../../shared/ui/components/selects/SelectCategories";
 import HFIsotype from '../../../public/assets/HFIsotype';
 import ThemeToggle from "../../shared/ui/layout/theme/ThemeToggle";
+import { categories } from "../../../public/assets/Categories";
 
 const loadingIcons = [Banknote, Wallet, PiggyBank, TrendingUp];
 
 const SignUp: React.FC = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPasswordStrength, setShowPasswordStrength] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [loadingIconIndex, setLoadingIconIndex] = useState(0);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+  const { setAuth } = useAuth();
+
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -34,13 +48,15 @@ const SignUp: React.FC = () => {
     sector: "",
     phone: "",
     network: "",
+    specialities: [
+      {
+        categoryId: 0,
+        title: '',
+        description: ''
+      }
+    ]
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [showPasswordStrength, setShowPasswordStrength] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+
   const [validationErrors, setValidationErrors] = useState<{
     email?: string;
     password?: string;
@@ -50,7 +66,9 @@ const SignUp: React.FC = () => {
     sector?: string;
     phone?: string;
     network?: string;
+    categories?: string;
   }>({});
+
   const [touched, setTouched] = useState({
     email: false,
     password: false,
@@ -60,13 +78,8 @@ const SignUp: React.FC = () => {
     sector: false,
     phone: false,
     network: false,
+    categories: false,
   });
-
-  const passwordInputRef = useRef<HTMLInputElement>(null);
-  const { setAuth } = useAuth();
-  const navigate = useNavigate();
-
-  const [loadingIconIndex, setLoadingIconIndex] = useState(0);
 
   // Ensure auth page respects the last selected theme
   useEffect(() => {
@@ -138,6 +151,10 @@ const SignUp: React.FC = () => {
       errors.legalName = "El nombre debe tener al menos 2 caracteres";
     }
 
+    if (selectedCategories.length === 0) {
+      errors.categories = "Selecciona al menos una especialidad";
+    }
+
     setValidationErrors(errors);
     return (
       Object.keys(errors).length === 0 &&
@@ -167,6 +184,10 @@ const SignUp: React.FC = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
+    const selectedFullCategories = categories.filter(cat =>
+      selectedCategories.includes(cat.id)
+    );
+
     setError(null);
     setSuccess(null);
     setLoading(true);
@@ -181,7 +202,12 @@ const SignUp: React.FC = () => {
         sector: form.sector,
         phone: form.phone,
         network: form.network,
-        status: "AUTHORIZED"
+        status: "AUTHORIZED",
+        specialities: selectedFullCategories.map(cat => ({
+          categoryId: cat.id,
+          title: cat.name,
+          description: cat.description,
+        })),
       });
 
       setAuth(res.token, res.role.id, res.id);
@@ -344,7 +370,7 @@ const SignUp: React.FC = () => {
         >
           <div className="form-control">
             <label htmlFor="email" className="label">
-              <span className="label-text text-base-content/70">
+              <span className="label-text text-base-content/70 mb-1">
                 Correo Electrónico
               </span>
             </label>
@@ -375,7 +401,7 @@ const SignUp: React.FC = () => {
 
           <div className="form-control">
             <label htmlFor="password" className="label">
-              <span className="label-text text-base-content/70">
+              <span className="label-text text-base-content/70 mb-1">
                 Contraseña
               </span>
             </label>
@@ -437,7 +463,7 @@ const SignUp: React.FC = () => {
 
           <div className="form-control">
             <label htmlFor="confirmPassword" className="label">
-              <span className="label-text text-base-content/70">
+              <span className="label-text text-base-content/70 mb-1">
                 Confirmar Contraseña
               </span>
             </label>
@@ -491,7 +517,7 @@ const SignUp: React.FC = () => {
 
           <div className="form-control">
             <label htmlFor="legalName" className="label">
-              <span className="label-text text-base-content/70">
+              <span className="label-text text-base-content/70 mb-1">
                 Nombre Legal
               </span>
             </label>
@@ -522,7 +548,7 @@ const SignUp: React.FC = () => {
 
           <div className="form-control">
             <label htmlFor="cedulaOrNIT" className="label">
-              <span className="label-text text-base-content/70">
+              <span className="label-text text-base-content/70 mb-1">
                 Cédula o NIT
               </span>
             </label>
@@ -553,7 +579,7 @@ const SignUp: React.FC = () => {
 
           <div className="form-control">
             <label htmlFor="sector" className="label">
-              <span className="label-text text-base-content/70">
+              <span className="label-text text-base-content/70 mb-1">
                 Sector
               </span>
             </label>
@@ -583,8 +609,8 @@ const SignUp: React.FC = () => {
           </div>
 
           <div className="form-control">
-            <label htmlFor="sector" className="label">
-              <span className="label-text text-base-content/70">
+            <label htmlFor="network" className="label">
+              <span className="label-text text-base-content/70 mb-1">
                 LinkedIn
               </span>
             </label>
@@ -600,7 +626,7 @@ const SignUp: React.FC = () => {
                 onChange={handleChange}
                 className={`input input-bordered w-full pl-10 ${(touched.network && !form.network) || validationErrors.network ? "input-error" : ""}`}
                 disabled={loading}
-                placeholder="Ej: https://www.linkedin.com/in/usuario/"
+                placeholder="Ej: www.linkedin.com/in/usuario"
               />
             </div>
             {validationErrors.network && (
@@ -614,7 +640,7 @@ const SignUp: React.FC = () => {
 
           <div className="form-control">
             <label htmlFor="phone" className="label">
-              <span className="label-text text-base-content/70">
+              <span className="label-text text-base-content/70 mb-1">
                 Teléfono
               </span>
             </label>
@@ -638,6 +664,33 @@ const SignUp: React.FC = () => {
               <label className="label">
                 <span className="label-text-alt text-error">
                   {validationErrors.phone}
+                </span>
+              </label>
+            )}
+          </div>
+
+          <div className="form-control">
+            <label htmlFor="categories" className="label">
+              <span className="label-text text-base-content/70 mb-1">
+                Especialidades
+              </span>
+            </label>
+
+            <SelectCategories
+              name="categories"
+              categories={categories}
+              value={selectedCategories}
+              onChange={(value) => {
+                setSelectedCategories(value);
+                setTouched(prev => ({ ...prev, categories: true }));
+                setValidationErrors(prev => ({ ...prev, categories: undefined }));
+              }}
+            />
+
+            {validationErrors.categories && touched.categories && (
+              <label className="label">
+                <span className="label-text-alt text-error">
+                  {validationErrors.categories}
                 </span>
               </label>
             )}

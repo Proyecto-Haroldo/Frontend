@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Filter, Search, Loader2, Plus } from "lucide-react";
+import React, { useMemo, useState } from "react";
+import { Filter, Search, Loader2, Plus, Settings } from "lucide-react";
 import { motion } from "motion/react";
 import { IQuestionnaire } from "../../../core/models/questionnaire";
+import { deleteQuestionnaire } from "../../../api/questionnairesApi";
 import TableQuestionnaires from "../components/tables/TableQuestionnaires";
-import CategoryModal from "../components/modals/CategoryModal";
-import QuestionnaireModal from "../components/modals/QuestionnaireModal";
-import { useAuth } from "../../context/AuthContext";
+import ModalCategory from "../components/modals/ModalCategory";
+import ModalQuestionnaire from "../components/modals/ModalQuestionnaire";
 
 interface TemplateQuestionnairesProps {
     questionnaires: IQuestionnaire[];
@@ -24,27 +24,21 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
 }) => {
     const [filter, setFilter] = useState<string>("all");
     const [searchTerm, setSearchTerm] = useState("");
-    const [filteredQuestionnaires, setFilteredQuestionnaires] = useState<
-        IQuestionnaire[]
-    >([]);
-    const [showCategoryModal, setShowCategoryModal] = useState(false);
+    const [showModalCategory, setShowModalCategory] = useState(false);
     const [showQuestionnaireModal, setShowQuestionnaireModal] = useState(false);
-    const [editingQuestionnaire, setEditingQuestionnaire] = useState<IQuestionnaire | null>(null);
-    const { role: userRole } = useAuth();
+    const [editQuestionnaire, setEditQuestionnaire] = useState<IQuestionnaire | null>(null);
 
-    const isAdmin = userRole === 1;
+    const isAdmin = role === 1;
     const canManage = isAdmin;
 
     // Obtener categorías únicas para el filtro
     const categories = useMemo(() => {
-        const unique = Array.from(
-            new Set(questionnaires.map((q) => q.categoryName))
-        );
+        const unique = [...new Set(questionnaires.map(q => q.categoryName).filter(Boolean))];
         return ["all", ...unique];
     }, [questionnaires]);
 
     // Filtrar y buscar
-    const filterQuestionnaires = useCallback(() => {
+    const filteredQuestionnaires = useMemo(() => {
         let filtered = [...questionnaires];
 
         if (filter !== "all") {
@@ -52,36 +46,50 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
         }
 
         if (searchTerm) {
-            filtered = filtered.filter(
-                (q) =>
-                    q.creatorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    q.categoryName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    (q.title && q.title.toLowerCase().includes(searchTerm.toLowerCase()))
+            const term = searchTerm.toLowerCase();
+
+            filtered = filtered.filter((q) =>
+                q.creatorName.toLowerCase().includes(term) ||
+                q.categoryName.toLowerCase().includes(term) ||
+                (q.title && q.title.toLowerCase().includes(term))
             );
         }
 
-        setFilteredQuestionnaires(filtered);
+        return filtered;
     }, [questionnaires, filter, searchTerm]);
-
-    useEffect(() => {
-        filterQuestionnaires();
-    }, [filterQuestionnaires]);
 
     const handleCreateQuestionnaire = () => {
         if (!canManage) return;
-        setEditingQuestionnaire(null);
+        setEditQuestionnaire(null);
         setShowQuestionnaireModal(true);
     };
 
     const handleEditQuestionnaire = (questionnaire: IQuestionnaire) => {
         if (!canManage) return;
-        setEditingQuestionnaire(questionnaire);
+        setEditQuestionnaire(questionnaire);
         setShowQuestionnaireModal(true);
+    };
+
+    const handleDeleteQuestionnaire = async (questionnaire: IQuestionnaire) => {
+        if (!canManage || !questionnaire.id) return;
+
+        const confirmDelete = confirm(
+            '¿Está seguro de que desea eliminar este cuestionario? Esta acción también eliminará todas las preguntas asociadas.'
+        );
+
+        if (!confirmDelete) return;
+
+        try {
+            await deleteQuestionnaire(questionnaire.id);
+            onQuestionnairesChange?.();
+        } catch {
+            console.error('Error eliminando cuestionario');
+        }
     };
 
     const handleQuestionnaireSaved = () => {
         setShowQuestionnaireModal(false);
-        setEditingQuestionnaire(null);
+        setEditQuestionnaire(null);
         onQuestionnairesChange?.();
     };
 
@@ -124,7 +132,10 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
                             >
                                 {categories.map((cat) => (
                                     <li key={cat}>
-                                        <button onClick={() => setFilter(cat)}>
+                                        <button onClick={() => {
+                                            setFilter(cat);
+                                            setSearchTerm('');
+                                        }}>
                                             {cat === "all" ? "Todas las categorías" : cat}
                                         </button>
                                     </li>
@@ -139,7 +150,7 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
                         <div className="card w-full bg-base-100 shadow-sm border border-base-200">
                             <div className="card-body items-center text-center">
                                 <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
-                                <p className="mt-4">Cargando cuestionarios...</p>
+                                <p className="mt-4">Cargando servicios...</p>
                             </div>
                         </div>
                     </div>
@@ -162,6 +173,30 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
 
     return (
         <div className="container mx-auto space-y-4 md:space-y-6">
+            {/* Header Admin for Categories */}
+            {canManage && (
+                <div className="card bg-base-100/95 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 shadow-sm flex-wrap">
+                    <div className="w-full p-3 md:p-6">
+                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                            <h1 className="text-lg sm:text-xl font-semibold">
+                                Gestor de Categorías
+                                <div className="flex break-words max-w-xl mt-1 gap-2 text-sm font-normal text-base-content/70">
+                                    Aquí puedes crear, editar o eliminar categorías para administrar los módulos ofrecidos en la plataforma.
+                                </div>
+                            </h1>
+                            <button
+                                onClick={() => setShowModalCategory(true)}
+                                className="btn btn-primary shadow-sm btn-sm gap-2"
+                            >
+                                <Settings className="h-4 w-4" />
+                                <span className="hidden sm:inline">Gestionar Categorías</span>
+                                <span className="sm:hidden">Categorías</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Buscador y Filtros */}
             <div className="card bg-base-100 shadow-sm border border-base-200">
                 <div className="card-body p-3 md:p-6 space-y-3">
@@ -179,7 +214,7 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
                                 />
                             </div>
                         </div>
-                        
+
                         <div className="flex gap-2">
                             {/* Filter Dropdown */}
                             <div className="dropdown dropdown-start">
@@ -207,22 +242,13 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
 
                             {/* Action Buttons */}
                             {canManage && (
-                                <>
-                                    <button
-                                        onClick={() => setShowCategoryModal(true)}
-                                        className="btn btn-outline btn-sm gap-2"
-                                    >
-                                        <Plus className="h-4 w-4" />
-                                        Categoría
-                                    </button>
-                                    <button
-                                        onClick={handleCreateQuestionnaire}
-                                        className="btn btn-primary btn-sm gap-2"
-                                    >
-                                        <Plus className="h-4 w-4" />
-                                        Cuestionario
-                                    </button>
-                                </>
+                                <button
+                                    onClick={handleCreateQuestionnaire}
+                                    className="btn btn-outline bg-base-content/15 shadow-sm btn-sm gap-2 hover:border-base-content border-base-content/50"
+                                >
+                                    <Plus className="h-4 w-4" />
+                                    <span className="hidden sm:inline">Nuevo Cuestionario</span>
+                                    <span className="sm:hidden">Cuestionario</span>                                </button>
                             )}
                         </div>
                     </div>
@@ -234,20 +260,21 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
                 questionnaires={filteredQuestionnaires}
                 role={role}
                 onEditQuestionnaire={handleEditQuestionnaire}
+                onDeleteQuestionnaire={handleDeleteQuestionnaire}
             />
 
-            {/* Category Modal */}
-            <CategoryModal
-                isOpen={showCategoryModal}
-                onClose={() => setShowCategoryModal(false)}
+            {/* Modal Category */}
+            <ModalCategory
+                isOpen={showModalCategory}
+                onClose={() => setShowModalCategory(false)}
                 onCategoryCreated={handleCategoryCreated}
             />
 
-            {/* Questionnaire Modal */}
-            <QuestionnaireModal
+            {/* Modal Questionnaire */}
+            <ModalQuestionnaire
                 isOpen={showQuestionnaireModal}
                 onClose={() => setShowQuestionnaireModal(false)}
-                questionnaire={editingQuestionnaire}
+                questionnaire={editQuestionnaire}
                 onQuestionnaireSaved={handleQuestionnaireSaved}
             />
         </div>

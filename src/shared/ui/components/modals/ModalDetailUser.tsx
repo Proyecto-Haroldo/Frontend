@@ -106,7 +106,7 @@ const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-base-200 rounded-lg p-4 md:p-6 max-w-3xl w-full max-h-[90vh] flex flex-col">
+            <div className="bg-base-200 rounded-lg p-4 pr-3 md:p-6 md:pr-5 max-w-3xl w-full max-h-[80vh] flex flex-col">
 
                 {/* Header fijo */}
                 <div className="flex justify-between items-center mb-4 shrink-0">

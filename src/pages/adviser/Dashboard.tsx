@@ -6,7 +6,7 @@ import { IAnalysis } from "../../core/models/analysis";
 import { IQuestionnaire } from "../../core/models/questionnaire";
 import { useAuth } from "../../shared/context/AuthContext";
 import { motion, AnimatePresence } from "motion/react";
-import { ClipboardList, ArrowLeft, FileText } from "lucide-react";
+import { ClipboardList, ArrowLeft, Briefcase } from "lucide-react";
 import Questions from "../../shared/ui/template/TemplateQuestions";
 import AnalysisReview from "../../shared/ui/template/TemplateAnalysisReview";
 import HeaderStats from "../../shared/ui/components/headers/HeaderStats";
@@ -167,8 +167,8 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
                 }}
               >
                 <div className="card-body flex flex-col items-center text-center space-y-1">
-                  <FileText className="h-10 w-10 text-primary" />
-                  <h2 className="card-title text-lg md:text-xl">Cuestionarios</h2>
+                  <Briefcase className="h-10 w-10 text-primary" />
+                  <h2 className="card-title text-lg md:text-xl">Servicios</h2>
                   <p className="text-sm text-base-content/70">
                     Gestiona los cuestionarios y sus categorías.
                   </p>

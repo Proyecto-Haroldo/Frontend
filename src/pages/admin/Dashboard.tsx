@@ -4,7 +4,7 @@ import { getAllAnalysis } from "../../api/analysisApi";
 import { getAllQuestionnaires } from "../../api/questionnairesApi";
 import { getAllUsers } from "../../api/usersApi";
 import { motion, AnimatePresence } from "motion/react";
-import { ClipboardList, ArrowLeft, FileText, Users } from "lucide-react";
+import { ClipboardList, ArrowLeft, Users, Briefcase } from "lucide-react";
 import { IQuestionnaire } from "../../core/models/questionnaire";
 import { IUser } from "../../core/models/user";
 import { IAnalysis } from "../../core/models/analysis";
@@ -225,8 +225,8 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
               }}
             >
               <div className="card-body flex flex-col items-center text-center space-y-1">
-                <FileText className="h-10 w-10 text-primary" />
-                <h2 className="card-title text-lg md:text-xl">Cuestionarios</h2>
+                <Briefcase className="h-10 w-10 text-primary" />
+                <h2 className="card-title text-lg md:text-xl">Servicios</h2>
                 <p className="text-sm text-base-content/70">
                   Gestiona los cuestionarios y sus categorías.
                 </p>

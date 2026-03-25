@@ -1,5 +1,5 @@
 import React from "react";
-import { Eye, Edit } from "lucide-react";
+import { Eye, Edit, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { IQuestionnaire } from "../../../../core/models/questionnaire";
 
@@ -7,12 +7,14 @@ interface TableQuestionnairesProps {
     questionnaires: IQuestionnaire[];
     role: number | null;
     onEditQuestionnaire?: (questionnaire: IQuestionnaire) => void;
+    onDeleteQuestionnaire?: (questionnaire: IQuestionnaire) => void;
 }
 
 const TableQuestionnaires: React.FC<TableQuestionnairesProps> = ({
     questionnaires,
     role,
-    onEditQuestionnaire
+    onEditQuestionnaire,
+    onDeleteQuestionnaire
 }) => {
     const navigate = useNavigate();
 
@@ -29,7 +31,7 @@ const TableQuestionnaires: React.FC<TableQuestionnairesProps> = ({
     return (
         <div className="card bg-base-100 shadow-sm border border-base-200">
             <div className="card-body p-3 md:p-6">
-                <h2 className="card-title mb-2 lg:mb-4 text-lg">Cuestionarios</h2>
+                <h2 className="card-title mb-2 lg:mb-4 text-lg">Cuestionarios ({questionnaires.length}) </h2>
 
                 {questionnaires.length > 0 ? (
                     <>
@@ -70,7 +72,7 @@ const TableQuestionnaires: React.FC<TableQuestionnairesProps> = ({
                                                         <Eye className="h-3 w-3" />
                                                         <p className="whitespace-nowrap">Ver</p>
                                                     </button>
-                                                    
+
                                                     {isAdmin && onEditQuestionnaire && (
                                                         <button
                                                             className="btn btn-warning btn-xs gap-1"
@@ -78,6 +80,16 @@ const TableQuestionnaires: React.FC<TableQuestionnairesProps> = ({
                                                         >
                                                             <Edit className="h-3 w-3" />
                                                             <p className="whitespace-nowrap">Editar</p>
+                                                        </button>
+                                                    )}
+
+                                                    {isAdmin && onDeleteQuestionnaire && (
+                                                        <button
+                                                            className="btn btn-error btn-xs gap-1"
+                                                            onClick={() => onDeleteQuestionnaire(q)}
+                                                        >
+                                                            <Trash2 className="h-3 w-3" />
+                                                            <p className="whitespace-nowrap">Eliminar</p>
                                                         </button>
                                                     )}
                                                 </div>
@@ -115,7 +127,7 @@ const TableQuestionnaires: React.FC<TableQuestionnairesProps> = ({
                                                 <Eye className="h-3 w-3" />
                                                 Ver
                                             </button>
-                                            
+
                                             {isAdmin && onEditQuestionnaire && (
                                                 <button
                                                     className="btn btn-warning btn-xs gap-1"

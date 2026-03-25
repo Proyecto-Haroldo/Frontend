@@ -3,14 +3,6 @@ import { motion } from "motion/react"
 import {
   ArrowRight,
   ChevronLeft,
-  Lightbulb,
-  Calculator,
-  DollarSign,
-  BarChart2,
-  ClipboardList,
-  FileText,
-  LineChart,
-  BanknoteArrowUp,
   Search,
   AlertCircle,
   AlertTriangle,
@@ -20,60 +12,10 @@ import { useNavigate, Link, useSearchParams } from "react-router-dom"
 import { getUserById } from '../../api/usersApi'
 import { useAuth } from '../../shared/context/AuthContext'
 import { ICategory, IQuestionnaire } from '../../core/models/questionnaire'
-import { getQuestionnairesByCategory } from '../../api/questionnairesApi'
-
-const categories = [
-  {
-    id: 1,
-    title: 'Estrategia',
-    description: 'Planificación estratégica para el crecimiento sostenible',
-    icon: <Lightbulb className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
-  },
-  {
-    id: 2,
-    title: 'Contabilidad',
-    description: 'Gestión contable y cumplimiento normativo',
-    icon: <Calculator className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
-  },
-  {
-    id: 5,
-    title: 'Costos',
-    description: 'Estructuración y análisis de costos operativos',
-    icon: <BarChart2 className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
-  },
-  {
-    id: 7,
-    title: 'Finanzas Corporativas',
-    description: 'Estrategias financieras para crecimiento empresarial',
-    icon: <LineChart className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
-  },
-  {
-    id: 3,
-    title: 'Decisiones Operativas',
-    description: 'Estrategias financieras para crecimiento empresarial',
-    icon: <DollarSign className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
-  },
-  {
-    id: 4,
-    title: 'Tributación',
-    description: 'Optimización fiscal y cumplimiento tributario',
-    icon: <FileText className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
-  },
-  {
-    id: 6,
-    title: 'Presupuestos',
-    description: 'Planificación presupuestaria para objetivos futuros',
-    icon: <ClipboardList className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
-  },
-  {
-    id: 8,
-    title: 'Proyectos de Inversión',
-    description: 'Inversiones para mantener e incrementar el valor de la empresa',
-    icon: <BanknoteArrowUp className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
-  }
-]
+import { getAllCategories, getQuestionnairesByCategory } from '../../api/questionnairesApi'
 
 function Services() {
+  const [categories, setCategories] = useState<ICategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(null)
   const [selectedQuestionnaire, setSelectedQuestionnaire] = useState<number | null>(null)
   const [currentView, setCurrentView] =
@@ -81,6 +23,8 @@ function Services() {
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward')
   const [policyAccepted, setPolicyAccepted] = useState(false)
   const [questionnaires, setQuestionnaires] = useState<IQuestionnaire[]>([])
+  const [loadingCategories, setLoadingCategories] = useState(false)
+  const [errorCategories, setErrorCategories] = useState("")
   const [loadingQuestionnaires, setLoadingQuestionnaires] = useState(false)
   const [errorQuestionnaires, setErrorQuestionnaires] = useState("")
   const [search, setSearch] = useState('')
@@ -100,6 +44,26 @@ function Services() {
         console.error('Error al obtener el tipo de cliente:', err)
       )
   }, [userId])
+
+  const fetchCategories = async () => {
+    try {
+      setLoadingCategories(true);
+      setErrorCategories('');
+      const data = await getAllCategories();
+      setCategories(data);
+      console.log(data)
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+      setErrorCategories('Error al cargar las categorías');
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
 
   useEffect(() => {
     if (!selectedCategory) return
@@ -131,16 +95,12 @@ function Services() {
     if (!categoryParam) return
 
     const category = categories.find(
-      c => c.title.toLowerCase() === categoryParam.toLowerCase()
+      c => c.name.toLowerCase() === categoryParam.toLowerCase()
     )
 
     if (!category) return
 
-    setSelectedCategory({
-      id: category.id,
-      name: category.title,
-      description: category.description
-    })
+    setSelectedCategory(category)
     setCurrentView("questionnaires")
 
   }, [searchParams])
@@ -174,13 +134,8 @@ function Services() {
 
     if (!category) return
 
-    setSelectedCategory({
-      id: category.id,
-      name: category.title,
-      description: category.description
-    })
-
-    navigate(`?category=${encodeURIComponent(category.title.toLowerCase())}`)
+    setSelectedCategory(category)
+    navigate(`?category=${encodeURIComponent(category.name.toLowerCase())}`)
     transition("questionnaires", "forward")
   }
 
@@ -244,6 +199,32 @@ function Services() {
         animate="animate"
         exit="exit"
       >
+        {loadingCategories && (
+          <div className="container mx-auto space-y-6 overflow-hidden">
+            <div className="flex items-center justify-center">
+              <div className="card w-full bg-base-100 shadow-sm border border-base-200">
+                <div className="card-body items-center text-center">
+                  <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
+                  <p className="mt-4">Cargando categorías...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {errorCategories && (
+          <div className="container mx-auto p-3">
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="alert alert-error shadow-lg"
+            >
+              <AlertCircle className="h-5 w-5" />
+              {errorQuestionnaires}
+            </motion.div>
+          </div>
+        )}
+
         {categories.map(category => (
           <motion.button
             key={category.id}
@@ -263,11 +244,11 @@ function Services() {
                   damping: 10
                 }}
               >
-                {category.icon}
+                {category.icon.svg}
               </motion.div>
 
               <h3 className="card-title text-lg 2xl:text-2xl 2xl:mb-4">
-                {category.title}
+                {category.name}
               </h3>
 
               <p className="text-sm text-base-content/70 2xl:text-lg">
@@ -358,7 +339,7 @@ function Services() {
                 >
 
                   <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <FileText className="h-5 w-5 text-primary" />
+                    <span className='scale-50'>{selectedCategory?.icon.svg}</span>
                   </div>
                   <div className="flex-1">
                     <h3 className="font-medium break-all">
