@@ -5,7 +5,7 @@ import { IUser } from "../../core/models/user";
 import { IQuestion } from "../../core/models/question";
 import { getAllAnalysis } from "../../api/analysisApi";
 import { getAllUsers } from "../../api/usersApi";
-import { getAllQuestionnaires, fetchQuestionsByQuestionnaire} from "../../api/questionnairesApi";
+import { getAllQuestionnaires, fetchAllQuestions} from "../../api/questionnairesApi";
 import { X, Search, ClipboardList, FileText, Users } from "lucide-react";
 import TemplateMetrics from "../../shared/ui/template/TemplateMetrics";
 
@@ -35,11 +35,8 @@ export default function AdminReports() {
         fetchUsersData();
         fetchAnalysisData();
         fetchQuestionnairesData();
+        fetchQuestionsData();
     }, []);
-
-    useEffect(() => {
-        questionnaires.forEach(q => fetchQuestionsData(q.id));
-    }, [questionnaires]);
 
     // Fetch functions
     const fetchUsersData = async () => {
@@ -78,12 +75,12 @@ export default function AdminReports() {
         }
     };
 
-    const fetchQuestionsData = async (questionnaireId: number) => {
+    const fetchQuestionsData = async () => {
         try {
             setLoading(prev => ({ ...prev, questions: true }));
-            const data = await fetchQuestionsByQuestionnaire(questionnaireId);
-            setQuestions(prev => [...prev, ...data]);
-        } catch (err) {
+            const data = await fetchAllQuestions();
+            setQuestions(data);
+        } catch (err: unknown) {
             setError(prev => ({ ...prev, questions: err instanceof Error ? err.message : "Unexpected error" }));
         } finally {
             setLoading(prev => ({ ...prev, questions: false }));
