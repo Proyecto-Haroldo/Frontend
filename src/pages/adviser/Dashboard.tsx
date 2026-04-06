@@ -170,7 +170,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
                   <Briefcase className="h-10 w-10 text-primary" />
                   <h2 className="card-title text-lg md:text-xl">Servicios</h2>
                   <p className="text-sm text-base-content/70">
-                    Gestiona los cuestionarios y sus categorías.
+                    Observa los cuestionarios de cada categoría.
                   </p>
                 </div>
               </motion.div>

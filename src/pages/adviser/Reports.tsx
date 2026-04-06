@@ -4,9 +4,9 @@ import { IQuestionnaire } from "../../core/models/questionnaire";
 import { IUser } from "../../core/models/user";
 import { IQuestion } from "../../core/models/question";
 import { getAllAnalysis } from "../../api/analysisApi";
-import { fetchQuestionsByQuestionnaire, getAllQuestionnaires } from "../../api/questionnairesApi";
+import { fetchAllQuestions, getAllQuestionnaires } from "../../api/questionnairesApi";
 import { getAllUsers } from "../../api/usersApi";
-import { X, Search, ClipboardList, Users, FileText } from "lucide-react";
+import { X, Search, ClipboardList, FileText } from "lucide-react";
 import TemplateMetrics from "../../shared/ui/template/TemplateMetrics";
 
 export default function AdviserReports() {
@@ -35,11 +35,8 @@ export default function AdviserReports() {
         fetchUsersData();
         fetchAnalysisData();
         fetchQuestionnairesData();
+        fetchQuestionsData();
     }, []);
-
-    useEffect(() => {
-        questionnaires.forEach(q => fetchQuestionsData(q.id));
-    }, [questionnaires]);
 
     // Fetch functions
     const fetchUsersData = async () => {
@@ -80,12 +77,12 @@ export default function AdviserReports() {
         }
     };
 
-    const fetchQuestionsData = async (questionnaireId: number) => {
+    const fetchQuestionsData = async () => {
         try {
             setLoading(prev => ({ ...prev, questions: true }));
-            const data = await fetchQuestionsByQuestionnaire(questionnaireId);
-            setQuestions(prev => [...prev, ...data]);
-        } catch (err) {
+            const data = await fetchAllQuestions();
+            setQuestions(data);
+        } catch (err: unknown) {
             setError(prev => ({ ...prev, questions: err instanceof Error ? err.message : "Unexpected error" }));
         } finally {
             setLoading(prev => ({ ...prev, questions: false }));
@@ -155,13 +152,6 @@ export default function AdviserReports() {
             return typeFilter && searchFilter;
         });
     }, [questions, selectedQuestionType, searchText]);
-
-    const filteredUsers = useMemo(() => {
-        return users.filter(u => {
-            const searchFilter = searchText === "" || u.legalName.toLowerCase().includes(searchText.toLowerCase());
-            return searchFilter;
-        });
-    }, [users, searchText]);
 
     // Handlers for advanced filter modal
     const toggleFilter = (category: string, value: string) => {
@@ -422,16 +412,6 @@ export default function AdviserReports() {
                         </h3>
                     </div>
                     <TemplateMetrics type="questionnaires" questionnaires={filteredQuestionnaires} questions={filteredQuestions} loading={loading.questionnaires || loading.questions} error={error.questionnaires || error.questions} />
-
-                    <div className="flex items-center gap-2">
-                        <div className="p-2 bg-primary/10 rounded-full">
-                            <Users className="h-5 w-5 text-primary" />
-                        </div>
-                        <h3 className="font-semibold text-xl md:text-2xl text-base-content">
-                            Métricas de Usuarios
-                        </h3>
-                    </div>
-                    <TemplateMetrics type="users" users={filteredUsers} loading={loading.users} error={error.users} />
                 </div>
             </div>
         </div>

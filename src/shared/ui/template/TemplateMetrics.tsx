@@ -1,7 +1,7 @@
 import useEmblaCarousel from 'embla-carousel-react';
 import React, { useMemo, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { IQuestion } from '../../../core/models/question';
+import { IQuestion, QuestionType } from '../../../core/models/question';
 import { IUser } from '../../../core/models/user';
 import { IQuestionnaire } from '../../../core/models/questionnaire';
 import { IAnalysis } from '../../../core/models/analysis';
@@ -18,7 +18,7 @@ import {
     Filler,
     Title
 } from 'chart.js';
-import { Bar, Pie, Line } from 'react-chartjs-2';
+import { Bar, Line, Doughnut } from 'react-chartjs-2';
 import { useThemeColors } from '../../hooks/useThemeColors';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { normalizeUserRole } from '../../../api/usersApi';
@@ -52,17 +52,15 @@ interface MetricsCarouselProps {
 }
 
 const MAIN_COLORS = [
-    "#A167E8", // Violeta 
-    "#6F4FAF", // Añil 
-    "#5565A8", // Navy
-    "#4FA7FF", // Azul
-    "#4FC8BF", // Celeste
-    "#6DFF6D", // Verde 
-    "#C9FF77", // Lima 
-    "#FFE066", // Amarillo 
-    "#FFB366", // Naranja 
-    "#FF6161", // Rojo 
-    "#DC4FD4", // Rosa 
+    "#A167E8DD", // Violeta 
+    "#6F4FAFDD", // Añil 
+    "#5565A8DD", // Navy
+    "#4FA7FFDD", // Azul
+    "#4FC8BFDD", // Celeste
+    "#FFE066DD", // Amarillo 
+    "#FFB366DD", // Naranja 
+    "#FF6161DD", // Rojo 
+    "#DC4FD4DD", // Rosa 
 ];
 
 const baseChartOptions: any = {
@@ -78,12 +76,12 @@ const baseChartOptions: any = {
     },
     scales: {
         x: {
-            ticks: { color: '#ccc' },
+            ticks: { color: '#999' },
             grid: { display: false },
         },
         y: {
-            ticks: { color: '#ccc' },
-            grid: { color: '#333' },
+            ticks: { color: '#999' },
+            grid: { display: false },
             beginAtZero: true,
         },
     },
@@ -126,19 +124,19 @@ const TemplateMetricsSkeleton: React.FC = () => {
     );
 };
 
+function formatMinutesWithSeconds(totalMinutes: number) {
+    const mins = Math.floor(totalMinutes);
+    const secs = Math.round((totalMinutes - mins) * 60);
+    return `${mins}m ${secs}s`;
+}
+
+
 function minutesBetween(a?: string, b?: string) {
     if (!a || !b) return 0;
     const da = new Date(a).getTime();
     const db = new Date(b).getTime();
     if (isNaN(da) || isNaN(db)) return 0;
     return Math.abs(Math.round((db - da) / (1000 * 60)));
-}
-
-function formatMinutes(mins: number) {
-    if (mins < 60) return `${mins}m`;
-    const h = Math.floor(mins / 60);
-    const m = mins % 60;
-    return `${h}h ${m}m`;
 }
 
 function MetricCardShell({
@@ -155,7 +153,7 @@ function MetricCardShell({
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35 }}
-            className="bg-base-200 w-[80vw] shadow-xl rounded-[18px] box-border flex flex-col gap-3 md:w-[30vw] max-w-[544px] p-4"
+            className="bg-base-200 w-[80vw] shadow-xl rounded-xl box-border flex flex-col gap-3 md:w-[30vw] max-w-[544px] p-4"
         >
             <div className="h-[180px] w-full rounded-xl overflow-hidden flex items-center justify-center md:h-[200px]">
                 {chart}
@@ -216,10 +214,10 @@ export default function TemplateMetrics({
 
         // === MÉTRICAS DE ANÁLISIS ===
         if (type === 'analysis') {
-            // 1) Porcentajes de Semáforo (pastel)
+            // 1) Porcentajes de Semáforo (donut)
             const semMap: Record<string, number> = { verde: 0, amarillo: 0, rojo: 0 };
             analysis.forEach((a) => {
-                const key = (a.colorSemaforo || '').toLowerCase();
+                const key = (a.colorSemaforo || '').toLowerCase().trim();
                 if (semMap[key] !== undefined) semMap[key]++;
             });
             const semLabels = Object.keys(semMap);
@@ -228,15 +226,15 @@ export default function TemplateMetrics({
             arr.push({
                 id: 'analysis-semaforo',
                 title: 'Vista General del Semáforo',
-                description: 'Proporción de evaluaciones verdes / amarillas / rojas.',
+                description: 'Proporción de evaluaciones verdes, amarillas o rojas.',
                 chart: (
-                    <Pie
+                    <Doughnut
                         data={{
-                            labels: semLabels,
+                            labels: semLabels.map((l) => l.toUpperCase()),
                             datasets: [
                                 {
                                     data: semValues,
-                                    backgroundColor: ['#22c55e', '#eab308', '#ef4444'],
+                                    backgroundColor: ['#22C55EDD', '#EAB308DD', '#EF4444DD'],
                                     borderWidth: 0,
                                 },
                             ],
@@ -248,9 +246,21 @@ export default function TemplateMetrics({
 
             // 2) Por Categoría (barra)
             const byCategoryMap: Record<string, number> = {};
-            analysis.forEach((a) => (byCategoryMap[a.categoryName] = (byCategoryMap[a.categoryName] || 0) + 1));
-            const byCategoryLabels = Object.keys(byCategoryMap);
-            const byCategoryValues = byCategoryLabels.map((l) => byCategoryMap[l]);
+
+            analysis.forEach((a) => {
+                byCategoryMap[a.categoryName] =
+                    (byCategoryMap[a.categoryName] || 0) + 1;
+            });
+
+            const sortedCategories = Object.entries(byCategoryMap).sort(
+                (a, b) => b[1] - a[1]
+            );
+
+            const byCategoryNames = sortedCategories.map((item) => item[0]);
+            const byCategoryLabels = byCategoryNames.map(
+                (label) => label.slice(0, 5) + '.'
+            );
+            const byCategoryValues = sortedCategories.map((item) => item[1]);
 
             arr.push({
                 id: 'analysis-by-category',
@@ -260,33 +270,27 @@ export default function TemplateMetrics({
                     <Bar
                         data={{
                             labels: byCategoryLabels,
-                            datasets: [{ data: byCategoryValues, backgroundColor: MAIN_COLORS, borderRadius: 8 }],
+                            datasets: [
+                                {
+                                    data: byCategoryValues,
+                                    backgroundColor: MAIN_COLORS,
+                                    borderRadius: 8,
+                                },
+                            ],
                         }}
-                        options={baseChartOptions}
+                        options={{ ...baseChartOptions, indexAxis: 'y' }}
                     />
                 ),
             });
 
-            // 3) Tiempo promedio de resolución (línea por fecha)
-            const byDateMap: Record<string, number[]> = {};
-            analysis.forEach((a) => {
-                const date = new Date(a.timeWhenSolved).toLocaleDateString();
-                const mins = minutesBetween(a.timeWhenChecked, a.timeWhenSolved);
-                if (!byDateMap[date]) byDateMap[date] = [];
-                byDateMap[date].push(mins);
-            });
-            const dateLabels = Object.keys(byDateMap).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
-            const avgMins = dateLabels.map((d) => {
-                const arrM = byDateMap[d] || [];
-                if (arrM.length === 0) return 0;
-                return Math.round(arrM.reduce((s, v) => s + v, 0) / arrM.length);
-            });
-
+            // 3) Estados (donut)
+            const byState: Record<string, number> = {};
+            analysis.forEach((a) => (byState[a.status] = (byState[a.status] || 0) + 1));
             arr.push({
-                id: 'analysis-avg-solve',
-                title: 'Tiempo Promedio de Resolución',
-                description: `Tiempo promedio de resolución por día. Último: ${avgMins.length ? formatMinutes(avgMins[avgMins.length - 1]) : 'sin datos'}`,
-                chart: <Line data={{ labels: dateLabels, datasets: [{ data: avgMins, fill: true, backgroundColor: MAIN_COLORS, tension: 0.4 }] }} options={baseChartOptions} />,
+                id: 'analysis-states',
+                title: 'Estados de Análisis',
+                description: 'Distribución de estados de análisis.',
+                chart: <Doughnut data={{ labels: Object.keys(byState), datasets: [{ data: Object.values(byState), borderWidth: 0, backgroundColor: MAIN_COLORS }] }} options={baseChartOptions} />,
             });
 
             // 4) Principales clientes (barra)
@@ -295,19 +299,87 @@ export default function TemplateMetrics({
             const topClients = Object.entries(byClient).sort((a, b) => b[1] - a[1]).slice(0, 6);
             arr.push({
                 id: 'analysis-top-clients',
-                title: 'Principales Clientes (por análisis)',
+                title: 'Clientes Principales',
                 description: 'Clientes con más análisis enviados.',
-                chart: <Bar data={{ labels: topClients.map((t) => t[0]), datasets: [{ data: topClients.map((t) => t[1]), backgroundColor: MAIN_COLORS }] }} options={baseChartOptions} />,
+                chart: <Bar data={{ labels: topClients.map((t) => t[0].slice(0, 6) + '.'), datasets: [{ data: topClients.map((t) => t[1]), backgroundColor: MAIN_COLORS, borderRadius: 8 }] }} options={{ ...baseChartOptions, indexAxis: 'y' }} />,
             });
 
-            // 5) Estados (pastel)
-            const byState: Record<string, number> = {};
-            analysis.forEach((a) => (byState[a.status] = (byState[a.status] || 0) + 1));
+            // 5) Tiempo promedio de asesoría (línea por fecha)
+            const byDateMap: Record<string, number[]> = {};
+            analysis.forEach((a) => {
+                const date = new Date(a.timeWhenSolved).toLocaleDateString();
+                const mins = minutesBetween(a.timeWhenChecked, a.timeWhenSolved);
+                if (!byDateMap[date]) byDateMap[date] = [];
+                byDateMap[date].push(mins);
+            });
+
+            const dateLabelsFull = Object.keys(byDateMap).sort(
+                (a, b) => new Date(a).getTime() - new Date(b).getTime()
+            );
+
+            const avgMins = dateLabelsFull.map((d) => {
+                const arrM = byDateMap[d] || [];
+                if (arrM.length === 0) return 0;
+                return arrM.reduce((s, v) => s + v, 0) / arrM.length;
+            });
+
+            const globalAvg =
+                avgMins.length > 0
+                    ? avgMins.reduce((s, v) => s + v, 0) / avgMins.length
+                    : 0;
+
+            const getThreeLabels = (labels: string[]) => {
+                if (labels.length <= 3) return labels;
+                const midIndex = Math.floor(labels.length / 2);
+                return [labels[0], labels[midIndex], labels[labels.length - 1]];
+            };
+            const dateLabels = getThreeLabels(dateLabelsFull);
+
             arr.push({
-                id: 'analysis-states',
-                title: 'Estados de Análisis',
-                description: 'Distribución de estados de análisis.',
-                chart: <Pie data={{ labels: Object.keys(byState), datasets: [{ data: Object.values(byState), borderWidth: 0, backgroundColor: MAIN_COLORS }] }} options={baseChartOptions} />,
+                id: 'analysis-avg-solve',
+                title: 'Tiempo Promedio de Asesoría',
+                description: `Tiempo de atención de asesoría. Global: ${avgMins.length ? formatMinutesWithSeconds(globalAvg) : 'sin datos'}`,
+                chart: (
+                    <Line
+                        data={{
+                            labels: dateLabelsFull,
+                            datasets: [
+                                {
+                                    data: avgMins,
+                                    borderColor: '#A167E8',
+                                    borderWidth: 1,
+                                    backgroundColor: '#A167E833',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 0,
+                                },
+                            ],
+                        }}
+                        options={{
+                            scales: {
+                                x: {
+                                    ticks: {
+                                        callback: function (_, index) {
+                                            const label = dateLabelsFull[index];
+                                            return dateLabels.includes(label) ? label : '';
+                                        },
+                                    },
+                                },
+                            },
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (tooltipItem) {
+                                            const value = tooltipItem.raw as number;
+                                            return formatMinutesWithSeconds(value);
+                                        },
+                                    },
+                                },
+                            },
+                            ...baseChartOptions,
+                        }}
+                    />
+                ),
             });
         }
 
@@ -315,27 +387,92 @@ export default function TemplateMetrics({
         if (type === 'questionnaires') {
             // 1) Cuestionarios por categoría
             const byCat: Record<string, number> = {};
-            questionnaires.forEach((q) => (byCat[q.categoryName] = (byCat[q.categoryName] || 0) + 1));
+
+            questionnaires.forEach((q) => {
+                const category = q.categoryName || 'Sin categoría';
+                byCat[category] = (byCat[category] || 0) + 1;
+            });
+
+            const sortedCategories = Object.entries(byCat).sort(
+                (a, b) => b[1] - a[1]
+            );
+            const filteredData = sortedCategories.filter(([, value]) => value > 0);
+
             arr.push({
                 id: 'q-by-category',
                 title: 'Cuestionarios por Categoría',
-                description: 'Cantidad de cuestionarios por categoría.',
-                chart: <Bar data={{ labels: Object.keys(byCat), datasets: [{ data: Object.values(byCat), backgroundColor: MAIN_COLORS }] }} options={baseChartOptions} />,
+                description: 'Distribución de cuestionarios por categoría.',
+                chart: (
+                    <Doughnut
+                        data={{
+                            labels: filteredData.map(([name]) => name),
+                            datasets: [
+                                {
+                                    data: filteredData.map(([, value]) => value),
+                                    borderWidth: 0,
+                                    backgroundColor: MAIN_COLORS,
+                                },
+                            ],
+                        }}
+                        options={baseChartOptions}
+                    />
+                ),
             });
 
-            // 2) Promedio de preguntas por cuestionario
-            const qMap: Record<number, number> = {};
+            // 2) Promedio de preguntas por categoría (línea)
+            const questionsPerQuestionnaire: Record<number, number> = {};
+
             questions.forEach((q) => {
                 if (!q.questionnaireId) return;
-                qMap[q.questionnaireId] = (qMap[q.questionnaireId] || 0) + 1;
+                questionsPerQuestionnaire[q.questionnaireId] =
+                    (questionsPerQuestionnaire[q.questionnaireId] || 0) + 1;
             });
-            const counts = Object.values(qMap);
-            const avg = counts.length ? Math.round(counts.reduce((s, v) => s + v, 0) / counts.length) : 0;
+
+            const categoryMap: Record<string, number[]> = {};
+            questionnaires.forEach((q) => {
+                const count = questionsPerQuestionnaire[q.id] || 0;
+                if (!categoryMap[q.categoryName]) {
+                    categoryMap[q.categoryName] = [];
+                }
+                categoryMap[q.categoryName].push(count);
+            });
+
+            const categoryData = Object.keys(categoryMap).map((cat) => {
+                const arr = categoryMap[cat];
+                const avg = arr.length
+                    ? Math.round(arr.reduce((sum, v) => sum + v, 0) / arr.length)
+                    : 0;
+                return { name: cat, avg };
+            });
+
+            categoryData.sort((a, b) => b.avg - a.avg);
+
+            const categoryLabels = categoryData.map((c) => c.name.slice(0, 5) + '.');
+            const categoryAverages = categoryData.map((c) => c.avg);
+
             arr.push({
-                id: 'q-avg-questions',
-                title: 'Promedio de Preguntas por Cuestionario',
-                description: `Número promedio de preguntas en los cuestionarios: ${avg}`,
-                chart: <Bar data={{ labels: ['promedio'], datasets: [{ data: [avg], backgroundColor: MAIN_COLORS }] }} options={baseChartOptions} />,
+                id: 'q-avg-questions-by-category',
+                title: 'Promedio de Preguntas',
+                description: 'Promedio de preguntas en cuestionarios por categoría.',
+                chart: (
+                    <Line
+                        data={{
+                            labels: categoryLabels,
+                            datasets: [
+                                {
+                                    data: categoryAverages,
+                                    borderColor: '#A167E8',
+                                    borderWidth: 1,
+                                    backgroundColor: '#A167E833',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 0,
+                                },
+                            ],
+                        }}
+                        options={baseChartOptions}
+                    />
+                ),
             });
 
             // 3) Palabras clave principales (extraídas de preguntas)
@@ -346,25 +483,56 @@ export default function TemplateMetrics({
                 id: 'q-top-keywords',
                 title: 'Palabras Clave Principales',
                 description: 'Palabras clave más frecuentes en las preguntas.',
-                chart: <Bar data={{ labels: topKws.map((t) => t[0]), datasets: [{ data: topKws.map((t) => t[1]), backgroundColor: MAIN_COLORS }] }} options={baseChartOptions} />,
+                chart: <Bar data={{ labels: topKws.map((t) => t[0]), datasets: [{ data: topKws.map((t) => t[1]), backgroundColor: MAIN_COLORS, borderRadius: 8 }] }} options={baseChartOptions} />,
             });
 
             // 4) Distribución de tipos de pregunta
-            const typeMap: Record<string, number> = { abierta: 0, única: 0, múltiple: 0 };
-            const typeTranslation: Record<string, string> = {
-                open: 'abierta',
-                single: 'única',
-                multiple: 'múltiple',
+            const typeMap: Record<QuestionType, number> = {
+                OPEN: 0,
+                SINGLE: 0,
+                MULTIPLE: 0,
             };
+
             questions.forEach((q) => {
-                const translatedType = typeTranslation[q.questionType] || q.questionType;
-                typeMap[translatedType] = (typeMap[translatedType] || 0) + 1;
+                const rawType = q.questionType;
+
+                if (!rawType) return;
+
+                const type = rawType.toUpperCase().trim() as QuestionType;
+
+                if (typeMap[type] !== undefined) {
+                    typeMap[type]++;
+                }
             });
+
+            const filteredEntries = Object.entries(typeMap).filter(([, value]) => value > 0);
+
+            const labelsMap: Record<QuestionType, string> = {
+                OPEN: 'ABIERTA',
+                SINGLE: 'ÚNICA',
+                MULTIPLE: 'MÚLTIPLE',
+            };
+
             arr.push({
                 id: 'q-types',
                 title: 'Tipos de Pregunta',
-                description: 'Conteo de preguntas abiertas / única selección / múltiple selección.',
-                chart: <Pie data={{ labels: Object.keys(typeMap), datasets: [{ data: Object.values(typeMap), borderWidth: 0, backgroundColor: MAIN_COLORS }] }} options={baseChartOptions} />,
+                description:
+                    'Conteo de preguntas abiertas, selección única y múltiple.',
+                chart: (
+                    <Doughnut
+                        data={{
+                            labels: filteredEntries.map(([key]) => labelsMap[key as QuestionType]),
+                            datasets: [
+                                {
+                                    data: filteredEntries.map(([, value]) => value),
+                                    borderWidth: 0,
+                                    backgroundColor: MAIN_COLORS,
+                                },
+                            ],
+                        }}
+                        options={baseChartOptions}
+                    />
+                ),
             });
         }
 
@@ -377,20 +545,140 @@ export default function TemplateMetrics({
                 id: 'u-client-type',
                 title: 'Usuarios por Tipo de Cliente',
                 description: 'Distribución Persona vs Empresa.',
-                chart: <Pie data={{ labels: Object.keys(ctMap), datasets: [{ data: Object.values(ctMap), borderWidth: 0, backgroundColor: MAIN_COLORS }] }} options={baseChartOptions} />,
+                chart: <Doughnut data={{ labels: Object.keys(ctMap), datasets: [{ data: Object.values(ctMap), borderWidth: 0, backgroundColor: MAIN_COLORS }] }} options={baseChartOptions} />,
             });
 
             // 2) Distribución de roles
             const roleMap: Record<string, number> = {};
-            users.forEach((u) => (roleMap[normalizeUserRole(u.role?.id) || 'desconocido'] = (roleMap[normalizeUserRole(u.role?.id) || 'desconocido'] || 0) + 1));
+            users.forEach((u) => (roleMap[normalizeUserRole(u.role.id)] = (roleMap[normalizeUserRole(u.role.id)] || 0) + 1));
             arr.push({
                 id: 'u-roles',
                 title: 'Distribución de Roles',
                 description: 'Cantidad de usuarios por rol.',
-                chart: <Bar data={{ labels: Object.keys(roleMap), datasets: [{ data: Object.values(roleMap), backgroundColor: MAIN_COLORS }] }} options={baseChartOptions} />,
+                chart: <Bar data={{ labels: Object.keys(roleMap), datasets: [{ data: Object.values(roleMap), backgroundColor: MAIN_COLORS, borderRadius: 8 }] }} options={baseChartOptions} />,
             });
 
-            // 3) Por sector (top 6)
+            // 3) Completitud de contacto (stacked)
+            const totalUsers = users.length;
+
+            const countField = (field: keyof typeof users[number]) => {
+                const withField = users.filter((u) => !!u[field]).length;
+
+                return {
+                    withField,
+                    withoutField: totalUsers - withField,
+                };
+            };
+
+            const networkStats = countField("network");
+            const addressStats = countField("address");
+            const phoneStats = countField("phone");
+
+            arr.push({
+                id: "u-contact",
+                title: "Completitud de Contacto",
+                description: "Usuarios con y sin información de contacto.",
+                chart: (
+                    <Bar
+                        data={{
+                            labels: ["Red", "Región", "Teléfono"],
+                            datasets: [
+                                {
+                                    label: "Con dato",
+                                    data: [
+                                        networkStats.withField,
+                                        addressStats.withField,
+                                        phoneStats.withField,
+                                    ],
+                                    backgroundColor: MAIN_COLORS[0],
+                                    borderRadius: 8,
+                                    stack: "total",
+                                },
+                                {
+                                    label: "Sin dato",
+                                    data: [
+                                        networkStats.withoutField,
+                                        addressStats.withoutField,
+                                        phoneStats.withoutField,
+                                    ],
+                                    backgroundColor: MAIN_COLORS[1],
+                                    borderRadius: 8,
+                                    stack: "total",
+                                },
+                            ],
+                        }}
+                        options={{
+                            indexAxis: "y",
+                            scales: {
+                                x: {
+                                    stacked: true,
+                                    beginAtZero: true,
+                                },
+                                y: {
+                                    stacked: true,
+                                },
+                            },
+                            ...baseChartOptions
+                        }}
+                    />
+                ),
+            });
+
+            // 4) Estado de usuarios (Doughnut)
+            const statusMap: Record<string, number> = {};
+
+            users.forEach((u) => {
+                const status = u.status ?? "DESCONOCIDO";
+                statusMap[status] = (statusMap[status] || 0) + 1;
+            });
+
+            const formatStatus = (s: string) => {
+                switch (s) {
+                    case "AUTHORIZED":
+                        return "Autorizado";
+                    case "UNAUTHORIZED":
+                        return "No autorizado";
+                    default:
+                        return "Desconocido";
+                }
+            };
+
+            const colorMap: Record<string, string> = {
+                AUTHORIZED: "#A167E8DD",
+                UNAUTHORIZED: "#6F4FAFDD",
+                DESCONOCIDO: "#999",
+            };
+
+            const filteredEntries = Object.entries(statusMap).filter(
+                ([, value]) => value > 0
+            );
+
+            const labels = filteredEntries.map(([key]) => formatStatus(key));
+            const dataValues = filteredEntries.map(([, value]) => value);
+            const backgroundColor = filteredEntries.map(([key]) => colorMap[key]);
+
+            arr.push({
+                id: "u-status",
+                title: "Estado de Usuarios",
+                description: "Distribución de usuarios según su estado.",
+                chart: (
+                    <Doughnut
+                        data={{
+                            labels,
+                            datasets: [
+                                {
+                                    data: dataValues,
+                                    borderWidth: 0,
+                                    backgroundColor,
+                                },
+                            ],
+                        }}
+                        options={baseChartOptions}
+                    />
+                ),
+            });
+
+            // 5) Por sector (top 6)
             const sectorMap: Record<string, number> = {};
             users.forEach((u) => {
                 const sector = u.sector ?? "N/A"; // si es null o undefined → "N/A"
@@ -406,27 +694,18 @@ export default function TemplateMetrics({
                 chart: (
                     <Bar
                         data={{
-                            labels: topSectors.map(([sector]) => sector),
+                            labels: topSectors.map(([sector]) => sector.slice(0, 6) + '.'),
                             datasets: [
                                 {
                                     data: topSectors.map(([, count]) => count),
                                     backgroundColor: MAIN_COLORS,
+                                    borderRadius: 8
                                 },
                             ],
                         }}
-                        options={baseChartOptions}
+                        options={{ ...baseChartOptions, indexAxis: 'y' }}
                     />
                 ),
-            });
-
-            // 4) Completitud de contacto (teléfono presente vs ausente)
-            const withPhone = users.filter((u) => u.phone).length;
-            const withoutPhone = users.length - withPhone;
-            arr.push({
-                id: 'u-contact',
-                title: 'Completitud de Contacto',
-                description: 'Usuarios con y sin teléfono registrado.',
-                chart: <Pie data={{ labels: ['con teléfono', 'sin teléfono'], datasets: [{ data: [withPhone, withoutPhone], borderWidth: 0, backgroundColor: MAIN_COLORS }] }} options={baseChartOptions} />,
             });
         }
 
@@ -463,14 +742,14 @@ export default function TemplateMetrics({
                 <button
                     onClick={scrollPrev}
                     aria-label="Anterior"
-                    className="absolute top-1/2 left-2 -translate-y-1/2 w-[42px] h-[42px] rounded-full border-none grid place-items-center shadow-[0_6px_18px_rgba(16,24,40,0.08)] btn btn-secondary cursor-pointer z-30"
+                    className="absolute top-1/2 left-2 w-[42px] h-[42px] rounded-full border-none grid place-items-center shadow-[0_6px_18px_rgba(16,24,40,0.08)] btn btn-secondary cursor-pointer z-30 pointer-events-auto"
                 >
                     <ArrowLeft />
                 </button>
                 <button
                     onClick={scrollNext}
                     aria-label="Siguiente"
-                    className="absolute top-1/2 right-2 -translate-y-1/2 w-[42px] h-[42px] rounded-full border-none grid place-items-center shadow-[0_6px_18px_rgba(16,24,40,0.08)] btn btn-secondary cursor-pointer z-30"
+                    className="absolute top-1/2 right-2 w-[42px] h-[42px] rounded-full border-none grid place-items-center shadow-[0_6px_18px_rgba(16,24,40,0.08)] btn btn-secondary cursor-pointer z-30 pointer-events-auto"
                 >
                     <ArrowRight />
                 </button>

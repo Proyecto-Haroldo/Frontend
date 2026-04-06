@@ -305,13 +305,12 @@ const Login: React.FC = () => {
 
       {/* Footer */}
       <footer className='text-base-content/50 w-full text-center flex flex-col items-center justify-center'>
-        <div className="p-6 pb-4">
+        <div className="p-6">
           <ThemeToggle />
         </div>
-        <hr className="text-accent/30 w-[80%] max-w-100 m-0" />
-        <div className='mt-6 mb-2 sm:mb-0 flex flex-col-reverse sm:flex-col gap-1'>
-          <p className='text-xs sm:text-sm'>© {new Date().getFullYear()} Haroldo Finanzas. Todos los derechos reservados.</p>
-          <p className='text-xs sm:text-sm'>Institución Universitaria ITM. Colombia.</p>
+        <div className='mt-0 mb-2 sm:mt-2 sm:mb-0 flex flex-col-reverse sm:flex-col gap-1'>
+          <p className='text-sm'>© {new Date().getFullYear()} Haroldo Finanzas. Todos los derechos reservados.</p>
+          <p className='text-sm'>Institución Universitaria ITM. Colombia.</p>
         </div>
       </footer>
     </div>
