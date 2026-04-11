@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Filter, Search, Eye, Trash, Loader2, Edit } from "lucide-react";
+import { Filter, Search, Eye, Trash2, Loader2, Edit } from "lucide-react";
 import { IUser } from "../../../core/models/user.ts";
 import { motion } from 'motion/react';
 import { IAnalysis } from "../../../core/models/analysis.ts";
@@ -54,6 +54,13 @@ const TemplateUsers: React.FC<TemplateUsersProps> = ({
                     u.clientType.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
+
+        // Ordenar para que los UNAUTHORIZED vayan primero
+        filtered = filtered.sort((a, b) => {
+            if (a.status === "UNAUTHORIZED" && b.status !== "UNAUTHORIZED") return -1;
+            if (a.status !== "UNAUTHORIZED" && b.status === "UNAUTHORIZED") return 1;
+            return 0;
+        });
 
         setFilteredUsers(filtered);
     }, [users, filter, searchTerm]);
@@ -253,34 +260,40 @@ const TemplateUsers: React.FC<TemplateUsersProps> = ({
                     <h2 className="card-title mb-2 lg:mb-4 text-lg">Usuarios</h2>
 
                     <div className="hidden lg:block overflow-x-auto">
-                        <table className="table table-zebra">
+                        <table className="table">
                             <thead>
                                 <tr>
                                     <th>ID</th>
                                     <th>Nombre Legal</th>
+                                    <th>Rol</th>
                                     <th>Cédula/NIT</th>
                                     <th>Tipo</th>
                                     <th>Sector</th>
-                                    <th>Rol</th>
+                                    <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="[&>tr:hover>td]:bg-base-200/70 [&>tr:hover>td:first-child]:rounded-l-lg [&>tr:hover>td:last-child]:rounded-r-lg">
                                 {filteredUsers.map((user) => (
-                                    <tr key={user.userId}>
+                                    <tr key={user.userId} className={user.status === "UNAUTHORIZED" ? "opacity-70" : ""}>
                                         <td>{user.userId}</td>
-                                        <td>{user.legalName}</td>
+                                        <td className="font-semibold">{user.legalName}</td>
+                                        <td>
+                                            <span className="badge badge-outline font-semibold border-0 bg-base-content/30 text-xs badge-sm">{normalizeUserRole(user.role.id)}</span>
+                                        </td>
                                         <td>{user.cedulaOrNIT}</td>
-                                        <td>{user.clientType}</td>
+                                        <td>
+                                            <span className="badge badge-outline font-semibold border-0 bg-base-content/30 capitalize text-xs badge-sm">{user.clientType.toLocaleLowerCase()}</span>
+                                        </td>
                                         <td>{user.sector || "No especificado"}</td>
                                         <td>
-                                            <span className="badge badge-outline border-0 bg-base-content/30 text-xs badge-sm">{normalizeUserRole(user.role.id)}</span>
+                                            <span className="badge badge-outline font-semibold border-0 bg-base-content/30 capitalize text-xs badge-sm">{user.status === "UNAUTHORIZED" ? "Inactivo" : "Activo"}</span>
                                         </td>
                                         <td>
                                             <div className="flex gap-2">
 
                                                 <button
-                                                    className="btn btn-primary btn-xs gap-1 whitespace-nowrap"
+                                                    className="btn btn-info btn-xs gap-1 whitespace-nowrap"
                                                     onClick={() => openDetailsModal(user)}
                                                 >
                                                     <Eye className="h-3 w-3" />
@@ -303,7 +316,7 @@ const TemplateUsers: React.FC<TemplateUsersProps> = ({
                                                     {toDelete === user.userId ? (
                                                         <span className="loading loading-spinner loading-xs" />
                                                     ) : (
-                                                        <Trash className="h-3 w-3" />
+                                                        <Trash2 className="h-3 w-3" />
                                                     )}
                                                     {toDelete === user.userId ? "Eliminando..." : "Eliminar"}
                                                 </button>
@@ -318,20 +331,22 @@ const TemplateUsers: React.FC<TemplateUsersProps> = ({
                     {/* Vista móvil */}
                     <div className="lg:hidden space-y-3">
                         {filteredUsers.map((user) => (
-                            <div key={user.userId} className="card bg-base-200 p-4 space-y-2">
+                            <div key={user.userId} className={`card bg-base-200 p-4 space-y-2 ${user.status === "UNAUTHORIZED" ? "opacity-70" : ""}`}>
                                 <div className="flex justify-between items-start">
-                                    <span className="text-xs text-base-content/70 whitespace-nowrap">
-                                        #{user.userId}
-                                    </span>
-                                    <span className="badge badge-outline border-0 bg-base-content/30 text-xs badge-sm">{normalizeUserRole(user.role.id)}</span>
+                                    <span className="text-xs text-base-content/70 whitespace-nowrap">#{user.userId}</span>
+                                    <span className="badge badge-outline font-semibold border-0 bg-base-content/30 text-xs badge-sm">{user.status === "UNAUTHORIZED" ? "Inactivo" : "Activo"}</span>
                                 </div>
-                                <div>
-                                    <h3 className="font-semibold text-sm">{user.legalName}</h3>
-                                    <p className="text-xs text-base-content/60">{user.cedulaOrNIT}</p>
+                                <div className="flex flex-col">
+                                    <div className="flex justify-between w-full">
+                                        <h3 className="font-semibold text-sm">{user.legalName}</h3>
+                                        <span className="text-xs text-base-content/60">{user.cedulaOrNIT}</span>
+                                    </div>
+                                    <p className="text-xs capitalize text-base-content/70">
+                                        {user.clientType.toLocaleLowerCase()} · {user.sector}
+                                    </p>
+                                    <span className="badge badge-outline font-semibold border-0 bg-base-content/30 text-xs badge-sm mt-2">{normalizeUserRole(user.role.id)}</span>
                                 </div>
-                                <p className="text-xs capitalize text-base-content/70">
-                                    {user.clientType} · {user.sector}
-                                </p>
+
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                     <button
                                         className="btn btn-info btn-xs gap-1"
@@ -340,7 +355,7 @@ const TemplateUsers: React.FC<TemplateUsersProps> = ({
                                         <Eye className="h-3 w-3" /> Ver
                                     </button>
                                     <button
-                                        className="btn btn-primary btn-xs gap-1 whitespace-nowrap"
+                                        className="btn btn-warning btn-xs gap-1 whitespace-nowrap"
                                         onClick={() => openEditModal(user)}
                                     >
                                         <Edit className="h-3 w-3" />
@@ -354,7 +369,7 @@ const TemplateUsers: React.FC<TemplateUsersProps> = ({
                                         {toDelete === user.userId ? (
                                             <span className="loading loading-spinner loading-xs" />
                                         ) : (
-                                            <Trash className="h-3 w-3" />
+                                            <Trash2 className="h-3 w-3" />
                                         )}
                                         {toDelete === user.userId ? "Eliminando..." : "Eliminar"}
                                     </button>

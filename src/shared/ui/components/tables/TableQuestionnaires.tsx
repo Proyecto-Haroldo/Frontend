@@ -37,32 +37,23 @@ const TableQuestionnaires: React.FC<TableQuestionnairesProps> = ({
                     <>
                         {/* Desktop Table */}
                         <div className="hidden lg:block overflow-x-auto">
-                            <table className="table table-zebra">
+                            <table className="table">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Detalles</th>
+                                        <th>Título</th>
+                                        <th>Categoría</th>
                                         <th>Creador</th>
-                                        <th>ID Creador</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className="[&>tr:hover>td]:bg-base-200/70 [&>tr:hover>td:first-child]:rounded-l-lg [&>tr:hover>td:last-child]:rounded-r-lg">
                                     {questionnaires.map((q) => (
                                         <tr key={q.id}>
                                             <td>{q.id}</td>
-                                            <td>
-                                                <div className="flex flex-col items-start justify-center">
-                                                    <h3 className="text-md font-bold">
-                                                        {q.title || "Sin determinar"}
-                                                    </h3>
-                                                    <div className="flex mt-2 capitalize text-base text-xs font-normal card h-auto badge-outline text-center border-0 bg-base-content/30 badge-sm">
-                                                        {q.categoryName}
-                                                    </div>
-                                                </div>
-                                            </td>
+                                            <td className="font-semibold">{q.title}</td>
+                                            <td>{q.categoryName}</td>
                                             <td>{q.creatorName}</td>
-                                            <td>{q.creatorId}</td>
                                             <td>
                                                 <div className="flex gap-2">
                                                     <button

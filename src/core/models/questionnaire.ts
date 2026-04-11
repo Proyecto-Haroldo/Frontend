@@ -1,5 +1,5 @@
 import { JSX } from 'react';
-import { categories } from '../../../public/assets/Categories';
+import { categoriesIcons } from '../../../public/assets/Categories';
 
 export interface IQuestionnaire {
     id: number;
@@ -13,10 +13,10 @@ export interface IQuestionnaire {
 export interface ICategoryDTO {
     categoryId: number;
     title: string;
-    icon: number;
     description: string;
-    decimalvalue: number;
-    questionnaires: any[];
+    icon: number;
+    decimalvalue?: number;
+    questionnaires?: any[];
 }
 
 export interface ICategory {
@@ -33,19 +33,17 @@ export interface ICategoryIcon {
 
 // API → Frontend
 export const mapCategoryFromDTO = (apiCategory: ICategoryDTO): ICategory => {
-    const categoryFound = categories.find(
+    const categoryFound = categoriesIcons.find(
         (cat) => cat.id === apiCategory.icon
     );
 
-    if (!categoryFound) {
-        throw new Error(`Category with id ${apiCategory.icon} not found`);
-    }
+    const defaultIcon = categoriesIcons.find((cat) => cat.id === 0);
 
     return {
         id: apiCategory.categoryId,
         name: apiCategory.title,
         description: apiCategory.description,
-        icon: categoryFound.icon
+        icon: categoryFound || defaultIcon!
     };
 };
 

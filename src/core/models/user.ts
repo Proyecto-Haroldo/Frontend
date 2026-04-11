@@ -1,3 +1,5 @@
+import { ICategoryDTO } from "./questionnaire";
+
 export type ClientType = "PERSONA" | "EMPRESA";
 
 export type UserStatus = "AUTHORIZED" | "UNAUTHORIZED";
@@ -18,6 +20,7 @@ export interface IUser {
   role: IRole;
   status?: UserStatus;
   phone?: string;
-  address?: string;
+  location?: string;
   network?: string;
+  specialities?: ICategoryDTO[];
 }

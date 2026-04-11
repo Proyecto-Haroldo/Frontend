@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState, useRef } from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import { Check, X } from 'lucide-react';
 
 export interface PasswordStrengthProps {
@@ -14,7 +14,6 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = ({
   inputRef,
   onClose 
 }) => {
-  const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
   const strengthRef = useRef<HTMLDivElement>(null);
 
   const strength = useMemo(() => {
@@ -77,21 +76,6 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = ({
     }
   }, [isVisible, inputRef, onClose]);
 
-  // Update position when visible
-  useEffect(() => {
-    if (inputRef.current && isVisible) {
-      const rect = inputRef.current.getBoundingClientRect();
-      const scrollY = window.scrollY || document.documentElement.scrollTop;
-      const scrollX = window.scrollX || document.documentElement.scrollLeft;
-      
-      setPosition({
-        top: rect.bottom + scrollY + 8,
-        left: rect.left + scrollX,
-        width: rect.width
-      });
-    }
-  }, [isVisible, inputRef, password]);
-
   if (!isVisible || !password) return null;
 
   const requirements = [
@@ -105,14 +89,7 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = ({
   return (
     <div
       ref={strengthRef}
-      className="fixed bg-base-100 border border-base-300 rounded-xl shadow-xl p-5 max-w-sm"
-      style={{
-        top: `${position.top}px`,
-        left: `${position.left}px`,
-        width: `${Math.max(position.width, 300)}px`,
-        zIndex: 9999
-      }}
-    >
+      className="absolute left-0 top-full mt-3 bg-base-200 w-[calc(100%-40px)] rounded-xl shadow-xl p-5 z-100">
       {/* Strength indicator */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">

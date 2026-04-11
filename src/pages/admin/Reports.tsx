@@ -193,8 +193,8 @@ export default function AdminReports() {
             <div className="container space-y-6">
                 {/* Header */}
                 <header>
-                    <h1 className="text-2xl font-bold">Reportes del Administrador</h1>
-                    <p className="text-gray-600 mt-1">Visualiza estadísticas relevantes de usuarios, cuestionarios y análisis. Utiliza los filtros para obtener información específica.</p>
+                    <h1 className="text-2xl font-bold">Reportes Administrativos</h1>
+                    <p className="text-base-content/70 mt-1">Visualiza estadísticas relevantes de usuarios, cuestionarios y análisis. Utiliza los filtros para obtener información específica.</p>
                 </header>
 
                 {/* Simple filters */}
@@ -206,7 +206,7 @@ export default function AdminReports() {
                         <option value="year">Último año</option>
                     </select>
                     <button
-                        className="btn m-1 btn-sm gap-2 hover:bg-primary bg-secondary text-white transition"
+                        className="btn m-1 btn-sm gap-2 hover:bg-primary bg-primary text-white transition"
                         onClick={() => setShowAdvancedFilters(true)}
                     >
                         Filtros avanzados
@@ -286,7 +286,7 @@ export default function AdminReports() {
                                     <div className="md:col-span-1 col-span-3 flex flex-col bg-base-100 card p-4 h-42">
                                         <h3 className="font-semibold mb-2">Estado</h3>
                                         <div className="flex flex-row gap-2 flex-wrap overflow-y-auto">
-                                            {["pending", "completed", "in-progress"]
+                                            {["pending", "completed", "pending"]
                                                 .filter(s => s.toLowerCase().includes(searchText.toLowerCase()))
                                                 .map(s => (
                                                     <button

@@ -148,7 +148,7 @@ const HeaderStats: React.FC<HeaderStatsProps> = ({
         <div className="container mx-auto space-y-4 md:space-y-5">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <h1 className="text-2xl font-semibold">Panel Administrativo</h1>
+                <h1 className="text-2xl font-semibold">{role === 1 ? 'Panel Administrativo' : 'Panel de Asesoría'}</h1>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-4">
                     <button onClick={() => {
                         if (role === 3) {
@@ -172,7 +172,18 @@ const HeaderStats: React.FC<HeaderStatsProps> = ({
 
             {/* Statistics Section */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-                <StatCard label="Total Cuestionarios" value={stats.total} valueClass="text-primary" icon={<FileText className="h-8 w-8 text-primary" />} />
+                <StatCard
+                    label="Total Cuestionarios"
+                    value={stats.total}
+                    icon={<FileText className="h-8 w-8 text-primary" />}
+                    valueClass="text-primary"
+                />
+                <StatCard
+                    label="Asesorados"
+                    value={uniqueClients}
+                    icon={<Users className="h-8 w-8 text-info" />}
+                    valueClass="text-info"
+                />
                 <StatCard
                     label="Pendientes"
                     value={stats.pending}
@@ -184,12 +195,6 @@ const HeaderStats: React.FC<HeaderStatsProps> = ({
                     value={stats.completed}
                     icon={<CheckCircle className="h-8 w-8 text-success" />}
                     valueClass="text-success"
-                />
-                <StatCard
-                    label="Asesorados"
-                    value={uniqueClients}
-                    icon={<Users className="h-8 w-8 text-info" />}
-                    valueClass="text-info"
                 />
             </div>
 

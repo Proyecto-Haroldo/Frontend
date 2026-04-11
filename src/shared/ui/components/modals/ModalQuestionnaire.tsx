@@ -284,7 +284,7 @@ const ModalQuestionnaire: React.FC<ModalQuestionnaireProps> = ({
                             </div>
 
                             {questions.length === 0 ? (
-                                <div className="text-center text-sm py-8 text-base-content/50 bg-base-200 rounded-lg">
+                                <div className="text-center text-sm py-8 text-base-content/50 bg-base-200 rounded-xl">
                                     No hay preguntas agregadas...
                                 </div>
                             ) : (
@@ -295,7 +295,7 @@ const ModalQuestionnaire: React.FC<ModalQuestionnaireProps> = ({
                                                 <div className="flex justify-between items-start gap-4">
                                                     <div className="flex-1">
                                                         <div className="flex items-center gap-2 mb-1">
-                                                            <span className="badge badge-outline border-0 bg-base-content/30 text-xs badge-sm">
+                                                            <span className="badge badge-outline font-semibold border-0 bg-base-content/30 text-xs badge-sm">
                                                                 {question.questionType === 'OPEN' && 'Abierta'}
                                                                 {question.questionType === 'SINGLE' && 'Única'}
                                                                 {question.questionType === 'MULTIPLE' && 'Múltiple'}

@@ -96,7 +96,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-dvh p-5 md:p-8 flex flex-col items-center justify-center bg-base-200 relative overflow-hidden font-family">
+    <div className="min-h-dvh p-6 md:p-8 md:pb-6 flex flex-col items-center justify-center bg-base-200 relative overflow-hidden font-family">
       {/* Animated background elements */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -121,7 +121,7 @@ const Login: React.FC = () => {
             animate={{ y: [0, 20, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 2 }}
           >
-            <PiggyBank className="w-32 h-32 text-secondary" />
+            <PiggyBank className="w-32 h-32 text-primary" />
           </motion.div>
           <motion.div
             animate={{ y: [0, -20, 0] }}
@@ -136,7 +136,7 @@ const Login: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md p-8 space-y-8 bg-base-100 rounded-xl shadow-2xl relative z-10"
+        className="w-full max-w-md p-8 space-y-4 bg-base-100 rounded-xl shadow-xl relative z-10"
       >
         <div className="text-center">
           <motion.div
@@ -145,7 +145,7 @@ const Login: React.FC = () => {
             transition={{ delay: 0.2, type: "spring" }}
             className="mb-4"
           >
-            <HFIsotype className="w-16 h-16 mx-auto animate-pulse" />
+            <HFIsotype className="w-16 h-16 mx-auto" />
           </motion.div>
           <motion.h1
             initial={{ scale: 0.8 }}
@@ -292,11 +292,11 @@ const Login: React.FC = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-center"
+          className="text-center pt-2"
         >
           <p className="text-sm text-base-content/70">
             ¿No tienes cuenta?{' '}
-            <Link to="/signup" className="text-primary hover:underline">
+            <Link to="/signup" className="text-primary font-semibold hover:underline">
               Regístrate
             </Link>
           </p>
@@ -304,13 +304,9 @@ const Login: React.FC = () => {
       </motion.div>
 
       {/* Footer */}
-      <footer className='text-base-content/50 w-full text-center flex flex-col items-center justify-center'>
-        <div className="p-6">
+      <footer className='text-base-content/70 w-full text-center flex flex-col items-center justify-center'>
+        <div className="pt-6">
           <ThemeToggle />
-        </div>
-        <div className='mt-0 mb-2 sm:mt-2 sm:mb-0 flex flex-col-reverse sm:flex-col gap-1'>
-          <p className='text-sm'>© {new Date().getFullYear()} Haroldo Finanzas. Todos los derechos reservados.</p>
-          <p className='text-sm'>Institución Universitaria ITM. Colombia.</p>
         </div>
       </footer>
     </div>

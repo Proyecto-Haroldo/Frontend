@@ -6,6 +6,7 @@ interface Props {
   name: string;
   categories: ICategory[];
   value: number[]; // ids seleccionados
+  readOnly?: boolean;
   onChange: (selected: number[]) => void;
 }
 
@@ -13,6 +14,7 @@ const SelectCategories: React.FC<Props> = ({
   name,
   categories,
   value,
+  readOnly = false,
   onChange,
 }) => {
   const [search, setSearch] = useState("");
@@ -22,7 +24,7 @@ const SelectCategories: React.FC<Props> = ({
     setSelected(value);
   }, [value]);
 
-  const normalize = (str: string) =>
+  const normalize = (str: string = "") =>
     str
       .toLowerCase()
       .normalize("NFD")
@@ -39,7 +41,9 @@ const SelectCategories: React.FC<Props> = ({
     onChange(updated);
   };
 
-  const filtered = categories.filter((cat) => {
+  const filtered: ICategory[] = (categories ?? []).filter((cat) => {
+    if (!cat || !cat.name) return false;
+
     const normalizedTitle = normalize(cat.name);
     const normalizedSearch = normalize(search);
 
@@ -55,6 +59,33 @@ const SelectCategories: React.FC<Props> = ({
     const bSel = selected.includes(b.id);
     return aSel === bSel ? 0 : aSel ? -1 : 1;
   });
+
+  if (readOnly) return (
+    <div className="w-full flex flex-col gap-3">
+      {/* Options (solo visual) */}
+      <div className="flex flex-wrap gap-2 max-h-45 overflow-y-auto pr-1">
+        {filtered.map((cat) => {
+          const active = selected.includes(cat.id);
+
+          return (
+            <div
+              key={cat.id}
+              className={`
+              flex items-center justify-between gap-2
+              px-3 py-1 rounded-full text-sm border
+              opacity-80
+              ${active
+                  ? "bg-primary/60 border-transparent"
+                  : "border-base-content/30"}
+            `}
+            >
+              {cat.name}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 
   return (
     <div className="w-full flex flex-col gap-3">
@@ -74,7 +105,7 @@ const SelectCategories: React.FC<Props> = ({
       </div>
 
       {/* Options */}
-      <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto pr-1">
+      <div className="flex flex-wrap gap-2 max-h-45 overflow-y-auto pr-1">
         {filtered.map((cat) => {
           const active = selected.includes(cat.id);
 

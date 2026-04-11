@@ -1,13 +1,9 @@
 import { useMemo, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  FileText,
+  ClipboardList,
   ArrowRight,
-  Clock,
-  CheckCircle,
   AlertCircle,
-  AlertTriangle,
-  XCircle,
   Filter
 } from 'lucide-react';
 import { getUserAnalysis } from '../../api/analysisApi';
@@ -52,25 +48,12 @@ function Analysis() {
     };
   }, [userId]);
 
-  const getStatusIcon = (status: string) => {
-    switch (status?.toUpperCase()) {
-      case 'CHECKED':
-      case 'COMPLETED':
-        return <CheckCircle className="min-h-5 min-w-5 max-h-5 max-w-5 text-success" />;
-      case 'IN-PROGRESS':
-      case 'PENDING':
-        return <Clock className="min-h-5 min-w-5 max-h-5 max-w-5 text-warning" />;
-      default:
-        return <AlertCircle className="min-h-5 min-w-5 max-h-5 max-w-5 text-base-content/50" />;
-    }
-  };
-
   const getStatusText = (status: string) => {
     switch (status?.toUpperCase()) {
       case 'CHECKED':
       case 'COMPLETED':
         return 'Completado';
-      case 'IN-PROGRESS':
+      case 'pending':
       case 'PENDING':
         return 'En revisión';
       default:
@@ -78,16 +61,29 @@ function Analysis() {
     }
   };
 
-  const getSeverityIcon = (color: IAnalysis['colorSemaforo']) => {
+  const getStatusDot = (status: string) => {
+    switch (status?.toUpperCase()) {
+      case 'CHECKED':
+      case 'COMPLETED':
+        return <div className="min-w-3 w-3 aspect-[1/1] rounded-full bg-primary text-primary-content" />;
+      case 'pending':
+      case 'PENDING':
+        return <div className="min-w-3 w-3 aspect-[1/1] rounded-full bg-secondary text-secondary-content" />;
+      default:
+        return <div className="min-w-3 w-3 aspect-[1/1] rounded-full bg-base-content/50 text-base-content" />;
+    }
+  };
+
+  const getSeverityDot = (color: IAnalysis['colorSemaforo']) => {
     switch (color) {
       case 'verde':
-        return <CheckCircle className="min-h-4 min-w-4 max-h-4 max-w-4 text-success" />;
+        return <div className="min-w-3 w-3 aspect-[1/1] rounded-full bg-success text-success-content" />;
       case 'amarillo':
-        return <AlertTriangle className="min-h-4 min-w-4 max-h-4 max-w-4 text-warning" />;
+        return <div className="min-w-3 w-3 aspect-[1/1] rounded-full bg-warning text-warning-content" />;
       case 'rojo':
-        return <XCircle className="min-h-4 min-w-4 max-h-4 max-w-4 text-error" />;
+        return <div className="min-w-3 w-3 aspect-[1/1] rounded-full bg-error text-error-content" />;
       default:
-        return <AlertCircle className="min-h-4 min-w-4 max-h-4 max-w-4 text-base-content/50" />;
+        return <div className="min-w-3 w-3 aspect-[1/1] rounded-full bg-base-content/50 text-base-content" />;
     }
   };
 
@@ -213,7 +209,7 @@ function Analysis() {
               {analysis && analysis.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-16">
                   <div className="text-center">
-                    <FileText className="h-16 w-16 mx-auto text-base-content/30 mb-4" />
+                    <ClipboardList className="h-16 w-16 mx-auto text-base-content/30 mb-4" />
                     <p className="text-lg font-medium text-base-content/60 mb-2">No hay análisis disponibles.</p>
                     <p className="text-sm text-base-content/40">Complete un cuestionario para ver su primer análisis.</p>
                   </div>
@@ -238,7 +234,7 @@ function Analysis() {
               )}
               {analysis && filteredAndSortedAnalysis.map((item, index) => {
                 const isChecked = item.status?.toUpperCase() === 'CHECKED';
-                const status: AnalysisStatus = isChecked ? 'completed' : 'in-progress';
+                const status: AnalysisStatus = isChecked ? 'completed' : 'pending';
                 const progress = calculateTotalProgress(isChecked);
 
                 return (
@@ -248,38 +244,42 @@ function Analysis() {
                       className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 hover:bg-base-200/70 transition-colors cursor-pointer ${index !== analysisLength - 1 ? 'border-b border-base-200' : ''}`}
                       onClick={() => handleAnalysisClick(item)}
                     >
-                      <div className='flex gap-4'>
-                        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                          <FileText className="h-5 w-5 text-primary" />
+                      <div className='flex gap-4 items-center'>
+                        <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <ClipboardList className="h-6 w-6 text-primary" />
                         </div>
                         <div className="flex-1 min-w-0>">
                           <div className="flex flex-col gap-1">
                             <p className="text-xs text-base-content/70">Análisis #{item.analysisId} · {formatDate(item?.timeWhenSolved || new Date().toISOString())}</p>
-
                             <div className="flex gap-2 w-full items-start justify-start min-w-0">
-                              <h3 className="font-medium flex-1 min-w-0 truncate sm:max-w-[40vw] md:max-w-[25vw] lg:max-w-[35vw] xl:max-w-[45vw]">
-                                {item.questionnaireTitle || "Sin determinar"}
-                              </h3>
-                              <div className="flex-shrink-0">
-                                {getSeverityIcon(item.colorSemaforo)}
+                              <div className="flex-shrink-0 mt-1">
+                                {getSeverityDot(item.colorSemaforo)}
+                              </div>
+                              <div className="flex w-full flex-col items-start justify-start min-w-0">
+                                <h3 className="font-medium flex-1 min-w-0 truncate sm:w-[40vw] md:w-[25vw] lg:w-[35vw] xl:w-[45vw]">
+                                  {item.questionnaireTitle || "Sin determinar"}
+                                </h3>
+                                <p className="text-base-content/70 text-xs font-semibold">
+                                  {item.categoryName}
+                                </p>
                               </div>
                             </div>
-
-                            <span className="rounded-full w-fit text-center badge-outline border-0 bg-base-content/30 text-xs badge-sm">
-                              {item.categoryName}
-                            </span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-4 flex-wrap-reverse justify-end">
+                      <div className="flex items-center gap-4 flex-wrap-reverse justify-end self-end">
                         <div className="text-right w-25 flex flex-col items-end justify-end">
                           <div className="flex items-center gap-2 justify-start w-full mb-1">
+                            {getStatusDot(status)}
                             <p className="text-sm font-medium">{getStatusText(status)}</p>
-                            {getStatusIcon(status)}
                           </div>
                           <div className="flex items-center gap-2 justify-start w-full">
-                            <progress className="progress progress-primary w-full" value={progress} max="100" />
+                            <progress
+                              className={`progress ${progress === 100 ? "progress-primary" : "progress-secondary"} w-full`}
+                              value={progress}
+                              max="100"
+                            />
                             <span className="text-sm text-base-content/70">{progress}%</span>
                           </div>
                         </div>

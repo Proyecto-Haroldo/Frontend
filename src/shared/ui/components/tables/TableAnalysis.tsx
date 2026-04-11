@@ -19,7 +19,7 @@ const TableAnalysis: React.FC<TableAnalysisProps> = ({
         switch (state?.toUpperCase()) {
             case "PENDING":
                 return (
-                    <span className="badge badge-warning p-2 badge-sm gap-1 text-xs">
+                    <span className="badge badge-secondary font-semibold p-2 badge-sm gap-1 text-xs">
                         <Clock className="h-3 w-3" />
                         <span className="hidden sm:inline">Pendiente</span>
                         <span className="sm:hidden">Pend.</span>
@@ -28,7 +28,7 @@ const TableAnalysis: React.FC<TableAnalysisProps> = ({
             case "CHECKED":
             case "COMPLETED":
                 return (
-                    <span className="badge badge-success p-2 badge-sm gap-1 text-xs">
+                    <span className="badge badge-primary font-semibold p-2 badge-sm gap-1 text-xs">
                         <CheckCircle className="h-3 w-3" />
                         <span className="hidden sm:inline">Completado</span>
                         <span className="sm:hidden">Comp.</span>
@@ -36,7 +36,7 @@ const TableAnalysis: React.FC<TableAnalysisProps> = ({
                 );
             default:
                 return (
-                    <span className="badge badge-neutral p-2 badge-sm text-xs">
+                    <span className="badge badge-neutral font-semibold p-2 badge-sm text-xs">
                         <span className="hidden sm:inline">Desconocido</span>
                         <span className="sm:hidden">Desc.</span>
                     </span>
@@ -48,17 +48,17 @@ const TableAnalysis: React.FC<TableAnalysisProps> = ({
         switch (color) {
             case "verde":
                 return (
-                    <span className="badge badge-success p-2 badge-sm text-xs">Verde</span>
+                    <span className="badge badge-success font-semibold p-2 badge-sm text-xs">Verde</span>
                 );
             case "amarillo":
                 return (
-                    <span className="badge badge-warning p-2 badge-sm text-xs">Amarillo</span>
+                    <span className="badge badge-warning font-semibold p-2 badge-sm text-xs">Amarillo</span>
                 );
             case "rojo":
-                return <span className="badge badge-error p-2 badge-sm text-xs">Rojo</span>;
+                return <span className="badge badge-error font-semibold p-2 badge-sm text-xs">Rojo</span>;
             default:
                 return (
-                    <span className="badge badge-neutral p-2 badge-sm text-xs">
+                    <span className="badge badge-neutral font-semibold p-2 badge-sm text-xs">
                         Sin clasificar
                     </span>
                 );
@@ -82,7 +82,7 @@ const TableAnalysis: React.FC<TableAnalysisProps> = ({
                     <>
                         {/* Desktop */}
                         <div className="hidden lg:block overflow-x-auto">
-                            <table className="table table-zebra">
+                            <table className="table">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
@@ -96,16 +96,14 @@ const TableAnalysis: React.FC<TableAnalysisProps> = ({
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className="[&>tr:hover>td]:bg-base-200/70 [&>tr:hover>td:first-child]:rounded-l-lg [&>tr:hover>td:last-child]:rounded-r-lg">
                                     {analysis.map((a) => (
                                         <tr key={a.analysisId}>
                                             <td>{a.analysisId}</td>
-                                            <td>{a.clientName}</td>
+                                            <td className="font-semibold">{a.clientName}</td>
                                             <td>{a.asesorName || 'Sin Asignar'}</td>
                                             <td>{a.questionnaireTitle}</td>
-                                            <td>
-                                                <span className="card h-auto badge-outline text-center border-0 bg-base-content/30 text-xs badge-sm">{a.categoryName}</span>
-                                            </td>
+                                            <td>{a.categoryName}</td>
                                             <td>{getStatusBadge(a.status)}</td>
                                             <td>{getColorBadge(a.colorSemaforo)}</td>
                                             <td>
@@ -159,7 +157,7 @@ const TableAnalysis: React.FC<TableAnalysisProps> = ({
                                                 {getColorBadge(a.colorSemaforo)}
                                             </div>
                                             <button
-                                                className="btn btn-primary btn-xs gap-1 flex-shrink-0"
+                                                className="btn btn-info btn-xs gap-1 flex-shrink-0"
                                                 onClick={() => handleViewDetails(a)}
                                             >
                                                 <Eye className="h-3 w-3" />

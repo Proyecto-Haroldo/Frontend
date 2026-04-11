@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { IUser } from "../../../../core/models/user";
 import { putUserById } from "../../../../api/usersApi";
 import DialogConfirmEdit from "../dialogs/DialogConfirmEdit";
+import SelectCategories from "../selects/SelectCategories";
+import useCategories from "../../../hooks/useCategories";
 
 interface ModalEditUserProps {
     user: IUser;
@@ -17,6 +19,11 @@ const ModalEditUser: React.FC<ModalEditUserProps> = ({
     const [formData, setFormData] = useState<IUser>(user);
     const [showConfirm, setShowConfirm] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [selectedCategories, setSelectedCategories] = useState<number[]>(
+        user.specialities?.map((s) => s.categoryId) || []
+    );
+
+    const { categories } = useCategories();
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -31,7 +38,11 @@ const ModalEditUser: React.FC<ModalEditUserProps> = ({
     const handleConfirmEdit = async () => {
         setLoading(true);
         try {
-            const updated = await putUserById(formData.userId, formData);
+            const selectedFullCategories = (formData.specialities ?? []).filter((cat) => selectedCategories.includes(cat.categoryId));
+            const updated = await putUserById(formData.userId, {
+                ...formData,
+                specialities: selectedFullCategories,
+            });
             onUpdate(updated);
             onClose();
         } catch (error) {
@@ -60,7 +71,7 @@ const ModalEditUser: React.FC<ModalEditUserProps> = ({
                         <form className="space-y-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label htmlFor="legalName" className="text-sm font-medium text-base-content/70">
+                                    <label htmlFor="legalName" className="text-sm font-medium text-base-content">
                                         Nombre Legal
                                     </label>
                                     <input
@@ -69,12 +80,12 @@ const ModalEditUser: React.FC<ModalEditUserProps> = ({
                                         name="legalName"
                                         value={formData.legalName}
                                         onChange={handleChange}
-                                        className="input input-bordered w-full"
+                                        className="input input-bordered w-full text-sm text-base-content/70"
                                     />
                                 </div>
 
                                 <div>
-                                    <label htmlFor="cedulaOrNIT" className="text-sm font-medium text-base-content/70">
+                                    <label htmlFor="cedulaOrNIT" className="text-sm font-medium text-base-content">
                                         Cédula / NIT
                                     </label>
                                     <input
@@ -83,12 +94,12 @@ const ModalEditUser: React.FC<ModalEditUserProps> = ({
                                         name="cedulaOrNIT"
                                         value={formData.cedulaOrNIT}
                                         onChange={handleChange}
-                                        className="input input-bordered w-full"
+                                        className="input input-bordered w-full text-sm text-base-content/70"
                                     />
                                 </div>
 
                                 <div>
-                                    <label htmlFor="email" className="text-sm font-medium text-base-content/70">
+                                    <label htmlFor="email" className="text-sm font-medium text-base-content">
                                         Correo Electrónico
                                     </label>
                                     <input
@@ -97,12 +108,12 @@ const ModalEditUser: React.FC<ModalEditUserProps> = ({
                                         name="email"
                                         value={formData.email}
                                         onChange={handleChange}
-                                        className="input input-bordered w-full"
+                                        className="input input-bordered w-full text-sm text-base-content/70"
                                     />
                                 </div>
 
                                 <div>
-                                    <label htmlFor="clientType" className="text-sm font-medium text-base-content/70">
+                                    <label htmlFor="clientType" className="text-sm font-medium text-base-content">
                                         Tipo de Cliente
                                     </label>
                                     <select
@@ -110,7 +121,7 @@ const ModalEditUser: React.FC<ModalEditUserProps> = ({
                                         title="clientType"
                                         value={formData.clientType}
                                         onChange={handleChange}
-                                        className="select select-bordered w-full"
+                                        className="select select-bordered w-full text-sm text-base-content/70"
                                     >
                                         <option value="persona">Persona</option>
                                         <option value="empresa">Empresa</option>
@@ -118,7 +129,7 @@ const ModalEditUser: React.FC<ModalEditUserProps> = ({
                                 </div>
 
                                 <div>
-                                    <label htmlFor="sector" className="text-sm font-medium text-base-content/70">
+                                    <label htmlFor="sector" className="text-sm font-medium text-base-content">
                                         Sector
                                     </label>
                                     <input
@@ -127,28 +138,103 @@ const ModalEditUser: React.FC<ModalEditUserProps> = ({
                                         name="sector"
                                         value={formData.sector}
                                         onChange={handleChange}
-                                        className="input input-bordered w-full"
+                                        className="input input-bordered w-full text-sm text-base-content/70"
                                     />
                                 </div>
 
                                 <div>
-                                    <label htmlFor="name" className="text-sm font-medium text-base-content/70">
+                                    <label htmlFor="location" className="text-sm font-medium text-base-content">
+                                        Región
+                                    </label>
+                                    <input
+                                        type="text"
+                                        title="location"
+                                        name="location"
+                                        value={formData.location || ""}
+                                        onChange={handleChange}
+                                        className="input input-bordered w-full text-sm text-base-content/70"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="phone" className="text-sm font-medium text-base-content">
+                                        Teléfono
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="phone"
+                                        title="phone"
+                                        value={formData.phone || ""}
+                                        onChange={handleChange}
+                                        className="input input-bordered w-full text-sm text-base-content/70"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="network" className="text-sm font-medium text-base-content">
+                                        Red
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="network"
+                                        title="network"
+                                        value={formData.network || ""}
+                                        onChange={handleChange}
+                                        className="input input-bordered w-full text-sm text-base-content/70"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="status" className="text-sm font-medium text-base-content">
+                                        Estado
+                                    </label>
+                                    <select
+                                        name="status"
+                                        title="status"
+                                        value={formData.status || ""}
+                                        onChange={handleChange}
+                                        className="select select-bordered w-full text-sm text-base-content/70"
+                                    >
+                                        <option value="">Seleccionar</option>
+                                        <option value="AUTHORIZED">Activo</option>
+                                        <option value="UNAUTHORIZED">Inactivo</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="role" className="text-sm font-medium text-base-content">
                                         Rol
                                     </label>
                                     <input
                                         type="text"
-                                        title="name"
-                                        name="name"
+                                        title="role"
+                                        name="role"
                                         value={formData.role.name}
                                         disabled
-                                        className="input input-bordered w-full opacity-70"
+                                        className="input input-bordered w-full"
                                     />
                                 </div>
                             </div>
+
+                            {formData.role.id === 3 && (
+                                <div className="flex flex-col gap-2">
+                                    <label htmlFor="specialties" className="text-sm font-medium text-base-content">
+                                        Especialidades
+                                    </label>
+                                    <SelectCategories
+                                        name="categories"
+                                        categories={categories || []}
+                                        value={selectedCategories}
+                                        onChange={(value) => {
+                                            setSelectedCategories(value);
+                                        }}
+                                    />
+                                </div>
+                            )}
                         </form>
 
                         <div className="flex justify-end mt-6 gap-2">
-                            <button onClick={onClose} className="btn btn-outline">
+                            <button onClick={onClose} className="btn btn-ghost">
                                 Cancelar
                             </button>
                             <button

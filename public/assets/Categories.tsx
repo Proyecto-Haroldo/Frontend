@@ -8,10 +8,12 @@ import {
     LineChart,
     BanknoteArrowUp,
     TrendingUp,
+    Wallet,
+    Blocks
 } from "lucide-react";
 import { ICategory, ICategoryIcon } from "../../src/core/models/questionnaire";
 
-export const categories: ICategory[] = [
+export const defaultCategories: ICategory[] = [
     {
         id: 1,
         name: 'Estrategia',
@@ -92,16 +94,28 @@ export const categories: ICategory[] = [
             id: 9,
             svg: <TrendingUp className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
         }
+    },
+    {
+        id: 10,
+        name: 'Finanzas Personales',
+        description: 'Gestión del dinero personal, ahorro e inversiones individuales',
+        icon: {
+            id: 10,
+            svg: <Wallet className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
+        }
     }
 ];
 
 export const categoriesIcons: ICategoryIcon[] = [
     {
+        id: 0,
+        svg: <Blocks className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
+    },
+    {
         id: 1,
         svg: <Lightbulb className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
     },
     {
-
         id: 2,
         svg: <Calculator className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
     },
@@ -132,5 +146,9 @@ export const categoriesIcons: ICategoryIcon[] = [
     {
         id: 9,
         svg: <TrendingUp className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
+    },
+    {
+        id: 10,
+        svg: <Wallet className="w-10 h-10 lg:w-12 lg:h-12 2xl:w-14 2xl:h-14 text-primary" />
     }
 ];

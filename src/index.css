@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 @import "tailwindcss";
 @plugin "daisyui";
 
@@ -8,29 +8,27 @@
   prefersdark: false;
   color-scheme: "light";
   --color-base-100: oklch(98% 0.003 247.858);
-  --color-base-200: #efedf2;
+  --color-base-200: oklch(94% 0.006 300);
   --color-base-300: oklch(89% 0.057 293.283);
   --color-base-content: oklch(40% 0.006 56.043);
-  --color-primary: #8761b8;
-  --color-primary-content: oklch(98% 0.002 247.839);
-  --color-secondary: #61428a;
-  --color-secondary-content: oklch(98% 0 0);
-  --color-light-purple: #8761b8;
-  --color-dark-purple: #61428a;
-  --color-navigator: #f5f4f7;
+  --color-primary: oklch(60% 0.116 302);
+  --color-primary-content: oklch(98% 0.006 56.043);
+  --color-secondary: oklch(54% 0.086 257);
+  --color-secondary-content: oklch(96% 0.04 265);
+  --color-navigator: oklch(96.88% 0.004 301.42);
   --color-accent: oklch(21% 0.006 285.885);
   --color-accent-content: oklch(100% 0 0);
   --color-neutral: oklch(21% 0.006 56.043);
   --color-neutral-content: oklch(98% 0.001 106.423);
-  --color-info: oklch(75% 0.1 293.571);
-  --color-info-content: oklch(22% 0.091 267.935);
-  --color-success: oklch(84% 0.238 128.85);
-  --color-success-content: oklch(27% 0.072 132.109);
-  --color-warning: oklch(82% 0.189 84.429);
-  --color-warning-content: oklch(27% 0.077 45.635);
+  --color-info: oklch(72% 0.06 255);
+  --color-info-content: oklch(23% 0.141 255);
+  --color-success: oklch(76% 0.155 162.12);
+  --color-success-content: oklch(32% 0.077 168.94);
+  --color-warning: oklch(81% 0.158 81.79);
+  --color-warning-content: oklch(32% 0.112 45.904);
   --color-error: oklch(71% 0.194 13.428);
-  --color-error-content: oklch(27% 0.105 12.094);
-  --color-navbar: #000000b0;
+  --color-error-content: oklch(30% 0.105 12.094);
+  --color-navbar: oklch(0 0.000 0 / 0.7);
   --radius-selector: 0.5rem;
   --radius-field: 1rem;
   --radius-box: 1rem;
@@ -46,30 +44,28 @@
   default: false;
   prefersdark: true;
   color-scheme: "dark";
-  --color-base-100: oklch(25.33% 0.016 252.42);
-  --color-base-200: oklch(22.2% 0.014 253.1);
-  --color-base-300: oklch(21.15% 0.012 254.09);
-  --color-base-content: oklch(97.807% 0.029 256.847);
-  --color-primary: #a97be6;
-  --color-primary-content: oklch(96% 0.018 272.314);
-  --color-secondary: #7b5db0;
-  --color-secondary-content: oklch(94% 0.028 342.258);
+  --color-base-100: oklch(25% 0.005 245);
+  --color-base-200: oklch(22% 0.005 250);
+  --color-base-300: oklch(19% 0.005 255);
+  --color-base-content: oklch(97.5% 0 0);
+  --color-primary: oklch(59% 0.116 302);
+  --color-primary-content: oklch(100% 0.010 300);
+  --color-secondary: oklch(42% 0.086 257);
+  --color-secondary-content: oklch(96% 0.04 265);
   --color-accent: oklch(94% 0.029 294.588);
   --color-accent-content: oklch(38% 0.189 293.745);
-  --color-light-purple: #a97be6;
-  --color-dark-purple: #7b5db0;
-  --color-navigator: #a97be6;
+  --color-navigator: oklch(67.27% 0.159 302.17);
   --color-neutral: oklch(14% 0.005 285.823);
   --color-neutral-content: oklch(92% 0.004 286.32);
-  --color-info: oklch(81% 0.111 293.571);
-  --color-info-content: oklch(28% 0.141 291.089);
-  --color-success: oklch(76% 0.177 163.223);
-  --color-success-content: oklch(37% 0.077 168.94);
-  --color-warning: oklch(82% 0.189 84.429);
-  --color-warning-content: oklch(41% 0.112 45.904);
-  --color-error: oklch(71% 0.194 13.428);
+  --color-info: oklch(72% 0.06 255);
+  --color-info-content: oklch(23% 0.141 255);
+  --color-success: oklch(70.87% 0.155 162.12);
+  --color-success-content: oklch(35% 0.077 168.94);
+  --color-warning: oklch(77% 0.158 81.79);
+  --color-warning-content: oklch(39% 0.112 45.904);
+  --color-error: oklch(72% 0.194 13.428);
   --color-error-content: oklch(27% 0.105 12.094);
-  --color-navbar: #ffffffd0;
+  --color-navbar: oklch(100.00% 0.000 0 / 0.8);
   --radius-selector: 0.5rem;
   --radius-field: 1rem;
   --radius-box: 1rem;
@@ -81,8 +77,9 @@
 }
 
 @theme {
-  --font-family: "Onest", "sans-serif";
-  --color-warm-white: #f5f4f7;
+  --font-family: "Plus Jakarta Sans", sans-serif;
+  --font-optical-sizing: auto;
+  --color-warm-white: oklch(96.59% 0.009 314);
 }
 
 html,

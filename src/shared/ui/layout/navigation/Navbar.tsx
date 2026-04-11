@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Home, ChartColumnIncreasing, Briefcase,
-  Calendar, FileText, User, LogOut, Menu, X,
+  Home, Compass, Briefcase,
+  Calendar, ClipboardList, User, LogOut, Menu, X,
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { BarChart } from 'lucide-react';
@@ -32,8 +32,8 @@ function Navbar() {
   const getNavItems = () => {
     if (role === 1) { // Admin
       return [
-        { path: '/m', icon: BarChart, label: 'Dashboard' },
-        { path: '/m/reports', icon: ChartColumnIncreasing, label: 'Reportes' },
+        { path: '/m', icon: Compass, label: 'Dashboard' },
+        { path: '/m/reports', icon: BarChart, label: 'Reportes' },
         { path: '/m/profile', icon: User, label: 'Perfil' },
       ];
     } else if (role === 2) { // Client
@@ -41,13 +41,13 @@ function Navbar() {
         { path: '/c', icon: Home, label: 'Inicio' },
         { path: '/c/services', icon: Briefcase, label: 'Servicios' },
         { path: '/c/schedule', icon: Calendar, label: 'Agendar' },
-        { path: '/c/analysis', icon: FileText, label: 'Análisis' },
+        { path: '/c/analysis', icon: ClipboardList, label: 'Análisis' },
         { path: '/c/profile', icon: User, label: 'Perfil' },
       ];
     } else if (role === 3) { // Adviser
       return [
-        { path: '/a', icon: Home, label: 'Inicio' },
-        { path: '/a/reports', icon: ChartColumnIncreasing, label: 'Reportes' },
+        { path: '/a', icon: Compass, label: 'Dashboard' },
+        { path: '/a/reports', icon: BarChart, label: 'Reportes' },
         { path: '/a/profile', icon: User, label: 'Perfil' },
       ];
     }
@@ -113,7 +113,7 @@ function Navbar() {
           transition={{ delay: 0.1 }}
         >
           <div className="h-12 w-12 flex items-center justify-center">
-            <ITMLogo className='text-[var(--color-navbar)]' />
+            <ITMLogo className='h-10 w-10 text-[var(--color-navbar)]' />
           </div>
           <span className="font-normal text-sm text-[var(--color-navbar)] tracking-[4px]">CONSULTORÍA</span>
         </motion.div>
