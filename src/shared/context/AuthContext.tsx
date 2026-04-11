@@ -75,31 +75,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    let timer: ReturnType<typeof setTimeout>;
+    const checkTokenExpiration = () => {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const exp = payload.exp;
 
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const exp = payload.exp;
+        if (!exp) return;
 
-      if (!exp) return;
+        const isExpired = exp * 1000 <= Date.now();
 
-      const timeLeft = exp * 1000 - Date.now();
-
-      if (timeLeft <= 0) {
-        logout();
-        return;
+        if (isExpired) {
+          console.warn("Token expired → logout");
+          logout();
+        }
+      } catch (error) {
+        console.warn("Invalid token → ignoring", error);
+        setApiToken(null);
       }
-
-      timer = setTimeout(() => {
-        logout();
-      }, timeLeft);
-    } catch {
-      logout();
-    }
-
-    return () => {
-      if (timer) clearTimeout(timer);
     };
+
+    // Ejecutar inmediatamente
+    checkTokenExpiration();
+
+    // Luego cada cierto tiempo (ej: 30s)
+    const interval = setInterval(checkTokenExpiration, 30000);
+
+    return () => clearInterval(interval);
   }, [token, logout]);
 
   return (

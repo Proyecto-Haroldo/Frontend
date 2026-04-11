@@ -114,13 +114,25 @@ function AnimatedRoutes({ role }: { role: number | null }) {
     }
 }
 
-// ProtectedRoute to check auth & roles
+// ProtectedRoute and PublicRoute to check auth & roles
 function ProtectedRoute({ children, allowedRoles }: { children: React.ReactNode, allowedRoles?: number[] }) {
     const { token, role } = useAuth();
     if (!token) return <Navigate to="/login" replace />;
     if (allowedRoles && (!role || !allowedRoles.includes(role))) {
         return <Navigate to="/login" replace />;
     }
+    return <>{children}</>;
+}
+
+function PublicRoute({ children }: { children: React.ReactNode }) {
+    const { token, role } = useAuth();
+
+    if (token) {
+        if (role === 1) return <Navigate to="/m" replace />;
+        if (role === 2) return <Navigate to="/c" replace />;
+        if (role === 3) return <Navigate to="/a" replace />;
+    }
+
     return <>{children}</>;
 }
 
@@ -156,8 +168,17 @@ function AppContent() {
             } />
 
             {/* Public routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<SignUp />} />
+            <Route path="/login" element={
+                <PublicRoute>
+                    <Login />
+                </PublicRoute>
+            } />
+
+            <Route path="/signup" element={
+                <PublicRoute>
+                    <SignUp />
+                </PublicRoute>
+            } />
 
             {/* Moderator area (Administrador) */}
             <Route path="/m/*" element={
@@ -237,7 +258,16 @@ function AppContent() {
             />
 
             {/* FALLBACK ROUTE */}
-            <Route path="*" element={<Navigate to="/login" replace />} />
+            <Route path="*" element={
+                token ? (
+                    role === 1 ? <Navigate to="/m" replace /> :
+                        role === 2 ? <Navigate to="/c" replace /> :
+                            role === 3 ? <Navigate to="/a" replace /> :
+                                <Navigate to="/login" replace />
+                ) : (
+                    <Navigate to="/login" replace />
+                )
+            } />
         </Routes>
     );
 }

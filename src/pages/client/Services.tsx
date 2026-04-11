@@ -190,6 +190,33 @@ function Services() {
         Selecciona una categoría para comenzar. Cada módulo cuenta con cuestionarios que te permitirán conocer tu situación financiera con análisis personalizados.
       </p>
       <hr className="text-accent/25 mx-4 pt-2" />
+
+      {loadingCategories && (
+        <div className="container min-w-full mx-auto space-y-6 overflow-hidden">
+          <div className="flex items-center justify-center">
+            <div className="card w-full bg-base-100 shadow-sm border border-base-200">
+              <div className="card-body items-center text-center">
+                <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
+                <p className="mt-4">Cargando categorías...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {errorCategories && (
+        <div className="container mx-auto p-3">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="alert alert-error shadow-lg"
+          >
+            <AlertCircle className="h-5 w-5" />
+            {errorQuestionnaires}
+          </motion.div>
+        </div>
+      )}
+
       <motion.div
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 2xl:gap-6"
         key={currentView}
@@ -199,32 +226,6 @@ function Services() {
         animate="animate"
         exit="exit"
       >
-        {loadingCategories && (
-          <div className="container mx-auto space-y-6 overflow-hidden">
-            <div className="flex items-center justify-center">
-              <div className="card w-full bg-base-100 shadow-sm border border-base-200">
-                <div className="card-body items-center text-center">
-                  <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
-                  <p className="mt-4">Cargando categorías...</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {errorCategories && (
-          <div className="container mx-auto p-3">
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="alert alert-error shadow-lg"
-            >
-              <AlertCircle className="h-5 w-5" />
-              {errorQuestionnaires}
-            </motion.div>
-          </div>
-        )}
-
         {categories.map(category => (
           <motion.button
             key={category.id}
@@ -338,11 +339,11 @@ function Services() {
                   onClick={() => handleQuestionnaireClick(item)}
                 >
 
-                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <span className='scale-50'>{selectedCategory?.icon.svg}</span>
+                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <span className='scale-60'>{selectedCategory?.icon.svg}</span>
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-medium break-all">
+                    <h3 className="font-medium break-words">
                       {item.title || "Sin determinar"}
                     </h3>
                     <p className="text-sm text-base-content/70">

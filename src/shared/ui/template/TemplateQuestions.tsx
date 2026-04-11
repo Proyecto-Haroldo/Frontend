@@ -354,7 +354,7 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
                 {/* Desktop Table */}
                 <div className="hidden lg:block">
                   <div className="overflow-x-auto">
-                    <table className="table table-zebra w-full">
+                    <table className="table w-full">
                       <thead>
                         <tr>
                           <th className="w-16">ID</th>
@@ -364,7 +364,7 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
                           <th className="w-32">Acciones</th>
                         </tr>
                       </thead>
-                      <tbody>
+                      <tbody className="[&>tr:hover>td]:bg-base-200/70 [&>tr:hover>td:first-child]:rounded-l-lg [&>tr:hover>td:last-child]:rounded-r-lg">
                         {filteredQuestions.map((question) => (
                           <tr key={question.id}>
                             <td>{question.id}</td>
@@ -374,10 +374,10 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
                               </div>
                             </td>
                             <td>
-                              <span className="badge badge-outline border-0 bg-base-content/30 text-xs badge-sm">
-                              {question.questionType === 'OPEN' && 'Abierta'}
-                              {question.questionType === 'SINGLE' && 'Única'}
-                              {question.questionType === 'MULTIPLE' && 'Múltiple'}
+                              <span className="badge badge-outline font-semibold border-0 bg-base-content/30 text-xs badge-sm">
+                                {question.questionType === 'OPEN' && 'Abierta'}
+                                {question.questionType === 'SINGLE' && 'Única'}
+                                {question.questionType === 'MULTIPLE' && 'Múltiple'}
                               </span>
                             </td>
                             <td className="text-center">
@@ -429,7 +429,7 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
                         <div className="flex justify-between items-start gap-2">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1 flex-wrap">
-                              <span className="badge badge-outline border-0 bg-base-content/30 text-xs badge-sm">
+                              <span className="badge badge-outline font-semibold border-0 bg-base-content/30 text-xs badge-sm">
                                 {question.questionType === 'OPEN' && 'Abierta'}
                                 {question.questionType === 'SINGLE' && 'Única'}
                                 {question.questionType === 'MULTIPLE' && 'Múltiple'}

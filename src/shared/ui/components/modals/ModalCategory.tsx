@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ICategory, mapCategoryToDTO } from "../../../../core/models/questionnaire";
-import { categories as categoriesCatalog } from '../../../../../public/assets/Categories';
+import { categoriesIcons } from '../../../../../public/assets/Categories';
 import {
     getAllCategories,
     createCategory,
@@ -68,7 +68,7 @@ const ModalCategory: React.FC<ModalCategoryProps> = ({
             id: 0,
             name: '',
             description: '',
-            icon: categoriesCatalog[0].icon
+            icon: categoriesIcons[0]
         });
     };
 
@@ -231,17 +231,17 @@ const ModalCategory: React.FC<ModalCategoryProps> = ({
                                         </label>
 
                                         <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
-                                            {categoriesCatalog.map((cat) => {
-                                                const isSelected = editingCategory.icon.id === cat.icon.id;
+                                            {categoriesIcons.map((icon) => {
+                                                const isSelected = editingCategory.icon.id === icon.id;
 
                                                 return (
                                                     <button
-                                                        key={cat.id}
+                                                        key={icon.id}
                                                         type="button"
                                                         onClick={() =>
                                                             setEditingCategory({
                                                                 ...editingCategory,
-                                                                icon: cat.icon
+                                                                icon: icon
                                                             })
                                                         }
                                                         className={`
@@ -252,7 +252,7 @@ const ModalCategory: React.FC<ModalCategoryProps> = ({
                                                                 : "border-base-300 hover:bg-base-300"}
                                                             `}
                                                     >
-                                                        <span className="scale-75">{cat.icon.svg}</span>
+                                                        <span className="scale-75">{icon.svg}</span>
                                                     </button>
                                                 );
                                             })}
@@ -340,8 +340,8 @@ const ModalCategory: React.FC<ModalCategoryProps> = ({
                                                             className="btn btn-error btn-sm gap-1"
                                                             title="Eliminar"
                                                         >
-                                                            Eliminar
                                                             <Trash2 className="h-3 w-3" />
+                                                            Eliminar
                                                         </button>
                                                     </div>
                                                 )}

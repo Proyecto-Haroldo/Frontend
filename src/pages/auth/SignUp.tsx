@@ -12,6 +12,7 @@ import {
   TrendingUp,
   IdCard,
   Building2,
+  MapPin,
   User,
   Phone,
   Globe,
@@ -22,7 +23,7 @@ import PasswordStrength from "../../shared/ui/validator/PasswordStrength";
 import SelectCategories from "../../shared/ui/components/selects/SelectCategories";
 import HFIsotype from '../../../public/assets/HFIsotype';
 import ThemeToggle from "../../shared/ui/layout/theme/ThemeToggle";
-import { categories } from "../../../public/assets/Categories";
+import useCategories from "../../shared/hooks/useCategories";
 
 const loadingIcons = [Banknote, Wallet, PiggyBank, TrendingUp];
 
@@ -35,9 +36,12 @@ const SignUp: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingIconIndex, setLoadingIconIndex] = useState(0);
+
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { setAuth } = useAuth();
+
+  const { categories, isUsingFallback } = useCategories();
 
   const [form, setForm] = useState({
     email: "",
@@ -46,6 +50,7 @@ const SignUp: React.FC = () => {
     cedulaOrNIT: "",
     legalName: "",
     sector: "",
+    location: "",
     phone: "",
     network: "",
     specialities: [
@@ -64,6 +69,7 @@ const SignUp: React.FC = () => {
     cedulaOrNIT?: string;
     legalName?: string;
     sector?: string;
+    location?: string;
     phone?: string;
     network?: string;
     categories?: string;
@@ -76,6 +82,7 @@ const SignUp: React.FC = () => {
     cedulaOrNIT: false,
     legalName: false,
     sector: false,
+    location: false,
     phone: false,
     network: false,
     categories: false,
@@ -184,8 +191,8 @@ const SignUp: React.FC = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    const selectedFullCategories = categories.filter(cat =>
-      selectedCategories.includes(cat.id)
+    const selectedFullCategories = (categories ?? []).filter(cat =>
+      selectedCategories.includes(Number(cat.id))
     );
 
     setError(null);
@@ -200,6 +207,7 @@ const SignUp: React.FC = () => {
         clientType: "PERSONA",
         role: { id: 2 },
         sector: form.sector,
+        location: form.location,
         phone: form.phone,
         network: form.network,
         status: "AUTHORIZED",
@@ -238,7 +246,7 @@ const SignUp: React.FC = () => {
   const isPasswordValid = passwordStrength >= 80;
 
   return (
-    <div className="min-h-dvh p-5 md:p-8 flex flex-col items-center justify-center bg-base-200 relative overflow-hidden font-family">
+    <div className="min-h-dvh p-6 md:p-8 md:pb-6 flex flex-col items-center justify-center bg-base-200 relative overflow-hidden font-family">
       {/* Animated background elements */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -273,7 +281,7 @@ const SignUp: React.FC = () => {
               delay: 2,
             }}
           >
-            <PiggyBank className="w-32 h-32 text-secondary" />
+            <PiggyBank className="w-32 h-32 text-primary" />
           </motion.div>
           <motion.div
             animate={{ y: [0, -20, 0] }}
@@ -293,7 +301,7 @@ const SignUp: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md p-8 space-y-6 bg-base-100 rounded-xl shadow-2xl relative z-10"
+        className="w-full max-w-md p-8 space-y-4 bg-base-100 rounded-xl shadow-xl relative z-10"
       >
         <div className="text-center">
           <motion.div
@@ -302,7 +310,7 @@ const SignUp: React.FC = () => {
             transition={{ delay: 0.2, type: "spring" }}
             className="mb-4"
           >
-            <HFIsotype className="w-16 h-16 mx-auto animate-pulse" />
+            <HFIsotype className="w-16 h-16 mx-auto" />
           </motion.div>
           <motion.h1
             initial={{ scale: 0.8 }}
@@ -384,7 +392,7 @@ const SignUp: React.FC = () => {
                 title="email"
                 value={form.email}
                 onChange={handleChange}
-                placeholder="Ingresa tu correo electrónico"
+                placeholder="Ej: usuario@dominio.com"
                 className={`input input-bordered w-full pl-10 ${(touched.email && !form.email) || validationErrors.email ? "input-error" : ""}`}
                 disabled={loading}
                 required
@@ -399,7 +407,7 @@ const SignUp: React.FC = () => {
             )}
           </div>
 
-          <div className="form-control">
+          <div className="form-control relative">
             <label htmlFor="password" className="label">
               <span className="label-text text-base-content/70 mb-1">
                 Contraseña
@@ -516,6 +524,37 @@ const SignUp: React.FC = () => {
           </div>
 
           <div className="form-control">
+            <label htmlFor="cedulaOrNIT" className="label">
+              <span className="label-text text-base-content/70 mb-1">
+                Cédula / NIT
+              </span>
+            </label>
+            <div className="relative flex-1">
+              <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
+                <IdCard className="h-5 w-5 text-base-content/50" />
+              </div>
+              <input
+                type="text"
+                title="cedulaOrNIT"
+                name="cedulaOrNIT"
+                value={form.cedulaOrNIT}
+                onChange={handleChange}
+                className={`input input-bordered w-full pl-10 ${(touched.cedulaOrNIT && !form.cedulaOrNIT) || validationErrors.cedulaOrNIT ? "input-error" : ""}`}
+                disabled={loading}
+                placeholder="Solo números y guiones"
+                required
+              />
+            </div>
+            {validationErrors.cedulaOrNIT && (
+              <label className="label">
+                <span className="label-text-alt text-error">
+                  {validationErrors.cedulaOrNIT}
+                </span>
+              </label>
+            )}
+          </div>
+
+          <div className="form-control">
             <label htmlFor="legalName" className="label">
               <span className="label-text text-base-content/70 mb-1">
                 Nombre Legal
@@ -541,37 +580,6 @@ const SignUp: React.FC = () => {
               <label className="label">
                 <span className="label-text-alt text-error">
                   {validationErrors.legalName}
-                </span>
-              </label>
-            )}
-          </div>
-
-          <div className="form-control">
-            <label htmlFor="cedulaOrNIT" className="label">
-              <span className="label-text text-base-content/70 mb-1">
-                Cédula o NIT
-              </span>
-            </label>
-            <div className="relative flex-1">
-              <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
-                <IdCard className="h-5 w-5 text-base-content/50" />
-              </div>
-              <input
-                type="text"
-                title="cedulaOrNIT"
-                name="cedulaOrNIT"
-                value={form.cedulaOrNIT}
-                onChange={handleChange}
-                className={`input input-bordered w-full pl-10 ${(touched.cedulaOrNIT && !form.cedulaOrNIT) || validationErrors.cedulaOrNIT ? "input-error" : ""}`}
-                disabled={loading}
-                placeholder="Solo números"
-                required
-              />
-            </div>
-            {validationErrors.cedulaOrNIT && (
-              <label className="label">
-                <span className="label-text-alt text-error">
-                  {validationErrors.cedulaOrNIT}
                 </span>
               </label>
             )}
@@ -609,36 +617,6 @@ const SignUp: React.FC = () => {
           </div>
 
           <div className="form-control">
-            <label htmlFor="network" className="label">
-              <span className="label-text text-base-content/70 mb-1">
-                LinkedIn
-              </span>
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
-                <Globe className="h-5 w-5 text-base-content/50" />
-              </div>
-              <input
-                type="text"
-                title="network"
-                name="network"
-                value={form.network}
-                onChange={handleChange}
-                className={`input input-bordered w-full pl-10 ${(touched.network && !form.network) || validationErrors.network ? "input-error" : ""}`}
-                disabled={loading}
-                placeholder="Ej: www.linkedin.com/in/usuario"
-              />
-            </div>
-            {validationErrors.network && (
-              <label className="label">
-                <span className="label-text-alt text-error">
-                  {validationErrors.network}
-                </span>
-              </label>
-            )}
-          </div>
-
-          <div className="form-control">
             <label htmlFor="phone" className="label">
               <span className="label-text text-base-content/70 mb-1">
                 Teléfono
@@ -670,6 +648,67 @@ const SignUp: React.FC = () => {
           </div>
 
           <div className="form-control">
+            <label htmlFor="location" className="label">
+              <span className="label-text text-base-content/70 mb-1">
+                Región
+              </span>
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
+                <MapPin className="h-5 w-5 text-base-content/50" />
+              </div>
+              <input
+                type="text"
+                title="location"
+                name="location"
+                value={form.location}
+                onChange={handleChange}
+                className={`input input-bordered w-full pl-10 ${(touched.location && !form.location) || validationErrors.location ? "input-error" : ""}`}
+                disabled={loading}
+                placeholder="Ej: Medellín, Colombia"
+                required
+              />
+            </div>
+            {validationErrors.location && (
+              <label className="label">
+                <span className="label-text-alt text-error">
+                  {validationErrors.location}
+                </span>
+              </label>
+            )}
+          </div>
+
+          <div className="form-control">
+            <label htmlFor="network" className="label">
+              <span className="label-text text-base-content/70 mb-1">
+                LinkedIn
+              </span>
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
+                <Globe className="h-5 w-5 text-base-content/50" />
+              </div>
+              <input
+                type="text"
+                title="network"
+                name="network"
+                value={form.network}
+                onChange={handleChange}
+                className={`input input-bordered w-full pl-10 ${(touched.network && !form.network) || validationErrors.network ? "input-error" : ""}`}
+                disabled={loading}
+                placeholder="Ej: www.linkedin.com/in/usuario"
+              />
+            </div>
+            {validationErrors.network && (
+              <label className="label">
+                <span className="label-text-alt text-error">
+                  {validationErrors.network}
+                </span>
+              </label>
+            )}
+          </div>
+
+          <div className="form-control">
             <label htmlFor="categories" className="label">
               <span className="label-text text-base-content/70 mb-1">
                 Especialidades
@@ -686,6 +725,12 @@ const SignUp: React.FC = () => {
                 setValidationErrors(prev => ({ ...prev, categories: undefined }));
               }}
             />
+
+            {isUsingFallback && (
+              <p className="text-xs text-base-content/50 mt-2">
+                * Usando categorías por defecto
+              </p>
+            )}
 
             {validationErrors.categories && touched.categories && (
               <label className="label">
@@ -735,26 +780,21 @@ const SignUp: React.FC = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-center"
+          className="text-center pt-2"
         >
           <p className="text-sm text-base-content/70">
             ¿Ya tienes cuenta?{" "}
-            <Link to="/login" className="text-primary hover:underline">
+            <Link to="/login" className="text-primary font-semibold hover:underline">
               Inicia sesión
             </Link>
           </p>
         </motion.div>
       </motion.div>
 
-
       {/* Footer */}
-      <footer className='text-base-content/50 w-full text-center flex flex-col items-center justify-center'>
-        <div className="p-6">
+      <footer className='text-base-content/70 w-full text-center flex flex-col items-center justify-center'>
+        <div className="pt-6">
           <ThemeToggle />
-        </div>
-        <div className='mt-0 mb-2 sm:mt-2 sm:mb-0 flex flex-col-reverse sm:flex-col gap-1'>
-          <p className='text-sm'>© {new Date().getFullYear()} Haroldo Finanzas. Todos los derechos reservados.</p>
-          <p className='text-sm'>Institución Universitaria ITM. Colombia.</p>
         </div>
       </footer>
     </div>

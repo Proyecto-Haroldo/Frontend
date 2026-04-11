@@ -244,11 +244,12 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
                             {canManage && (
                                 <button
                                     onClick={handleCreateQuestionnaire}
-                                    className="btn btn-outline bg-base-content/15 shadow-sm btn-sm gap-2 hover:border-base-content border-base-content/50"
+                                    className="btn btn-outline bg-base-content/10 text-base-content/70 shadow-sm btn-sm gap-2 border-base-content/50 hover:text-base-content hover:border-base-content"
                                 >
                                     <Plus className="h-4 w-4" />
                                     <span className="hidden sm:inline">Nuevo Cuestionario</span>
-                                    <span className="sm:hidden">Cuestionario</span>                                </button>
+                                    <span className="sm:hidden">Cuestionario</span>
+                                </button>
                             )}
                         </div>
                     </div>

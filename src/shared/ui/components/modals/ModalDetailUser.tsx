@@ -14,6 +14,8 @@ import { User, BarChart2, XCircle, Loader2 } from "lucide-react";
 import { IUser } from "../../../../core/models/user";
 import { IAnalysis } from "../../../../core/models/analysis";
 import { normalizeUserRole } from "../../../../api/usersApi";
+import SelectCategories from "../selects/SelectCategories";
+import useCategories from "../../../hooks/useCategories";
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -25,13 +27,32 @@ interface ModalDetailUserProps {
     onClose: () => void;
 }
 
+const normalizeStatus = (status: string): "Pendiente" | "Completado" => {
+    switch (status.toUpperCase()) {
+        case "PENDING":
+            return "Pendiente";
+        case "CHECKED":
+            return "Completado";
+        default:
+            return "Pendiente";
+    }
+};
+
 const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error, loading, onClose }) => {
+    const { categories } = useCategories();
+
     // Contar estados (pending, completed, etc.)
     const stateCounts = useMemo(() => {
-        const counts: Record<string, number> = {};
+        const counts: Record<"Pendiente" | "Completado", number> = {
+            "Pendiente": 0,
+            "Completado": 0,
+        };
+
         analysis.forEach((q) => {
-            counts[q.status] = (counts[q.status] || 0) + 1;
+            const normalized = normalizeStatus(q.status);
+            counts[normalized]++;
         });
+
         return counts;
     }, [analysis]);
 
@@ -51,7 +72,7 @@ const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error
         datasets: [
             {
                 data: Object.values(stateCounts),
-                backgroundColor: ["#FBBF24", "#60A5FA", "#34D399", "#F87171"],
+                backgroundColor: ["#60A5FA", "#A05CF6", "#999999"],
                 borderWidth: 0,
             },
         ],
@@ -75,35 +96,6 @@ const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error
         maintainAspectRatio: false,
     };
 
-    if (loading) {
-        return (
-            <div className="container mx-auto space-y-6 overflow-hidden">
-                <div className="flex items-center justify-center min-h-dvh">
-                    <Loader2 className="h-10 w-10 text-primary animate-spin" />
-                    <p className="ml-2">Cargando métricas...</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="min-h-dvh flex items-center justify-center bg-base-200 p-4">
-                <div className="card w-full max-w-lg bg-base-100 shadow-xl text-center">
-                    <div className="card-body">
-                        <div className="w-16 h-16 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <XCircle className="h-8 w-8 text-error" />
-                        </div>
-                        <h2 className="text-xl font-bold mb-2">{error ? 'Ups, ha ocurrido un error!' : 'Análisis no encontrado.'}</h2>
-                        <p className="text-base-content/70">
-                            {error || 'No se encontró información del análisis solicitado. Por favor, intente seleccionar un análisis desde la lista.'}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-base-200 rounded-lg p-4 pr-3 md:p-6 md:pr-5 max-w-3xl w-full max-h-[80vh] flex flex-col">
@@ -119,31 +111,63 @@ const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error
                 <div className="overflow-y-auto overflow-x-hidden pr-1 flex-1">
                     {/* Info básica */}
                     <h3 className="font-semibold mb-2">Información Personal</h3>
-                    <div className="grid grid-cols-1 shadow-sm card bg-base-100 p-4 sm:grid-cols-2 gap-3 md:gap-4 mb-6">
-                        <div>
-                            <label className="text-sm font-medium text-base-content/70">Nombre Legal</label>
-                            <p className="text-base-content">{user.legalName}</p>
+                    <div className="flex flex-col gap-3 md:gap-4 p-4 shadow-sm card bg-base-100 mb-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                            <div>
+                                <label className="text-sm font-medium text-base-content">Nombre Legal</label>
+                                <p className="text-sm text-base-content/70">{user.legalName}</p>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-base-content">Cédula / NIT</label>
+                                <p className="text-sm text-base-content/70">{user.cedulaOrNIT}</p>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-base-content">Correo</label>
+                                <p className="text-sm text-base-content/70">{user.email}</p>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-base-content">Tipo de Cliente</label>
+                                <p className="text-sm text-base-content/70 capitalize">{user.clientType.toLocaleLowerCase()}</p>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-base-content">Sector</label>
+                                <p className="text-sm text-base-content/70">{user.sector || "N/A"}</p>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-base-content">Región</label>
+                                <p className="text-sm text-base-content/70">{user.location || "N/A"}</p>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-base-content">Télefono</label>
+                                <p className="text-sm text-base-content/70">{user.phone || "N/A"}</p>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-base-content">Red</label>
+                                <p className="text-sm text-base-content/70">{user.network || "N/A"}</p>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-base-content">Estado</label>
+                                <p className="text-sm text-base-content/70">{user.status || "N/A"}</p>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-base-content">Rol</label>
+                                <p className="text-sm text-base-content/70">{normalizeUserRole(user.role.id)}</p>
+                            </div>
                         </div>
-                        <div>
-                            <label className="text-sm font-medium text-base-content/70">Cédula / NIT</label>
-                            <p className="text-base-content">{user.cedulaOrNIT}</p>
-                        </div>
-                        <div>
-                            <label className="text-sm font-medium text-base-content/70">Correo</label>
-                            <p className="text-base-content">{user.email}</p>
-                        </div>
-                        <div>
-                            <label className="text-sm font-medium text-base-content/70">Tipo de Cliente</label>
-                            <p className="text-base-content">{user.clientType}</p>
-                        </div>
-                        <div>
-                            <label className="text-sm font-medium text-base-content/70">Sector</label>
-                            <p className="text-base-content">{user.sector || "N/A"}</p>
-                        </div>
-                        <div>
-                            <label className="text-sm font-medium text-base-content/70">Rol</label>
-                            <p className="text-base-content">{normalizeUserRole(user.role.id)}</p>
-                        </div>
+                        {user.role.id === 3 && (
+                            <div className="flex flex-col gap-2">
+                                <label htmlFor="specialties" className="text-sm font-medium text-base-content">
+                                    Especialidades
+                                </label>
+                                <SelectCategories
+                                    name="categories"
+                                    categories={categories || []}
+                                    value={user.specialities?.map((s) => s.categoryId) || []}
+                                    onChange={() => { }}
+                                    readOnly
+                                />
+                            </div>
+                        )}
                     </div>
 
                     {/* Métricas */}
@@ -156,6 +180,18 @@ const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error
                                     <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
                                     <p className="mt-4">Buscando métricas...</p>
                                 </div>
+                            </div>
+                        </div>
+                    ) : error ? (
+                        <div className="card w-full bg-base-100 shadow-xl text-center">
+                            <div className="card-body">
+                                <div className="w-16 h-16 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <XCircle className="h-8 w-8 text-error" />
+                                </div>
+                                <h2 className="text-xl font-bold mb-2">{error ? 'Ups, ha ocurrido un error!' : 'Análisis no encontrados.'}</h2>
+                                <p className="text-base-content/70">
+                                    {error || 'No se encontró información de los análisis solicitados. Por favor, intente de nuevo.'}
+                                </p>
                             </div>
                         </div>
                     ) : analysis.length <= 0 ? (
@@ -171,13 +207,13 @@ const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error
                         >
                             {/* Header */}
                             <div className="card bg-base-100 shadow-sm flex flex-row p-4 gap-3 border-b border-base-200">
-                                <div className="p-2 bg-primary/10 rounded-full">
+                                <div className="p-2 h-10 w-10 bg-primary/10 rounded-full">
                                     <User className="text-primary h-6 w-6" />
                                 </div>
                                 <div>
                                     <h2 className="font-semibold text-base-content">{user.legalName}</h2>
-                                    <p className="text-sm text-base-content/70">
-                                        {normalizeUserRole(user.role?.id)} · {user.sector}
+                                    <p className="text-sm text-base-content/70 capitalize">
+                                        {user.clientType?.toLocaleLowerCase()} · {user.sector}
                                     </p>
                                 </div>
                             </div>
@@ -191,11 +227,11 @@ const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error
                                                 <BarChart2 className="h-5 w-5 text-primary" />
                                             </div>
                                             <h3 className="font-semibold text-base-content">
-                                                Estado de cuestionarios
+                                                Estado de análisis
                                             </h3>
                                         </div>
                                         <small className="text-base-content/60">
-                                            Visualiza el estado actual de los cuestionarios completados, pendientes y en revisión.
+                                            Visualiza el estado actual de los análisis completados y pendientes (en revisión).
                                         </small>
                                     </div>
                                     <div className="flex justify-center items-center">

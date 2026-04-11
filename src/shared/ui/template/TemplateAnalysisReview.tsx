@@ -187,7 +187,7 @@ function TemplateAnalysisReview({
     switch (state?.toUpperCase()) {
       case "PENDING":
         return (
-          <span className="badge badge-warning p-1 badge-sm gap-1 text-xs">
+          <span className="badge badge-secondary p-1 badge-sm gap-1 text-xs">
             <Clock className="h-3 w-3" />
             <span className="hidden sm:inline">Pendiente</span>
             <span className="sm:hidden">Pend.</span>
@@ -196,7 +196,7 @@ function TemplateAnalysisReview({
       case "CHECKED":
       case "COMPLETED":
         return (
-          <span className="badge badge-success p-1 badge-sm gap-1 text-xs">
+          <span className="badge badge-primary p-1 badge-sm gap-1 text-xs">
             <CheckCircle className="h-3 w-3" />
             <span className="hidden sm:inline">Completado</span>
             <span className="sm:hidden">Comp.</span>

@@ -130,7 +130,6 @@ function formatMinutesWithSeconds(totalMinutes: number) {
     return `${mins}m ${secs}s`;
 }
 
-
 function minutesBetween(a?: string, b?: string) {
     if (!a || !b) return 0;
     const da = new Date(a).getTime();
@@ -159,7 +158,7 @@ function MetricCardShell({
                 {chart}
             </div>
             <div className="text-[20px] font-bold leading-[1.1] text-base-content/80">{title}</div>
-            <div className="text-[13px] text-base-content/40">{description}</div>
+            <div className="text-[13px] text-base-content/60">{description}</div>
         </motion.div>
     );
 }
@@ -571,7 +570,7 @@ export default function TemplateMetrics({
             };
 
             const networkStats = countField("network");
-            const addressStats = countField("address");
+            const locationStats = countField("location");
             const phoneStats = countField("phone");
 
             arr.push({
@@ -587,7 +586,7 @@ export default function TemplateMetrics({
                                     label: "Con dato",
                                     data: [
                                         networkStats.withField,
-                                        addressStats.withField,
+                                        locationStats.withField,
                                         phoneStats.withField,
                                     ],
                                     backgroundColor: MAIN_COLORS[0],
@@ -598,7 +597,7 @@ export default function TemplateMetrics({
                                     label: "Sin dato",
                                     data: [
                                         networkStats.withoutField,
-                                        addressStats.withoutField,
+                                        locationStats.withoutField,
                                         phoneStats.withoutField,
                                     ],
                                     backgroundColor: MAIN_COLORS[1],
@@ -742,14 +741,14 @@ export default function TemplateMetrics({
                 <button
                     onClick={scrollPrev}
                     aria-label="Anterior"
-                    className="absolute top-1/2 left-2 w-[42px] h-[42px] rounded-full border-none grid place-items-center shadow-[0_6px_18px_rgba(16,24,40,0.08)] btn btn-secondary cursor-pointer z-30 pointer-events-auto"
+                    className="absolute top-1/2 left-2 w-[42px] h-[42px] rounded-full border-none grid place-items-center shadow-[0_6px_18px_rgba(16,24,40,0.08)] btn btn-primary cursor-pointer z-30 pointer-events-auto"
                 >
                     <ArrowLeft />
                 </button>
                 <button
                     onClick={scrollNext}
                     aria-label="Siguiente"
-                    className="absolute top-1/2 right-2 w-[42px] h-[42px] rounded-full border-none grid place-items-center shadow-[0_6px_18px_rgba(16,24,40,0.08)] btn btn-secondary cursor-pointer z-30 pointer-events-auto"
+                    className="absolute top-1/2 right-2 w-[42px] h-[42px] rounded-full border-none grid place-items-center shadow-[0_6px_18px_rgba(16,24,40,0.08)] btn btn-primary cursor-pointer z-30 pointer-events-auto"
                 >
                     <ArrowRight />
                 </button>

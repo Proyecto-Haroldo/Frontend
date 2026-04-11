@@ -10,15 +10,11 @@ export interface AnswersOfQuestionnaire {
     answerText: string;
 }
 
-export type AnalysisStatus = 'completed' | 'in-progress' | 'pending';
+export type AnalysisStatus = 'completed' | 'pending';
 
 export type ColorSemaforo = 'verde' | 'amarillo' | 'rojo';
 
 // Utility functions for analysis processing
-export const mapColorToStatus = (color: ColorSemaforo): AnalysisStatus => {
-    return color === 'verde' ? 'completed' : 'in-progress';
-};
-
 export const mapColorToProgress = (): number => {
     // All analysis are 50% complete when finished, regardless of color
     // Color indicates severity level, not completion level

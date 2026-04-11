@@ -93,7 +93,7 @@ function Profile() {
               </div>
               <div className='flex flex-col w-full'>
                 <h2 className="font-medium text-xl">{name}</h2>
-                <span className='text-base-content/50'>{userData?.clientType || 'No disponible'}</span>
+                <span className='text-base-content/50 capitalize'>{userData?.clientType.toLocaleLowerCase() || 'No disponible'}</span>
               </div>
             </div>
 
@@ -124,7 +124,7 @@ function Profile() {
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="h-5 w-5 text-base-content/50" />
-                <span>{userData?.address || 'No específicado'}</span>
+                <span>{userData?.location || 'No específicado'}</span>
               </div>
             </div>
 

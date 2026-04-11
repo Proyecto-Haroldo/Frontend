@@ -14,6 +14,7 @@ export interface RegisterRequest {
     sector: string;
     phone: string;
     network: string;
+    location: string;
     status: UserStatus;
     role: {
         id: number
