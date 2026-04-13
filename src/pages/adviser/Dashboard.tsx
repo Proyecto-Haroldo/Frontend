@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { getAllAnalysis } from "../../api/analysisApi";
 import { getAllQuestionnaires } from "../../api/questionnairesApi";
+import { getUserStatus } from "../../api/authApi";
 import { IAnalysis } from "../../core/models/analysis";
 import { IQuestionnaire } from "../../core/models/questionnaire";
 import { useAuth } from "../../shared/context/AuthContext";
@@ -22,7 +23,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
   const [errorQuestionnaires, setErrorQuestionnaires] = useState("");
   const [loadingAnalysis, setLoadingAnalysis] = useState(true);
   const [errorAnalysis, setErrorAnalysis] = useState("");
-  const { role } = useAuth();
+  const { role, userStatus, token, userId, setAuth } = useAuth();
   const { id } = useParams();
 
   useEffect(() => {
@@ -112,6 +113,35 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
     fetchAnalysis();
   };
 
+  const checkUserStatus = async () => {
+    if (!userId) return;
+
+    try {
+      const statusData = await getUserStatus(userId);
+      setAuth(token, role, userId, statusData.status);
+      
+      // Reload page to update UI
+      window.location.reload();
+    } catch (error) {
+      console.error("Error checking user status:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!userId || userStatus == "AUTHORIZED") return;
+
+    const fetchStatus = async () => {
+      try {
+        const statusData = await getUserStatus(userId);
+        setAuth(token, role, userId, statusData.status);
+      } catch (err) {
+        console.error("Failed to fetch user status:", err);
+      }
+    };
+
+    fetchStatus();
+  }, []);
+
   const stats = {
     total: analysis.length,
     pending: analysis.filter((q) => q.status?.toUpperCase() === "PENDING").length,
@@ -127,6 +157,43 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
     animate: { opacity: 1, y: 0 },
     exit: { opacity: 0, x: 100, transition: { duration: 0.4 } },
   };
+
+  // Check if user is UNAUTHORIZED and show authorization message
+  if (userStatus === "UNAUTHORIZED") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-base-200">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+          className="max-w-md w-full mx-4 p-8 bg-base-100 rounded-xl shadow-xl text-center"
+        >
+          <div className="mb-6">
+            <div className="w-20 h-20 bg-warning/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <ClipboardList className="w-10 h-10 text-warning" />
+            </div>
+            <h2 className="text-2xl font-bold text-base-content mb-2">
+              Autorización Pendiente
+            </h2>
+            <p className="text-base-content/70 mb-6">
+              Tu cuenta está pendiente de autorización. Por favor, contacta al administrador para obtener acceso completo a la plataforma.
+            </p>
+          </div>
+          
+          <div className="space-y-4">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={checkUserStatus}
+              className="btn btn-primary w-full"
+            >
+              Verificar estado
+            </motion.button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto space-y-6">

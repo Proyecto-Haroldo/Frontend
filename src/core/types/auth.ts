@@ -33,6 +33,7 @@ export interface LoginResponse {
         name: string
     };
     id: number;
+    status: string;
     message?: string;
 }
 
