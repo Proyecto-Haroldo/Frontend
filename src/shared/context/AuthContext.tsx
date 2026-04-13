@@ -12,10 +12,12 @@ interface AuthContextType {
   token: string | null;
   role: number | null;
   userId: number | null;
+  userStatus: string | null;
   setAuth: (
     token: string | null,
     role: number | null,
-    userId: number | null
+    userId: number | null,
+    userStatus?: string | null
   ) => void;
   logout: () => void;
 }
@@ -38,11 +40,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return storedUserId ? parseInt(storedUserId, 10) : null;
   });
 
+  const [userStatus, setUserStatusState] = useState<string | null>(() =>
+    localStorage.getItem('userStatus')
+  );
+
   const setAuth = useCallback(
-    (newToken: string | null, newRole: number | null, newUserId: number | null) => {
+    (newToken: string | null, newRole: number | null, newUserId: number | null, newUserStatus?: string | null) => {
       setTokenState(newToken);
       setRoleState(newRole);
       setUserIdState(newUserId);
+      setUserStatusState(newUserStatus || null);
 
       if (newToken) localStorage.setItem('token', newToken);
       else localStorage.removeItem('token');
@@ -52,12 +59,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (newUserId !== null) localStorage.setItem('userId', newUserId.toString());
       else localStorage.removeItem('userId');
+
+      if (newUserStatus) localStorage.setItem('userStatus', newUserStatus);
+      else localStorage.removeItem('userStatus');
     },
     []
   );
 
   const logout = useCallback(() => {
-    setAuth(null, null, null);
+    setAuth(null, null, null, null);
 
     localStorage.removeItem('questionnaireData');
     localStorage.removeItem('aiRecommendation');
@@ -104,7 +114,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [token, logout]);
 
   return (
-    <AuthContext.Provider value={{ token, role, userId, setAuth, logout }}>
+    <AuthContext.Provider value={{ token, role, userId, userStatus, setAuth, logout }}>
       {children}
     </AuthContext.Provider>
   );

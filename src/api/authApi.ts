@@ -1,5 +1,6 @@
 import { apiClient } from './apiClient';
 import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from '../core/types/auth';
+import { ICategory, ICategoryDTO, mapCategoryFromDTO } from '../core/models/questionnaire';
 
 function getMessageFromResponse(response: { status: number; data?: unknown }): string | null {
   if (typeof response.data === 'string' && response.data.trim()) {
@@ -43,3 +44,23 @@ export async function register(data: RegisterRequest): Promise<RegisterResponse>
     throw new Error('Error al registrar usuario. Por favor intenta nuevamente.');
   }
 } 
+
+export async function publicCategories(): Promise<ICategory[]> {
+  try {
+      const response = await apiClient.get<ICategoryDTO[]>('/public/categories');
+      return response.data.map(mapCategoryFromDTO);
+  } catch (error) {
+      console.error('Error fetching categories:', error);
+      throw new Error('Error al obtener las categorías');
+  }
+} 
+
+export async function getUserStatus(userId: number): Promise<{ status: string }> {
+  try {
+    const response = await apiClient.get<{ status: string }>(`/users/${userId}/status`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user status:', error);
+    throw new Error('Error al obtener el estado del usuario');
+  }
+}

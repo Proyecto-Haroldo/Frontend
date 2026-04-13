@@ -15,7 +15,7 @@ function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const { logout, role } = useAuth();
+  const { logout, role, userStatus } = useAuth();
 
   const isActive = (path: string) => {
     if (
@@ -45,11 +45,17 @@ function Navbar() {
         { path: '/c/profile', icon: User, label: 'Perfil' },
       ];
     } else if (role === 3) { // Adviser
-      return [
+      const baseItems = [
         { path: '/a', icon: Compass, label: 'Dashboard' },
-        { path: '/a/reports', icon: BarChart, label: 'Reportes' },
         { path: '/a/profile', icon: User, label: 'Perfil' },
       ];
+      
+      // Only add Reportes if user is AUTHORIZED
+      if (userStatus === "AUTHORIZED") {
+        baseItems.splice(1, 0, { path: '/a/reports', icon: BarChart, label: 'Reportes' });
+      }
+      
+      return baseItems;
     }
     return [];
   };

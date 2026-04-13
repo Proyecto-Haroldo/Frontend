@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { defaultCategories } from "../../../public/assets/Categories";
 import { ICategory } from "../../core/models/questionnaire";
-import { getAllCategories } from "../../api/questionnairesApi";
+import { publicCategories } from "../../api/authApi";
 
 const useCategories = () => {
     const [categories, setCategories] = useState<ICategory[]>(defaultCategories);
@@ -10,7 +10,7 @@ const useCategories = () => {
     useEffect(() => {
         let isMounted = true;
 
-        getAllCategories()
+        publicCategories()
             .then((data) => {
                 if (!isMounted) return;
 

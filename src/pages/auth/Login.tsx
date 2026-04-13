@@ -74,7 +74,7 @@ const Login: React.FC = () => {
     setLoading(true);
     try {
       const res = await login({ email, password });
-      setAuth(res.token, res.role.id, res.id);
+      setAuth(res.token, res.role.id, res.id, res.status);
 
       const role = res?.role.id;
 
