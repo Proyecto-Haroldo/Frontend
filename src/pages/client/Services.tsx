@@ -51,7 +51,6 @@ function Services() {
       setErrorCategories('');
       const data = await getAllCategories();
       setCategories(data);
-      console.log(data)
     } catch (err) {
       console.error('Error fetching categories:', err);
       setErrorCategories('Error al cargar las categorías');
@@ -125,6 +124,7 @@ function Services() {
     moveDirection: 'forward' | 'backward' = 'forward'
   ) => {
     setDirection(moveDirection)
+    setErrorQuestionnaires('')
     setCurrentView(nextView)
   }
 
@@ -135,12 +135,14 @@ function Services() {
     if (!category) return
 
     setSelectedCategory(category)
+    setErrorQuestionnaires('')
     navigate(`?category=${encodeURIComponent(category.name.toLowerCase())}`)
     transition("questionnaires", "forward")
   }
 
   const handleBackToCategories = () => {
     navigate("/c/services")
+    setErrorQuestionnaires('')
     transition('categories', 'backward')
   }
 
@@ -329,9 +331,8 @@ function Services() {
             )}
 
             {!loadingQuestionnaires && filteredQuestionnaires.map((item, index) => (
-              <>
+              <div key={item.id}>
                 <div
-                  key={item.id}
                   className={`flex items-center gap-4 p-6 hover:bg-base-200/70 transition-colors cursor-pointer ${index !== filteredQuestionnaires.length - 1
                     ? 'border-b border-base-200'
                     : ''
@@ -353,7 +354,7 @@ function Services() {
                   <ArrowRight className="h-5 w-5 text-base-content/40" />
                 </div>
                 <hr className="text-base-300 mx-4"></hr>
-              </>
+              </div>
             ))}
           </div>
         </div>

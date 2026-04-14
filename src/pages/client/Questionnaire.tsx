@@ -80,7 +80,7 @@ const HighlightedText = ({
           return (
             <span
               key={index}
-              className="tooltip tooltip-info inline-block z-30"
+              className="tooltip tooltip-accent inline-block z-30"
               data-tip={keyword.description}
             >
               <span className="text-primary cursor-help underline decoration-dotted underline-offset-2 inline-block hover:bg-base-300 hover:text-primary transition-all duration-200 rounded-sm px-0.5 -mx-0.5">
@@ -207,7 +207,7 @@ const Questionnaire = () => {
     allocation.title = findKeywordsInText(currentQuestion.question);
 
     // Then, allocate keywords found in options (excluding those already used in question)
-    currentQuestion.options?.forEach(option => {
+    currentQuestion.options?.sort((a, b) => b.id - a.id).forEach(option => {
       allocation.options.set(String(option.id), findKeywordsInText(option.text));
     });
 
