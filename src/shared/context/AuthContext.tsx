@@ -13,11 +13,13 @@ interface AuthContextType {
   role: number | null;
   userId: number | null;
   userStatus: string | null;
+  userSpecialities: any[] | null;
   setAuth: (
     token: string | null,
     role: number | null,
     userId: number | null,
-    userStatus?: string | null
+    userStatus?: string | null,
+    userSpecialities?: any[] | null
   ) => void;
   logout: () => void;
 }
@@ -44,12 +46,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.getItem('userStatus')
   );
 
+  const [userSpecialities, setUserSpecialitiesState] = useState<any[] | null>(() => {
+    const storedSpecialities = localStorage.getItem('userSpecialities');
+    return storedSpecialities ? JSON.parse(storedSpecialities) : null;
+  });
+
   const setAuth = useCallback(
-    (newToken: string | null, newRole: number | null, newUserId: number | null, newUserStatus?: string | null) => {
+    (newToken: string | null, newRole: number | null, newUserId: number | null, newUserStatus?: string | null, userSpecialities?: any[] | null) => {
       setTokenState(newToken);
       setRoleState(newRole);
       setUserIdState(newUserId);
       setUserStatusState(newUserStatus || null);
+
+      if (userSpecialities !== undefined) {
+        setUserSpecialitiesState(userSpecialities);
+        if (userSpecialities) {
+          localStorage.setItem('userSpecialities', JSON.stringify(userSpecialities));
+        } else {
+          localStorage.removeItem('userSpecialities');
+        }
+      }
 
       if (newToken) localStorage.setItem('token', newToken);
       else localStorage.removeItem('token');
@@ -67,7 +83,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const logout = useCallback(() => {
-    setAuth(null, null, null, null);
+    setAuth(null, null, null, null, null);
 
     localStorage.removeItem('questionnaireData');
     localStorage.removeItem('aiRecommendation');
@@ -114,7 +130,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [token, logout]);
 
   return (
-    <AuthContext.Provider value={{ token, role, userId, userStatus, setAuth, logout }}>
+    <AuthContext.Provider value={{ token, role, userId, userStatus, userSpecialities, setAuth, logout }}>
       {children}
     </AuthContext.Provider>
   );
