@@ -9,6 +9,7 @@ import {
   Banknote,
   Wallet,
   PiggyBank,
+  Users,
   TrendingUp,
   IdCard,
   Building2,
@@ -44,7 +45,7 @@ const SignUp: React.FC = () => {
 
   const { categories, isUsingFallback } = useCategories();
   const { setAuth } = useAuth();
-  
+
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -137,48 +138,48 @@ const SignUp: React.FC = () => {
     switch (step) {
       case 1:
         if (!form.email) {
-          errors.email = "El correo electrónico es requerido";
+          errors.email = "*El correo electrónico es requerido";
           setTouched((prev) => ({ ...prev, email: true }));
         } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-          errors.email = "Por favor ingrese un correo electrónico válido";
+          errors.email = "*Por favor ingrese un correo electrónico válido";
         }
 
         if (!form.password) {
-          errors.password = "La contraseña es requerida";
+          errors.password = "*La contraseña es requerida";
           setTouched((prev) => ({ ...prev, password: true }));
         } else if (form.password.length < 8) {
-          errors.password = "La contraseña debe tener al menos 8 caracteres";
+          errors.password = "*La contraseña debe tener al menos 8 caracteres";
         } else if (passwordStrength < 80) {
-          errors.password = "La contraseña debe tener al menos 80% de seguridad";
+          errors.password = "*La contraseña debe tener al menos 80% de seguridad";
         }
 
         if (!form.confirmPassword) {
-          errors.confirmPassword = "Confirmar contraseña es requerido";
+          errors.confirmPassword = "*Confirmar contraseña es requerido";
           setTouched((prev) => ({ ...prev, confirmPassword: true }));
         } else if (form.confirmPassword !== form.password) {
-          errors.confirmPassword = "Las contraseñas no coinciden";
+          errors.confirmPassword = "*Las contraseñas no coinciden";
         }
         break;
 
       case 3:
         if (!form.cedulaOrNIT) {
-          errors.cedulaOrNIT = "El documento es requerido";
+          errors.cedulaOrNIT = "*El documento es requerido";
           setTouched((prev) => ({ ...prev, cedulaOrNIT: true }));
         } else if (form.cedulaOrNIT.length < 5) {
-          errors.cedulaOrNIT = "Documento debe tener al menos 5 caracteres";
+          errors.cedulaOrNIT = "*Documento debe tener al menos 5 caracteres";
         }
 
         // Nombre legal is required for both persona and empresa
         if (!form.legalName) {
-          errors.legalName = "El nombre legal es requerido";
+          errors.legalName = "*El nombre legal es requerido";
           setTouched((prev) => ({ ...prev, legalName: true }));
         } else if (form.legalName.length < 2) {
-          errors.legalName = "El nombre debe tener al menos 2 caracteres";
+          errors.legalName = "*El nombre debe tener al menos 2 caracteres";
         }
 
         // Sector is required for both persona and empresa now
         if (!form.sector) {
-          errors.sector = "El sector es requerido";
+          errors.sector = "*El sector es requerido";
           setTouched((prev) => ({ ...prev, sector: true }));
         }
         break;
@@ -188,7 +189,7 @@ const SignUp: React.FC = () => {
 
       case 5:
         if (form.role === "Asesor" && selectedCategories.length === 0) {
-          errors.specialities = "Debe seleccionar al menos una especialidad";
+          errors.specialities = "*Debe seleccionar al menos una especialidad";
         }
         break;
     }
@@ -333,21 +334,20 @@ const SignUp: React.FC = () => {
     const steps = Array.from({ length: totalSteps }, (_, i) => i + 1);
     return (
       <div className="flex justify-center mb-6 px-2">
-        <div className="flex items-center space-x-1 sm:space-x-2">
+        <div className="flex items-center">
           {steps.map((step) => (
             <React.Fragment key={step}>
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-all duration-300 ${currentStep >= step
                   ? "bg-primary text-primary-content shadow-sm"
-                  : "bg-base-300 text-base-content/50"
+                  : "bg-primary/20 text-base-content/50"
                   }`}
               >
                 {step}
               </div>
               {step < totalSteps && (
                 <div
-                  className={`w-4 sm:w-8 h-0.5 transition-all duration-300 ${currentStep > step ? "bg-primary" : "bg-base-300"
-                    }`}
+                  className={`${totalSteps == 5 ? "w-6" : "w-8"} sm:w-12 h-0.75 transition-all duration-300 ${currentStep > step ? "bg-primary" : "bg-primary/20"}`}
                 />
               )}
             </React.Fragment>
@@ -357,17 +357,30 @@ const SignUp: React.FC = () => {
     );
   };
 
+  const getStepTitle = (step: number) => {
+    switch (step) {
+      case 1:
+        return "Información de cuenta";
+      case 2:
+        return "Tipo de cuenta";
+      case 3:
+        return `Información ${form.clientType === "persona" ? "personal" : "de la empresa"}`;
+      case 4:
+        return "Información de contacto";
+      case 5:
+        return "Especialidades";
+      default:
+        return "";
+    }
+  };
+
   const renderStep1 = () => (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3 }}
-      className="space-y-4"
+      className="space-y-4 min-h-[236px]"
     >
-      <h2 className="text-xl font-semibold text-center text-base-content/80">
-        Información de cuenta
-      </h2>
-
       <div className="form-control">
         <label htmlFor="email" className="label">
           <span className="label-text text-base-content/70 mb-1">
@@ -393,7 +406,7 @@ const SignUp: React.FC = () => {
         </div>
         {validationErrors.email && (
           <label className="label">
-            <span className="label-text-alt text-error">
+            <span className="label-text-alt text-sm text-error">
               {validationErrors.email}
             </span>
           </label>
@@ -448,7 +461,7 @@ const SignUp: React.FC = () => {
         </div>
         {validationErrors.password && (
           <label htmlFor="password" className="label">
-            <span className="label-text-alt text-error">
+            <span className="label-text-alt text-sm text-error">
               {validationErrors.password}
             </span>
           </label>
@@ -512,7 +525,7 @@ const SignUp: React.FC = () => {
         </div>
         {validationErrors.confirmPassword && (
           <label className="label">
-            <span className="label-text-alt text-error">
+            <span className="label-text-alt text-sm text-error">
               {validationErrors.confirmPassword}
             </span>
           </label>
@@ -526,12 +539,8 @@ const SignUp: React.FC = () => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3 }}
-      className="space-y-4"
+      className="space-y-4 min-h-[236px]"
     >
-      <h2 className="text-xl font-semibold text-center text-base-content/80">
-        Tipo de cuenta
-      </h2>
-
       <div className="form-control">
         <label className="label">
           <span className="label-text text-base-content/70">
@@ -551,7 +560,7 @@ const SignUp: React.FC = () => {
                   className="peer sr-only"
                   disabled={loading}
                 />
-                <div className="sm:h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-white peer-checked:shadow-sm peer-checked:text-primary peer-hover:bg-base-300">
+                <div className="h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-checked:shadow-sm peer-hover:scale-99">
                   <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center">
                     <User className="w-5 h-5 mr-2" />
                     <span className="font-medium">Cliente</span>
@@ -570,7 +579,7 @@ const SignUp: React.FC = () => {
                   className="peer sr-only"
                   disabled={loading}
                 />
-                <div className="sm:h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-white peer-checked:shadow-sm peer-checked:text-primary peer-hover:bg-base-300">
+                <div className="h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-checked:shadow-sm peer-hover:scale-99">
                   <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center">
                     <Briefcase className="w-5 h-5 mr-2" />
                     <span className="font-medium">Asesor</span>
@@ -585,7 +594,7 @@ const SignUp: React.FC = () => {
       <div className="form-control">
         <label className="label">
           <span className="label-text text-base-content/70">
-            Tipo de cliente
+            Tipo de Cuenta
           </span>
         </label>
         <div className="relative bg-base-200 rounded-lg p-1">
@@ -601,9 +610,9 @@ const SignUp: React.FC = () => {
                   className="peer sr-only"
                   disabled={loading}
                 />
-                <div className="sm:h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-white peer-checked:shadow-sm peer-checked:text-primary peer-hover:bg-base-300">
+                <div className="h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-checked:shadow-sm peer-hover:scale-99">
                   <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center">
-                    <User className="w-5 h-5 mr-2" />
+                    <Users className="w-5 h-5 mr-2" />
                     <span className="font-medium">Persona</span>
                   </div>
                 </div>
@@ -620,7 +629,7 @@ const SignUp: React.FC = () => {
                   className="peer sr-only"
                   disabled={loading}
                 />
-                <div className="sm:h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-white peer-checked:shadow-sm peer-checked:text-primary peer-hover:bg-base-300">
+                <div className="h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-checked:shadow-sm peer-hover:scale-99">
                   <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center">
                     <Building2 className="w-5 h-5 mr-2" />
                     <span className="font-medium">Empresa</span>
@@ -639,12 +648,8 @@ const SignUp: React.FC = () => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3 }}
-      className="space-y-4"
+      className="space-y-4 min-h-[236px]"
     >
-      <h2 className="text-xl font-semibold text-center text-base-content/80">
-        Información {form.clientType === "persona" ? "personal" : "de la empresa"}
-      </h2>
-
       <div className="form-control">
         <label htmlFor="cedulaOrNIT" className="label">
           <span className="label-text text-base-content/70 mb-1">
@@ -670,7 +675,7 @@ const SignUp: React.FC = () => {
         </div>
         {validationErrors.cedulaOrNIT && (
           <label className="label">
-            <span className="label-text-alt text-error">
+            <span className="label-text-alt text-sm text-error">
               {validationErrors.cedulaOrNIT}
             </span>
           </label>
@@ -702,7 +707,7 @@ const SignUp: React.FC = () => {
         </div>
         {validationErrors.legalName && (
           <label className="label">
-            <span className="label-text-alt text-error">
+            <span className="label-text-alt text-sm text-error">
               {validationErrors.legalName}
             </span>
           </label>
@@ -734,7 +739,7 @@ const SignUp: React.FC = () => {
         </div>
         {validationErrors.sector && (
           <label className="label">
-            <span className="label-text-alt text-error">
+            <span className="label-text-alt text-sm text-error">
               {validationErrors.sector}
             </span>
           </label>
@@ -748,83 +753,77 @@ const SignUp: React.FC = () => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3 }}
-      className="space-y-4"
+      className="space-y-4 min-h-[236px]"
     >
-      <h2 className="text-xl font-semibold text-center text-base-content/80">
-        Información de contacto
-      </h2>
-
-      <div className="space-y-4">
-        <div className="form-control">
-          <label htmlFor="phone" className="label">
-            <span className="label-text text-base-content/70 mb-1">
-              Teléfono (Opcional)
-            </span>
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
-              <Phone className="h-5 w-5 text-base-content/50" />
-            </div>
-            <input
-              type="tel"
-              title="phone"
-              name="phone"
-              value={form.phone}
-              onChange={handleChange}
-              onKeyDown={handleKeyDown}
-              className="input input-bordered w-full pl-10"
-              placeholder="Ej: 321 456 7890"
-              disabled={loading}
-            />
+      <div className="form-control">
+        <label htmlFor="phone" className="label">
+          <span className="label-text text-base-content/70 mb-1">
+            Teléfono (Opcional)
+          </span>
+        </label>
+        <div className="relative">
+          <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
+            <Phone className="h-5 w-5 text-base-content/50" />
           </div>
+          <input
+            type="tel"
+            title="phone"
+            name="phone"
+            value={form.phone}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            className="input input-bordered w-full pl-10"
+            placeholder="Ej: 321 456 7890"
+            disabled={loading}
+          />
         </div>
+      </div>
 
-        <div className="form-control">
-          <label htmlFor="location" className="label">
-            <span className="label-text text-base-content/70 mb-1">
-              Región (Opcional)
-            </span>
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
-              <MapPin className="h-5 w-5 text-base-content/50" />
-            </div>
-            <input
-              type="text"
-              title="location"
-              name="location"
-              value={form.location}
-              onChange={handleChange}
-              onKeyDown={handleKeyDown}
-              className="input input-bordered w-full pl-10"
-              placeholder="Ej: Medellín, Colombia"
-              disabled={loading}
-            />
+      <div className="form-control">
+        <label htmlFor="location" className="label">
+          <span className="label-text text-base-content/70 mb-1">
+            Región (Opcional)
+          </span>
+        </label>
+        <div className="relative">
+          <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
+            <MapPin className="h-5 w-5 text-base-content/50" />
           </div>
+          <input
+            type="text"
+            title="location"
+            name="location"
+            value={form.location}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            className="input input-bordered w-full pl-10"
+            placeholder="Ej: Medellín, Colombia"
+            disabled={loading}
+          />
         </div>
+      </div>
 
-        <div className="form-control">
-          <label htmlFor="network" className="label">
-            <span className="label-text text-base-content/70 mb-1">
-              LinkedIn (Opcional)
-            </span>
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
-              <Globe className="h-5 w-5 text-base-content/50" />
-            </div>
-            <input
-              type="url"
-              title="network"
-              name="network"
-              value={form.network}
-              onChange={handleChange}
-              onKeyDown={handleKeyDown}
-              placeholder="https://linkedin.com/in/..."
-              className="input input-bordered w-full pl-10"
-              disabled={loading}
-            />
+      <div className="form-control">
+        <label htmlFor="network" className="label">
+          <span className="label-text text-base-content/70 mb-1">
+            LinkedIn (Opcional)
+          </span>
+        </label>
+        <div className="relative">
+          <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
+            <Globe className="h-5 w-5 text-base-content/50" />
           </div>
+          <input
+            type="url"
+            title="network"
+            name="network"
+            value={form.network}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            placeholder="https://linkedin.com/in/..."
+            className="input input-bordered w-full pl-10"
+            disabled={loading}
+          />
         </div>
       </div>
     </motion.div>
@@ -835,14 +834,10 @@ const SignUp: React.FC = () => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3 }}
-      className="space-y-4"
+      className="space-y-4 min-h-[236px]"
     >
-      <h2 className="text-xl font-semibold text-center text-base-content/80">
-        Especialidades
-      </h2>
-
       <div className="form-control">
-        <label className="label">
+        <label className="label mb-2">
           <span className="label-text text-base-content/70">
             Especialidades (seleccione una o más)
           </span>
@@ -866,7 +861,7 @@ const SignUp: React.FC = () => {
 
         {validationErrors.specialities && (
           <label className="label">
-            <span className="label-text-alt text-error">
+            <span className="label-text-alt text-sm text-error">
               {validationErrors.specialities}
             </span>
           </label>
@@ -933,7 +928,7 @@ const SignUp: React.FC = () => {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md p-8 space-y-4 bg-base-100 rounded-xl shadow-xl relative z-10"
       >
-        <div className="text-center">
+        <div className="text-center mb-2">
           <motion.div
             initial={{ scale: 0.8, rotate: -5 }}
             animate={{ scale: 1, rotate: 0 }}
@@ -951,6 +946,10 @@ const SignUp: React.FC = () => {
             Registro
           </motion.h1>
         </div>
+
+        <h2 className="text-xl font-semibold text-center text-base-content/80 mb-4">
+          {getStepTitle(currentStep)}
+        </h2>
 
         {renderStepIndicator()}
 
@@ -1014,14 +1013,14 @@ const SignUp: React.FC = () => {
           {currentStep === 4 && renderStep4()}
           {currentStep === 5 && renderStep5()}
 
-          <div className="flex justify-between space-x-4">
+          <div className="flex justify-between space-x-4 transition-all duration-300">
             {currentStep > 1 && (
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 type="button"
                 onClick={handlePrevious}
-                className="btn btn-outline flex-1 border-0 bg-base-content/10"
+                className="btn btn-outline transition-all duration-300 flex-1 border-0 bg-base-content/10"
                 disabled={loading}
               >
                 Anterior
@@ -1034,7 +1033,7 @@ const SignUp: React.FC = () => {
                 whileTap={{ scale: 0.98 }}
                 type="button"
                 onClick={handleNext}
-                className={`btn btn-primary flex-1 ${currentStep > 1 ? "ml-auto" : ""}`}
+                className={`btn btn-primary transition-all duration-300 flex-1 ${currentStep > 1 ? "ml-auto" : ""}`}
                 disabled={loading}
               >
                 Siguiente
@@ -1045,7 +1044,7 @@ const SignUp: React.FC = () => {
                 whileTap={{ scale: 0.98 }}
                 type="button"
                 onClick={handleManualSubmit}
-                className={`btn btn-primary flex-1 ${currentStep > 1 ? "ml-auto" : ""}`}
+                className={`btn btn-primary transition-all duration-300 flex-1 ${currentStep > 1 ? "ml-auto" : ""}`}
                 disabled={loading}
               >
                 {loading ? (

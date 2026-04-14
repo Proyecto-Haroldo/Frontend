@@ -105,7 +105,7 @@ const SelectCategories: React.FC<Props> = ({
       </div>
 
       {/* Options */}
-      <div className="flex flex-wrap gap-2 max-h-45 overflow-y-auto pr-1">
+      <div className="flex flex-wrap gap-2 max-h-36 overflow-y-auto pr-1">
         {filtered.map((cat) => {
           const active = selected.includes(cat.id);
 
