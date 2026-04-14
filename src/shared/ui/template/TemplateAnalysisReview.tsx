@@ -41,9 +41,21 @@ function TemplateAnalysisReview({
   const [gradingColor, setGradingColor] = useState<string>('');
   const [isGrading, setIsGrading] = useState(false);
   const [gradeError, setGradeError] = useState<string | null>(null);
-  const { role } = useAuth();
+  const { role, userSpecialities } = useAuth();
 
   const isAdvisor = role === 3;
+
+  // Security check: Verify adviser has access to this analysis category
+  const hasAccessToAnalysis = (analysisCategoryName: string) => {
+    // Admins have access to everything
+    if (role === 1) return true;
+    
+    // Advisers must have matching specialities
+    if (!userSpecialities || userSpecialities.length === 0) return false;
+    
+    const specialityNames = new Set(userSpecialities.map(s => s.title));
+    return specialityNames.has(analysisCategoryName);
+  };
 
   // Fetch analysis
   useEffect(() => {
@@ -53,6 +65,14 @@ function TemplateAnalysisReview({
       try {
         setLoading(true);
         const data = await getAnalysisById(analysisId);
+        
+        // Security check: Verify access before setting analysis
+        if (!hasAccessToAnalysis(data.categoryName)) {
+          console.warn('Unauthorized access attempt to analysis:', data.categoryName);
+          setError('No tienes permiso para ver este análisis.');
+          return;
+        }
+        
         setAnalysis(data);
       } catch (err) {
         console.error('Error fetching analysis:', err);

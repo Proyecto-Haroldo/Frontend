@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { getAllAnalysis } from "../../api/analysisApi";
 import { getAllQuestionnaires } from "../../api/questionnairesApi";
+import { getUserById } from "../../api/usersApi";
 import { getUserStatus } from "../../api/authApi";
 import { IAnalysis } from "../../core/models/analysis";
 import { IQuestionnaire } from "../../core/models/questionnaire";
@@ -23,13 +24,29 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
   const [errorQuestionnaires, setErrorQuestionnaires] = useState("");
   const [loadingAnalysis, setLoadingAnalysis] = useState(true);
   const [errorAnalysis, setErrorAnalysis] = useState("");
-  const { role, userStatus, token, userId, setAuth } = useAuth();
+  const { role, userStatus, token, userId, userSpecialities, setAuth } = useAuth();
   const { id } = useParams();
+
+  // Fetch and cache specialities for advisers
+  useEffect(() => {
+    if (role == 3 && userId && !userSpecialities) {
+      const fetchAndCacheSpecialities = async () => {
+        try {
+          const userData = await getUserById(userId);
+          setAuth(token, role, userId, userStatus, userData.specialities || null);
+        } catch (error) {
+          console.warn('Error fetching user specialities:', error);
+        }
+      };
+      
+      fetchAndCacheSpecialities();
+    }
+  }, [userId, userSpecialities, setAuth]);
 
   useEffect(() => {
     fetchQuestionnaires();
     fetchAnalysis();
-  }, []);
+  }, [userSpecialities]);
 
   const [view, setView] = useState<
     "selector" | "questionnaires" | "analysis" | "questions" | "analysisReview"
@@ -113,6 +130,21 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
     fetchAnalysis();
   };
 
+  // Filter analysis based on user specialities for advisers
+  const visibleAnalysis = useMemo(() => {
+    // If specialities haven't loaded yet, show nothing
+    if (!userSpecialities || userSpecialities.length === 0) return [];
+    
+    const specialityNames = new Set(userSpecialities.map(s => s.title));
+    
+    const filtered = analysis.filter(a => {
+      // Check if analysis category matches adviser specialities
+      return specialityNames.has(a.categoryName);
+    });
+    
+    return filtered;
+  }, [analysis, userSpecialities, role]);
+
   const checkUserStatus = async () => {
     if (!userId) return;
 
@@ -143,12 +175,12 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
   }, []);
 
   const stats = {
-    total: analysis.length,
-    pending: analysis.filter((q) => q.status?.toUpperCase() === "PENDING").length,
-    completed: analysis.filter((q) => q.status?.toUpperCase() === "CHECKED").length,
-    green: analysis.filter((q) => q.colorSemaforo === "verde").length,
-    yellow: analysis.filter((q) => q.colorSemaforo === "amarillo").length,
-    red: analysis.filter((q) => q.colorSemaforo === "rojo").length,
+    total: visibleAnalysis.length,
+    pending: visibleAnalysis.filter((q) => q.status?.toUpperCase() === "PENDING").length,
+    completed: visibleAnalysis.filter((q) => q.status?.toUpperCase() === "CHECKED").length,
+    green: visibleAnalysis.filter((q) => q.colorSemaforo === "verde").length,
+    yellow: visibleAnalysis.filter((q) => q.colorSemaforo === "amarillo").length,
+    red: visibleAnalysis.filter((q) => q.colorSemaforo === "rojo").length,
   };
 
   // Animations for the selector cards
@@ -202,7 +234,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
         loading={loadingAnalysis}
         error={errorAnalysis}
         stats={stats}
-        analysis={analysis}
+        analysis={visibleAnalysis}
         role={role}
       />
 
@@ -314,7 +346,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
               <Analysis
                 loading={loadingAnalysis}
                 error={errorAnalysis}
-                analysis={analysis}
+                analysis={visibleAnalysis}
                 role={role}
               />
             </div>
