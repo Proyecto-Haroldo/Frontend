@@ -4,6 +4,7 @@ import { putUserById } from "../../../../api/usersApi";
 import DialogConfirmEdit from "../dialogs/DialogConfirmEdit";
 import SelectCategories from "../selects/SelectCategories";
 import useCategories from "../../../hooks/useCategories";
+import { useAuth } from "../../../context/AuthContext";
 
 interface ModalEditUserProps {
     user: IUser;
@@ -24,6 +25,7 @@ const ModalEditUser: React.FC<ModalEditUserProps> = ({
     );
 
     const { categories } = useCategories();
+    const { role: currentUserRole, userId: currentUserId } = useAuth();
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -175,45 +177,61 @@ const ModalEditUser: React.FC<ModalEditUserProps> = ({
                                         Red
                                     </label>
                                     <input
-                                        type="text"
-                                        name="network"
+                                        type="url"
                                         title="network"
+                                        name="network"
                                         value={formData.network || ""}
                                         onChange={handleChange}
                                         className="input input-bordered w-full text-sm text-base-content/70"
+                                        placeholder="https://linkedin.com/in/tunombre"
                                     />
                                 </div>
 
-                                <div>
-                                    <label htmlFor="status" className="text-sm font-medium text-base-content">
-                                        Estado
-                                    </label>
-                                    <select
-                                        name="status"
-                                        title="status"
-                                        value={formData.status || ""}
-                                        onChange={handleChange}
-                                        className="select select-bordered w-full text-sm text-base-content/70"
-                                    >
-                                        <option value="">Seleccionar</option>
-                                        <option value="AUTHORIZED">Activo</option>
-                                        <option value="UNAUTHORIZED">Inactivo</option>
-                                    </select>
-                                </div>
+                                {currentUserRole === 1 && (
+                                    <>
+                                    <div>
+                                        <label htmlFor="status" className="text-sm font-medium text-base-content">
+                                            Estado
+                                        </label>
+                                        {formData.userId === currentUserId ? (
+                                            <input
+                                                type="text"
+                                                title="status"
+                                                name="status"
+                                                value={formData.status === "AUTHORIZED" ? "Activo" : "Inactivo"}
+                                                disabled
+                                                className="input input-bordered w-full"
+                                            />
+                                        ) : (
+                                            <select
+                                                name="status"
+                                                title="status"
+                                                value={formData.status || ""}
+                                                onChange={handleChange}
+                                                className="select select-bordered w-full text-sm text-base-content/70"
+                                            >
+                                                <option value="">Seleccionar</option>
+                                                <option value="AUTHORIZED">Activo</option>
+                                                <option value="UNAUTHORIZED">Inactivo</option>
+                                            </select>
+                                        )}
+                                    </div>
 
-                                <div>
-                                    <label htmlFor="role" className="text-sm font-medium text-base-content">
-                                        Rol
-                                    </label>
-                                    <input
-                                        type="text"
-                                        title="role"
-                                        name="role"
-                                        value={formData.role.name}
-                                        disabled
-                                        className="input input-bordered w-full"
-                                    />
-                                </div>
+                                    <div>
+                                        <label htmlFor="role" className="text-sm font-medium text-base-content">
+                                            Rol
+                                        </label>
+                                        <input
+                                            type="text"
+                                            title="role"
+                                            name="role"
+                                            value={formData.role.name}
+                                            disabled
+                                            className="input input-bordered w-full"
+                                        />
+                                    </div>
+                                    </>
+                                )}
                             </div>
 
                             {formData.role.id === 3 && (

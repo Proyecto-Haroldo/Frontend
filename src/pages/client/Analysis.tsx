@@ -68,7 +68,7 @@ function Analysis() {
         return <div className="min-w-3 w-3 aspect-[1/1] rounded-full bg-primary text-primary-content" />;
       case 'pending':
       case 'PENDING':
-        return <div className="min-w-3 w-3 aspect-[1/1] rounded-full bg-secondary text-secondary-content" />;
+        return <div className="min-w-3 w-3 aspect-[1/1] rounded-full bg-accent text-accent-content" />;
       default:
         return <div className="min-w-3 w-3 aspect-[1/1] rounded-full bg-base-content/50 text-base-content" />;
     }
@@ -238,9 +238,8 @@ function Analysis() {
                 const progress = calculateTotalProgress(isChecked);
 
                 return (
-                  <>
+                  <div key={item.analysisId}>
                     <div
-                      key={item.analysisId}
                       className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 hover:bg-base-200/70 transition-colors cursor-pointer ${index !== analysisLength - 1 ? 'border-b border-base-200' : ''}`}
                       onClick={() => handleAnalysisClick(item)}
                     >
@@ -276,7 +275,7 @@ function Analysis() {
                           </div>
                           <div className="flex items-center gap-2 justify-start w-full">
                             <progress
-                              className={`progress ${progress === 100 ? "progress-primary" : "progress-secondary"} w-full`}
+                              className={`progress ${progress === 100 ? "progress-primary" : "progress-accent"} w-full`}
                               value={progress}
                               max="100"
                             />
@@ -284,7 +283,7 @@ function Analysis() {
                           </div>
                         </div>
                         <button
-                          className="btn btn-info btn-sm"
+                          className="btn btn-primary btn-sm"
                           title="Ver análisis"
                           onClick={e => {
                             e.stopPropagation();
@@ -296,7 +295,7 @@ function Analysis() {
                       </div>
                     </div>
                     <hr className="text-base-300 mx-4"></hr>
-                  </>
+                  </div>
                 );
               })}
             </div>

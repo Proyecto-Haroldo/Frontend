@@ -19,7 +19,7 @@ const TableAnalysis: React.FC<TableAnalysisProps> = ({
         switch (state?.toUpperCase()) {
             case "PENDING":
                 return (
-                    <span className="badge badge-secondary font-semibold p-2 badge-sm gap-1 text-xs">
+                    <span className="badge badge-accent font-semibold p-2 badge-sm gap-1 text-xs">
                         <Clock className="h-3 w-3" />
                         <span className="hidden sm:inline">Pendiente</span>
                         <span className="sm:hidden">Pend.</span>
