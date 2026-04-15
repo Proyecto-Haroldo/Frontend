@@ -7,15 +7,6 @@ const mapRoleNameToRoleObject = (roleName: string) => {
   // Normalizar a minúsculas
   let normalized = roleName.toLowerCase().trim();
 
-  // --- user → client, usuario → cliente ---
-  if (normalized.includes("usuario")) {
-    normalized = normalized.replace("usuario", "cliente");
-  }
-
-  if (normalized.includes("user")) {
-    normalized = normalized.replace("user", "client");
-  }
-
   // Mantener guion bajo
   const key = normalized.replaceAll(/[^a-z0-9_]/g, '');
 
@@ -30,6 +21,10 @@ const mapRoleNameToRoleObject = (roleName: string) => {
     'cliente': 2,
     'role_cliente': 2,
     'role_client': 2,
+    'user': 2,
+    'usuario': 2,
+    'role_user': 2,
+    'role_usuario': 2,
 
     'adviser': 3,
     'asesor': 3,
@@ -120,8 +115,27 @@ export const deleteUserById = async (id: number): Promise<IUser> => {
 
 export const putUserById = async (id: number, user: IUser): Promise<IUser> => {
   try {
-    const response = await apiClient.put<IUser>(`/users/${id}`, { user });
-    return response.data;
+    const userDTO = {
+      userId: id,
+      cedulaOrNIT: user.cedulaOrNIT,
+      legalName: user.legalName,
+      clientType: user.clientType,
+      email: user.email,
+      sector: user.sector,
+      roleName: user.role?.name || '',
+      network: user.network,
+      location: user.location,
+      phone: user.phone,
+      specialities: user.specialities?.map(s => ({
+        categoryId: s.categoryId,
+        title: s.title,
+        description: s.description,
+        icon: s.icon
+      })) || []
+    };
+    
+    const response = await apiClient.put<IUser>('/users', userDTO);
+    return transformUser(response.data);
   } catch (error) {
     console.error('Error updating user details:', error);
     throw new Error('Failed to update user details');
