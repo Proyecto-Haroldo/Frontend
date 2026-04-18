@@ -57,7 +57,7 @@ const ModalEditUser: React.FC<ModalEditUserProps> = ({
 
     return (
         <>
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 m-0">
                 <div className="bg-base-200 rounded-lg p-4 pr-3 md:p-6 md:pr-5 max-w-3xl w-full max-h-[80vh] flex flex-col">
                     {/* Header fijo */}
                     <div className="flex justify-between items-center mb-4">
@@ -118,16 +118,46 @@ const ModalEditUser: React.FC<ModalEditUserProps> = ({
                                     <label htmlFor="clientType" className="text-sm font-medium text-base-content">
                                         Tipo de Cliente
                                     </label>
-                                    <select
-                                        name="clientType"
-                                        title="clientType"
-                                        value={formData.clientType}
-                                        onChange={handleChange}
-                                        className="select select-bordered w-full text-sm text-base-content/70"
-                                    >
-                                        <option value="persona">Persona</option>
-                                        <option value="empresa">Empresa</option>
-                                    </select>
+                                    <div className="dropdown w-full">
+                                        <button
+                                            tabIndex={0}
+                                            type="button"
+                                            className="select select-bordered w-full text-sm text-base-content/70 flex items-center"
+                                        >
+                                            <span>
+                                                {formData.clientType === "EMPRESA" ? "Empresa" : "Persona"}
+                                            </span>
+                                        </button>
+
+                                        <ul className="dropdown-content z-[1] menu p-2 bg-base-300 mt-2 rounded-box w-full shadow-lg">
+                                            <li>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setFormData(prev => ({
+                                                            ...prev,
+                                                            clientType: "PERSONA"
+                                                        }))
+                                                    }
+                                                >
+                                                    Persona
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setFormData(prev => ({
+                                                            ...prev,
+                                                            clientType: "EMPRESA"
+                                                        }))
+                                                    }
+                                                >
+                                                    Empresa
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
 
                                 <div>
@@ -189,47 +219,78 @@ const ModalEditUser: React.FC<ModalEditUserProps> = ({
 
                                 {currentUserRole === 1 && (
                                     <>
-                                    <div>
-                                        <label htmlFor="status" className="text-sm font-medium text-base-content">
-                                            Estado
-                                        </label>
-                                        {formData.userId === currentUserId ? (
+                                        <div>
+                                            <label htmlFor="status" className="text-sm font-medium text-base-content">
+                                                Estado
+                                            </label>
+                                            {formData.userId === currentUserId ? (
+                                                <input
+                                                    type="text"
+                                                    title="status"
+                                                    name="status"
+                                                    value={formData.status === "UNAUTHORIZED" ? "Inactivo" : "Activo"}
+                                                    disabled
+                                                    className="input input-bordered w-full"
+                                                />
+                                            ) : (
+                                                <div className="dropdown w-full">
+                                                    <button
+                                                        tabIndex={0}
+                                                        type="button"
+                                                        className="select select-bordered w-full text-sm text-base-content/70 flex items-center"
+                                                    >
+                                                        <span>
+                                                            {formData.status === "AUTHORIZED"
+                                                                ? "Activo"
+                                                                : "Inactivo"}
+                                                        </span>
+                                                    </button>
+
+                                                    <ul className="dropdown-content z-[1] menu p-2 bg-base-300 mt-2 rounded-box w-full shadow-lg">
+                                                        <li>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() =>
+                                                                    setFormData(prev => ({
+                                                                        ...prev,
+                                                                        status: "AUTHORIZED"
+                                                                    }))
+                                                                }
+                                                            >
+                                                                Activo
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() =>
+                                                                    setFormData(prev => ({
+                                                                        ...prev,
+                                                                        status: "UNAUTHORIZED"
+                                                                    }))
+                                                                }
+                                                            >
+                                                                Inactivo
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div>
+                                            <label htmlFor="role" className="text-sm font-medium text-base-content">
+                                                Rol
+                                            </label>
                                             <input
                                                 type="text"
-                                                title="status"
-                                                name="status"
-                                                value={formData.status === "AUTHORIZED" ? "Activo" : "Inactivo"}
+                                                title="role"
+                                                name="role"
+                                                value={formData.role.name}
                                                 disabled
                                                 className="input input-bordered w-full"
                                             />
-                                        ) : (
-                                            <select
-                                                name="status"
-                                                title="status"
-                                                value={formData.status || ""}
-                                                onChange={handleChange}
-                                                className="select select-bordered w-full text-sm text-base-content/70"
-                                            >
-                                                <option value="">Seleccionar</option>
-                                                <option value="AUTHORIZED">Activo</option>
-                                                <option value="UNAUTHORIZED">Inactivo</option>
-                                            </select>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="role" className="text-sm font-medium text-base-content">
-                                            Rol
-                                        </label>
-                                        <input
-                                            type="text"
-                                            title="role"
-                                            name="role"
-                                            value={formData.role.name}
-                                            disabled
-                                            className="input input-bordered w-full"
-                                        />
-                                    </div>
+                                        </div>
                                     </>
                                 )}
                             </div>

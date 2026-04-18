@@ -333,13 +333,13 @@ const SignUp: React.FC = () => {
     const totalSteps = form.role === "Asesor" ? 5 : 4;
     const steps = Array.from({ length: totalSteps }, (_, i) => i + 1);
     return (
-      <div className="flex justify-center mb-6 px-2">
+      <div className="flex justify-center px-2">
         <div className="flex items-center">
           {steps.map((step) => (
             <React.Fragment key={step}>
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-all duration-300 ${currentStep >= step
-                  ? "bg-primary text-primary-content shadow-sm"
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold transition-all duration-300 ${currentStep >= step
+                  ? "bg-primary text-primary-content"
                   : "bg-primary/20 text-base-content/50"
                   }`}
               >
@@ -360,11 +360,11 @@ const SignUp: React.FC = () => {
   const getStepTitle = (step: number) => {
     switch (step) {
       case 1:
-        return "Información de cuenta";
+        return "Información de acceso";
       case 2:
-        return "Tipo de cuenta";
+        return "Información de cuenta";
       case 3:
-        return `Información ${form.clientType === "persona" ? "personal" : "de la empresa"}`;
+        return `Información ${form.clientType === "persona" ? "personal" : "empresarial"}`;
       case 4:
         return "Información de contacto";
       case 5:
@@ -560,9 +560,9 @@ const SignUp: React.FC = () => {
                   className="peer sr-only"
                   disabled={loading}
                 />
-                <div className="h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-checked:shadow-sm peer-hover:scale-99">
-                  <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center">
-                    <User className="w-5 h-5 mr-2" />
+                <div className="h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-hover:scale-99">
+                  <div className="relative text-base-content/80 z-10 flex flex-col sm:flex-row items-center justify-center sm:gap-2">
+                    <User className="w-5 h-5" />
                     <span className="font-medium">Cliente</span>
                   </div>
                 </div>
@@ -579,9 +579,9 @@ const SignUp: React.FC = () => {
                   className="peer sr-only"
                   disabled={loading}
                 />
-                <div className="h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-checked:shadow-sm peer-hover:scale-99">
-                  <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center">
-                    <Briefcase className="w-5 h-5 mr-2" />
+                <div className="h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-hover:scale-99">
+                  <div className="relative text-base-content/80 z-10 flex flex-col sm:flex-row items-center justify-center sm:gap-2">
+                    <Briefcase className="w-5 h-5" />
                     <span className="font-medium">Asesor</span>
                   </div>
                 </div>
@@ -610,9 +610,9 @@ const SignUp: React.FC = () => {
                   className="peer sr-only"
                   disabled={loading}
                 />
-                <div className="h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-checked:shadow-sm peer-hover:scale-99">
-                  <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center">
-                    <Users className="w-5 h-5 mr-2" />
+                <div className="h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-hover:scale-99">
+                  <div className="relative text-base-content/80 z-10 flex flex-col sm:flex-row items-center justify-center sm:gap-2">
+                    <Users className="w-5 h-5" />
                     <span className="font-medium">Persona</span>
                   </div>
                 </div>
@@ -629,9 +629,9 @@ const SignUp: React.FC = () => {
                   className="peer sr-only"
                   disabled={loading}
                 />
-                <div className="h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-checked:shadow-sm peer-hover:scale-99">
-                  <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center">
-                    <Building2 className="w-5 h-5 mr-2" />
+                <div className="h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-hover:scale-99">
+                  <div className="relative text-base-content/80 z-10 flex flex-col sm:flex-row items-center justify-center sm:gap-2">
+                    <Building2 className="w-5 h-5" />
                     <span className="font-medium">Empresa</span>
                   </div>
                 </div>
@@ -701,7 +701,7 @@ const SignUp: React.FC = () => {
             onKeyDown={handleKeyDown}
             className={`input input-bordered w-full pl-10 ${(touched.legalName && !form.legalName) || validationErrors.legalName ? "input-error" : ""}`}
             disabled={loading}
-            placeholder="Ej: John Doe"
+            placeholder={`Ej: ${form.clientType === "persona" ? "John Doe" : "Empresa S.A."}`}
             required
           />
         </div>
@@ -871,62 +871,12 @@ const SignUp: React.FC = () => {
   );
 
   return (
-    <div className="min-h-dvh p-6 md:p-8 md:pb-6 flex flex-col items-center justify-center bg-base-200 relative overflow-hidden font-family">
-      {/* Animated background elements */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.1 }}
-        transition={{ duration: 1 }}
-        className="absolute inset-0 flex items-center justify-center"
-      >
-        <div className="grid grid-cols-2 gap-8">
-          <motion.div
-            animate={{ y: [0, -20, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <Banknote className="w-32 h-32 text-success" />
-          </motion.div>
-          <motion.div
-            animate={{ y: [0, 20, 0] }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 1,
-            }}
-          >
-            <Wallet className="w-32 h-32 text-primary" />
-          </motion.div>
-          <motion.div
-            animate={{ y: [0, 20, 0] }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 2,
-            }}
-          >
-            <PiggyBank className="w-32 h-32 text-primary" />
-          </motion.div>
-          <motion.div
-            animate={{ y: [0, -20, 0] }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 3,
-            }}
-          >
-            <TrendingUp className="w-32 h-32 text-accent" />
-          </motion.div>
-        </div>
-      </motion.div>
-
+    <div className="min-h-dvh p-6 md:p-8 md:pb-6 bg-base-100 sm:bg-base-200 flex flex-col items-center justify-center font-family relative overflow-hidden">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md p-8 space-y-4 bg-base-100 rounded-xl shadow-xl relative z-10"
+        className="w-full max-w-md space-y-4 p-4 sm:p-8 sm:shadow-lg bg-base-100 rounded-xl relative z-10"
       >
         <div className="text-center mb-2">
           <motion.div
@@ -957,7 +907,7 @@ const SignUp: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="alert alert-error shadow-lg"
+            className="alert alert-error"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -980,7 +930,7 @@ const SignUp: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="alert alert-success shadow-lg"
+            className="alert alert-success"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -1004,7 +954,7 @@ const SignUp: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
           onSubmit={handleSubmit}
-          className="space-y-6"
+          className="mt-8 space-y-6"
           noValidate
         >
           {currentStep === 1 && renderStep1()}
@@ -1097,7 +1047,7 @@ const SignUp: React.FC = () => {
 
       {/* Footer */}
       <footer className='text-base-content/70 w-full text-center flex flex-col items-center justify-center'>
-        <div className="pt-6">
+        <div className="pt-2 sm:pt-6">
           <ThemeToggle />
         </div>
       </footer>

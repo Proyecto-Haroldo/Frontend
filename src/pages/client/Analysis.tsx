@@ -57,7 +57,7 @@ function Analysis() {
       case 'PENDING':
         return 'En revisión';
       default:
-        return 'Pendiente';
+        return 'En revisión';
     }
   };
 
@@ -130,51 +130,94 @@ function Analysis() {
         </div>
 
         {analysis && analysis.length > 0 && (
-          <div className="card bg-base-100 shadow-sm border border-base-200">
-            <div className="card-body p-4">
+          <div className="card bg-base-100 border border-base-200">
+            <div className="flex flex-wrap justify-between gap-3 p-4">
+              <span className="flex items-center gap-2 text-sm p-2 opacity-40 rounded-full font-medium">
+                <Filter className="h-4 w-4" />
+                Filtros
+              </span>
               <div className="flex flex-wrap items-center gap-3">
-                <span className="flex items-center gap-2 text-sm font-medium text-base-content/70">
-                  <Filter className="h-4 w-4" />
-                  Filtros
-                </span>
-                <select
-                  className="select select-bordered select-sm w-full max-w-[10rem]"
-                  value={statusFilter}
-                  onChange={e => setStatusFilter(e.target.value as StatusFilter)}
-                  title="Estado"
-                >
-                  <option value="all">Todos los estados</option>
-                  <option value="completed">Completados</option>
-                  <option value="incomplete">En revisión</option>
-                </select>
-                <select
-                  className="select select-bordered select-sm w-full max-w-[10rem]"
-                  value={dateSort}
-                  onChange={e => setDateSort(e.target.value as DateSort)}
-                  title="Orden por fecha"
-                >
-                  <option value="newest">Más recientes</option>
-                  <option value="oldest">Más antiguos</option>
-                </select>
+                {/* Date Sort */}
+                <div className="dropdown dropdown-start">
+                  <button tabIndex={0} type="button" className="select text-base-content/50 cursor-pointer">
+                    <span className="inline">
+                      {dateSort === "newest" ? "Más recientes" : "Más antiguos"}
+                    </span>
+                  </button>
+                  <ul className="dropdown-content z-[1] menu p-2 bg-base-300 mt-2 rounded-box w-52 shadow-lg">
+                    <li>
+                      <button onClick={() => setDateSort("newest")}>
+                        Más recientes
+                      </button>
+                    </li>
+                    <li>
+                      <button onClick={() => setDateSort("oldest")}>
+                        Más antiguos
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Status Filter */}
+                <div className="dropdown dropdown-start">
+                  <button tabIndex={0} type="button" className="select text-base-content/50 cursor-pointer">
+                    <span className="inline">
+                      {statusFilter === "all"
+                        ? "Todos los estados"
+                        : statusFilter === "completed"
+                          ? "Completados"
+                          : "En revisión"}
+                    </span>
+                  </button>
+                  <ul className="dropdown-content z-[1] menu p-2 bg-base-300 mt-2 rounded-box w-52 shadow-lg">
+                    <li>
+                      <button onClick={() => setStatusFilter("all")}>
+                        Todos los estados
+                      </button>
+                    </li>
+                    <li>
+                      <button onClick={() => setStatusFilter("completed")}>
+                        Completados
+                      </button>
+                    </li>
+                    <li>
+                      <button onClick={() => setStatusFilter("incomplete")}>
+                        En revisión
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Category Filter */}
                 {categories.length > 0 && (
-                  <select
-                    className="select select-bordered select-sm w-full max-w-[12rem]"
-                    value={categoryFilter}
-                    onChange={e => setCategoryFilter(e.target.value)}
-                    title="Categoría"
-                  >
-                    <option value="">Todas las categorías</option>
-                    {categories.map(cat => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="dropdown dropdown-start">
+                    <button tabIndex={0} type="button" className="select text-base-content/50 cursor-pointer">
+                      <span className="inline">
+                        {categoryFilter || "Todas las categorías"}
+                      </span>
+                    </button>
+                    <ul className="dropdown-content z-[1] menu p-2 bg-base-300 mt-2 rounded-box w-52 max-h-60 overflow-y-auto shadow-lg">
+                      <li>
+                        <button onClick={() => setCategoryFilter("")}>
+                          Todas las categorías
+                        </button>
+                      </li>
+                      {categories.map(cat => (
+                        <li key={cat}>
+                          <button onClick={() => setCategoryFilter(cat)}>
+                            {cat}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
+
+                {/* Clear Filters */}
                 {(statusFilter !== 'all' || categoryFilter || dateSort !== 'newest') && (
                   <button
                     type="button"
-                    className="btn btn-ghost btn-sm"
+                    className="btn btn-primary btn-sm"
                     onClick={() => {
                       setStatusFilter('all');
                       setCategoryFilter('');
@@ -189,7 +232,7 @@ function Analysis() {
           </div>
         )}
 
-        <div className="card bg-base-100 shadow-sm">
+        <div className="card bg-base-100">
           <div className="card-body p-0">
             <div>
               {error && (
@@ -202,8 +245,8 @@ function Analysis() {
               )}
               {!analysis && !error && (
                 <div className="flex flex-col items-center justify-center py-16">
-                  <span className="loading loading-spinner loading-lg text-primary mb-4"></span>
-                  <p className="text-base-content/60">Cargando análisis...</p>
+                  <span className="loading loading-spinner loading-lg text-primary"></span>
+                  <p className='mt-2'>Cargando análisis...</p>
                 </div>
               )}
               {analysis && analysis.length === 0 && (
@@ -240,7 +283,7 @@ function Analysis() {
                 return (
                   <div key={item.analysisId}>
                     <div
-                      className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 hover:bg-base-200/70 transition-colors cursor-pointer ${index !== analysisLength - 1 ? 'border-b border-base-200' : ''}`}
+                      className='flex items-start sm:items-center justify-between gap-4 p-6 hover:bg-base-200/70 transition-colors cursor-pointer'
                       onClick={() => handleAnalysisClick(item)}
                     >
                       <div className='flex gap-4 items-center'>
@@ -249,26 +292,24 @@ function Analysis() {
                         </div>
                         <div className="flex-1 min-w-0>">
                           <div className="flex flex-col gap-1">
-                            <p className="text-xs text-base-content/70">Análisis #{item.analysisId} · {formatDate(item?.timeWhenSolved || new Date().toISOString())}</p>
-                            <div className="flex gap-2 w-full items-start justify-start min-w-0">
-                              <div className="flex-shrink-0 mt-1">
-                                {getSeverityDot(item.colorSemaforo)}
-                              </div>
-                              <div className="flex w-full flex-col items-start justify-start min-w-0">
-                                <h3 className="font-medium flex-1 min-w-0 truncate sm:w-[40vw] md:w-[25vw] lg:w-[35vw] xl:w-[45vw]">
-                                  {item.questionnaireTitle || "Sin determinar"}
-                                </h3>
-                                <p className="text-base-content/70 text-xs font-semibold">
-                                  {item.categoryName}
-                                </p>
-                              </div>
+                            <div className="flex gap-1 w-full items-center min-w-0">
+                              {getSeverityDot(item.colorSemaforo)}
+                              <p className="text-xs text-base-content/70">#{item.analysisId} · {formatDate(item?.timeWhenSolved || new Date().toISOString())}</p>
+                            </div>
+                            <div className="flex w-full flex-col items-start justify-start min-w-0">
+                              <h3 className="font-medium flex-1 break-words">
+                                {item.questionnaireTitle || "Sin determinar"}
+                              </h3>
+                              <p className="text-base-content/70 text-xs font-semibold">
+                                {item.categoryName}
+                              </p>
                             </div>
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-4 flex-wrap-reverse justify-end self-end">
-                        <div className="text-right w-25 flex flex-col items-end justify-end">
+                      <div className="flex items-center gap-4 justify-end self-center">
+                        <div className="hidden sm:flex text-right w-25 flex-col items-end justify-end">
                           <div className="flex items-center gap-2 justify-start w-full mb-1">
                             {getStatusDot(status)}
                             <p className="text-sm font-medium">{getStatusText(status)}</p>
@@ -294,7 +335,7 @@ function Analysis() {
                         </button>
                       </div>
                     </div>
-                    <hr className="text-base-300 mx-4"></hr>
+                    {index !== analysisLength - 1 ? <hr className="text-base-200 mx-4"></hr> : ''}
                   </div>
                 );
               })}

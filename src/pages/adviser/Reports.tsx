@@ -194,12 +194,51 @@ export default function AdviserReports() {
 
                 {/* Simple filters */}
                 <div className="mb-6 flex flex-wrap gap-4">
-                    <select className="form-select select" title="time" value={filterByTime} onChange={e => setFilterByTime(e.target.value as "day" | "week" | "month" | "year")}>
-                        <option value="day">Último día</option>
-                        <option value="week">Última semana</option>
-                        <option value="month">Último mes</option>
-                        <option value="year">Último año</option>
-                    </select>
+                    <div className="flex gap-2">
+                        <div className="dropdown dropdown-start">
+                            <div
+                                tabIndex={0}
+                                role="button"
+                                className="select text-base-content/50"
+                            >
+                                <span className="inline min-w-[128px]">
+                                    {filterByTime === "day"
+                                        ? "Último día"
+                                        : filterByTime === "week"
+                                            ? "Última semana"
+                                            : filterByTime === "month"
+                                                ? "Último mes"
+                                                : "Último año"}
+                                </span>
+                            </div>
+
+                            <ul
+                                tabIndex={0}
+                                className="dropdown-content z-[1] menu p-2 bg-base-300 mt-2 rounded-box w-52 shadow-lg"
+                            >
+                                <li>
+                                    <button onClick={() => setFilterByTime("day")}>
+                                        Último día
+                                    </button>
+                                </li>
+                                <li>
+                                    <button onClick={() => setFilterByTime("week")}>
+                                        Última semana
+                                    </button>
+                                </li>
+                                <li>
+                                    <button onClick={() => setFilterByTime("month")}>
+                                        Último mes
+                                    </button>
+                                </li>
+                                <li>
+                                    <button onClick={() => setFilterByTime("year")}>
+                                        Último año
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                     <button
                         className="btn m-1 btn-sm gap-2 hover:bg-primary bg-primary text-white transition"
                         onClick={() => setShowAdvancedFilters(true)}
@@ -211,7 +250,7 @@ export default function AdviserReports() {
                 {/* Advanced Filter Modal */}
                 {showAdvancedFilters && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                        <div className="bg-base-200 rounded-lg shadow-lg w-[90%] max-w-4xl h-[85%] flex flex-col p-6">
+                        <div className="bg-base-200 rounded-lg w-[90%] max-w-4xl h-[85%] flex flex-col p-6">
 
                             {/* Header fijo */}
                             <div className="flex justify-between items-center mb-4 shrink-0">
@@ -310,7 +349,7 @@ export default function AdviserReports() {
                                                             }`}
                                                     >
                                                         <span
-                                                            className="w-4 h-4 rounded-full shadow-xl"
+                                                            className="w-4 h-4 rounded-full"
                                                             style={{
                                                                 backgroundColor: getColorValue(c),
                                                                 boxShadow: `0 0 6px ${getColorValue(c)}80`

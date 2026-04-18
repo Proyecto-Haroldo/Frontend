@@ -5,7 +5,7 @@ import { apiClient } from "./apiClient";
 const mapRoleNameToRoleObject = (roleName: string) => {
 
   // Normalizar a minúsculas
-  let normalized = roleName.toLowerCase().trim();
+  const normalized = roleName.toLowerCase().trim();
 
   // Mantener guion bajo
   const key = normalized.replaceAll(/[^a-z0-9_]/g, '');
@@ -55,6 +55,17 @@ export const normalizeUserRole = (value?: number): string => {
       return 'Cliente';
     case 3:
       return 'Asesor';
+    default:
+      return 'N/A';
+  }
+};
+
+export const normalizeUserStatus = (value?: string): string => {
+  switch (value) {
+    case "UNAUTHORIZED":
+      return 'Inactivo';
+    case "AUTHORIZED":
+      return 'Activo';
     default:
       return 'N/A';
   }
@@ -122,10 +133,11 @@ export const putUserById = async (id: number, user: IUser): Promise<IUser> => {
       clientType: user.clientType,
       email: user.email,
       sector: user.sector,
-      roleName: user.role?.name || '',
+      roleName: user.role.name,
       network: user.network,
       location: user.location,
       phone: user.phone,
+      status: user.status,
       specialities: user.specialities?.map(s => ({
         categoryId: s.categoryId,
         title: s.title,

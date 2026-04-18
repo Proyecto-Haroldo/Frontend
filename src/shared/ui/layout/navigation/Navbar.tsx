@@ -49,12 +49,12 @@ function Navbar() {
         { path: '/a', icon: Compass, label: 'Dashboard' },
         { path: '/a/profile', icon: User, label: 'Perfil' },
       ];
-      
+
       // Only add Reportes if user is AUTHORIZED
       if (userStatus === "AUTHORIZED") {
         baseItems.splice(1, 0, { path: '/a/reports', icon: BarChart, label: 'Reportes' });
       }
-      
+
       return baseItems;
     }
     return [];
@@ -111,7 +111,8 @@ function Navbar() {
   return (
     <>
       {/* Mobile Header */}
-      <div className="fixed top-0 left-0 right-0 h-16 bg-base-100 rounded-b-2xl flex items-center justify-between px-4 md:hidden z-22">
+      <div
+        className="fixed top-0 left-0 right-0 h-16 bg-base-100 rounded-b-2xl flex items-center justify-between px-4 md:hidden z-22">
         <motion.div
           className="flex items-center gap-3"
           initial={{ opacity: 0, y: -10 }}
@@ -160,7 +161,7 @@ function Navbar() {
 
       {/* Sidebar */}
       <motion.nav
-        className="fixed md:fixed w-64 h-dvh overflow-hidden bg-base-100 rounded-r-2xl p-6 z-20 md:translate-x-0 pt-[68px]"
+        className="fixed w-64 h-dvh overflow-hidden bg-base-100 rounded-r-2xl p-6 z-20 md:translate-x-0 pt-[68px]"
         variants={sidebarVariants}
         initial="hidden"
         animate={isOpen ? "visible" : "hidden"}

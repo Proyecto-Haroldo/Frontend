@@ -207,7 +207,7 @@ const ModalQuestionnaire: React.FC<ModalQuestionnaireProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 m-0">
             <div className="bg-base-200 rounded-lg p-4 pr-3 md:p-6 md:pr-5 max-w-3xl w-full max-h-[80vh] flex flex-col">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4">
@@ -242,23 +242,51 @@ const ModalQuestionnaire: React.FC<ModalQuestionnaireProps> = ({
                         </div>
                         <div className="form-control space-y-1 mb-2">
                             <label htmlFor='category' className="label"><span className="label-text text-md">Categoría</span></label>
-                            <select
-                                className="select select-bordered w-full"
-                                value={formData.categoryId || ''}
-                                title='category'
-                                onChange={(e) => {
-                                    const selectedCategoryId = Number(e.target.value) || 0;
-                                    const selectedCategory = categories.find(c => c.id === selectedCategoryId);
-                                    setFormData({
-                                        ...formData,
-                                        categoryId: selectedCategoryId,
-                                        categoryName: selectedCategory?.name || '',
-                                    });
-                                }}
-                            >
-                                <option value="">Seleccione una categoría</option>
-                                {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                            </select>
+                            <div className="dropdown w-full">
+                                <button
+                                    tabIndex={0}
+                                    type="button"
+                                    className="select select-bordered w-full flex items-center"
+                                >
+                                    <span>
+                                        {formData.categoryName || "Seleccione una categoría"}
+                                    </span>
+                                </button>
+
+                                <ul className="dropdown-content z-[1] menu p-2 bg-base-300 mt-2 rounded-box w-full max-h-60 overflow-y-auto shadow-lg">
+                                    <li>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    categoryId: 0,
+                                                    categoryName: ""
+                                                }))
+                                            }
+                                        >
+                                            Seleccione una categoría
+                                        </button>
+                                    </li>
+
+                                    {categories.map((c) => (
+                                        <li key={c.id}>
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        categoryId: c.id,
+                                                        categoryName: c.name,
+                                                    }))
+                                                }
+                                            >
+                                                {c.name}
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
                         </div>
                     </div>
 
@@ -349,7 +377,7 @@ const ModalQuestionnaire: React.FC<ModalQuestionnaireProps> = ({
                 {/* Question Modal */}
                 {showQuestionModal && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-60 p-4">
-                        <div className="bg-base-100 rounded-lg p-4 md:p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-lg">
+                        <div className="bg-base-100 rounded-lg p-4 md:p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto ">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-lg font-semibold">
                                     {isCreatingQuestion ? 'Nueva Pregunta' : 'Editar Pregunta'}
@@ -365,43 +393,107 @@ const ModalQuestionnaire: React.FC<ModalQuestionnaireProps> = ({
                             {editingQuestion && (
                                 <div className="space-y-4">
                                     <div className="form-control">
-                                        <label className="label"><span className="label-text">Pregunta</span></label>
+                                        <label htmlFor='question' className="label"><span className="label-text">Pregunta</span></label>
                                         <textarea
                                             className="textarea textarea-bordered w-full"
                                             value={editingQuestion.question}
                                             onChange={(e) => setEditingQuestion({ ...editingQuestion, question: e.target.value })}
                                             placeholder="Escriba la pregunta aquí..."
+                                            title='question'
+                                            name='question'
                                             rows={3}
                                         />
                                     </div>
 
                                     <div className="form-control">
                                         <label htmlFor='question-type' className="label"><span className="label-text">Tipo de Pregunta</span></label>
-                                        <select
-                                            className="select select-bordered w-full"
-                                            value={editingQuestion.questionType}
-                                            title='question-type'
-                                            onChange={(e) => setEditingQuestion({
-                                                ...editingQuestion,
-                                                questionType: e.target.value as QuestionType,
-                                                options: editingQuestion.options || [],
-                                            })}
-                                        >
-                                            <option value="OPEN">Abierta</option>
-                                            <option value="SINGLE">Opción Única</option>
-                                            <option value="MULTIPLE">Opción Múltiple</option>
-                                        </select>
+                                        <div className="dropdown w-full">
+                                            <button
+                                                tabIndex={0}
+                                                type="button"
+                                                className="select select-bordered w-full flex items-center"
+                                            >
+                                                <span>
+                                                    {editingQuestion.questionType === "OPEN"
+                                                        ? "Abierta"
+                                                        : editingQuestion.questionType === "SINGLE"
+                                                            ? "Opción Única"
+                                                            : "Opción Múltiple"}
+                                                </span>
+                                            </button>
+
+                                            <ul className="dropdown-content z-[1] menu p-2 bg-base-300 mt-2 rounded-box w-full shadow-lg">
+                                                <li>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setEditingQuestion(prev => {
+                                                                if (!prev) return prev;
+
+                                                                return {
+                                                                    ...prev,
+                                                                    questionType: "OPEN" as QuestionType,
+                                                                    options: prev.options || [],
+                                                                };
+                                                            })
+                                                        }
+                                                    >
+                                                        Abierta
+                                                    </button>
+                                                </li>
+
+                                                <li>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setEditingQuestion(prev => {
+                                                                if (!prev) return prev;
+
+                                                                return {
+                                                                    ...prev,
+                                                                    questionType: "SINGLE" as QuestionType,
+                                                                    options: prev.options || [],
+                                                                };
+                                                            })
+                                                        }
+                                                    >
+                                                        Opción Única
+                                                    </button>
+                                                </li>
+
+                                                <li>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setEditingQuestion(prev => {
+                                                                if (!prev) return prev;
+
+                                                                return {
+                                                                    ...prev,
+                                                                    questionType: "MULTIPLE" as QuestionType,
+                                                                    options: prev.options || [],
+                                                                };
+                                                            })
+                                                        }
+                                                    >
+                                                        Opción Múltiple
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
 
                                     {(editingQuestion.questionType === 'SINGLE' || editingQuestion.questionType === 'MULTIPLE') && (
                                         <div className="form-control">
-                                            <label className="label"><span className="label-text">Opciones</span></label>
+                                            <label htmlFor='options' className="label"><span className="label-text">Opciones</span></label>
                                             <div className="space-y-2">
                                                 {editingQuestion.options?.map((option, index) => (
                                                     <div key={option.id || index} className="flex gap-2">
                                                         <input
                                                             type="text" className="input input-bordered flex-1"
                                                             value={option.text}
+                                                            title='options'
+                                                            name='options'
                                                             onChange={(e) => handleOptionChange(index, e.target.value)}
                                                             placeholder={`Opción ${index + 1}`}
                                                         />

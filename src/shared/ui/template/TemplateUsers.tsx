@@ -120,7 +120,7 @@ const TemplateUsers: React.FC<TemplateUsersProps> = ({
         return (
             <div className="container mx-auto space-y-4 md:space-y-6">
                 {/* Filtros y búsqueda */}
-                <div className="card bg-base-100 shadow-sm border border-base-200">
+                <div className="card bg-base-100 border border-base-200">
                     <div className="card-body p-3 md:p-6">
                         <div className="flex flex-col gap-3">
                             <div className="relative">
@@ -138,7 +138,7 @@ const TemplateUsers: React.FC<TemplateUsersProps> = ({
                                 <div className="dropdown dropdown-start">
                                     <div tabIndex={0} role="button" className="btn btn-outline btn-sm gap-2 text-base-content/50">
                                         <Filter className="h-4 w-4" />
-                                        <span className="hidden sm:inline">
+                                        <span className="inline">
                                             {filter === "all"
                                                 ? "Todos"
                                                 : filter === "admin"
@@ -150,7 +150,7 @@ const TemplateUsers: React.FC<TemplateUsersProps> = ({
                                     </div>
                                     <ul
                                         tabIndex={0}
-                                        className="dropdown-content z-[1] menu p-2 shadow-md bg-base-300 mt-2 rounded-box w-52"
+                                        className="dropdown-content z-[1] menu p-2 bg-base-300 mt-2 rounded-box w-52 shadow-lg"
                                     >
                                         <li key={"all"}>
                                             <button onClick={() => setFilter("all")}>Todos</button>
@@ -173,10 +173,10 @@ const TemplateUsers: React.FC<TemplateUsersProps> = ({
 
                 <div className="container mx-auto space-y-6 overflow-hidden">
                     <div className="flex items-center justify-center">
-                        <div className="card w-full bg-base-100 shadow-sm border border-base-200">
+                        <div className="card w-full bg-base-100 border border-base-200">
                             <div className="card-body items-center text-center">
                                 <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
-                                <p className="mt-4">Cargando usuarios...</p>
+                                <p className="mt-2">Cargando usuarios...</p>
                             </div>
                         </div>
                     </div>
@@ -190,7 +190,7 @@ const TemplateUsers: React.FC<TemplateUsersProps> = ({
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="alert alert-error shadow-lg"
+                    className="alert alert-error "
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -203,7 +203,7 @@ const TemplateUsers: React.FC<TemplateUsersProps> = ({
     return (
         <div className="container mx-auto space-y-4 md:space-y-6">
             {/* Filtros y búsqueda */}
-            <div className="card bg-base-100 shadow-sm border border-base-200">
+            <div className="card bg-base-100 border border-base-200">
                 <div className="card-body p-3 md:p-6">
                     <div className="flex flex-col gap-3">
                         <div className="relative">
@@ -221,7 +221,7 @@ const TemplateUsers: React.FC<TemplateUsersProps> = ({
                             <div className="dropdown dropdown-start">
                                 <div tabIndex={0} role="button" className="btn btn-outline btn-sm gap-2 text-base-content/50">
                                     <Filter className="h-4 w-4" />
-                                    <span className="hidden sm:inline">
+                                    <span className="inline">
                                         {filter === "all"
                                             ? "Todos"
                                             : filter === "admin"
@@ -233,7 +233,7 @@ const TemplateUsers: React.FC<TemplateUsersProps> = ({
                                 </div>
                                 <ul
                                     tabIndex={0}
-                                    className="dropdown-content z-[1] menu p-2 shadow-md bg-base-300 mt-2 rounded-box w-52"
+                                    className="dropdown-content z-[1] menu p-2 bg-base-300 mt-2 rounded-box w-52 shadow-lg"
                                 >
                                     <li key={"all"}>
                                         <button onClick={() => setFilter("all")}>Todos</button>
@@ -255,7 +255,7 @@ const TemplateUsers: React.FC<TemplateUsersProps> = ({
             </div>
 
             {/* Tabla de usuarios */}
-            <div className="card bg-base-100 shadow-sm border border-base-200">
+            <div className="card bg-base-100 border border-base-200">
                 <div className="card-body p-3 md:p-6">
                     <h2 className="card-title mb-2 lg:mb-4 text-lg">Usuarios</h2>
 
@@ -331,7 +331,7 @@ const TemplateUsers: React.FC<TemplateUsersProps> = ({
                     {/* Vista móvil */}
                     <div className="lg:hidden space-y-3">
                         {filteredUsers.map((user) => (
-                            <div key={user.userId} className={`card bg-base-200 p-4 space-y-2 ${user.status === "UNAUTHORIZED" ? "opacity-70" : ""}`}>
+                            <div key={user.userId} className={`card bg-base-200/70 p-4 space-y-2 ${user.status === "UNAUTHORIZED" ? "opacity-70" : ""}`}>
                                 <div className="flex justify-between items-start">
                                     <span className="text-xs text-base-content/70 whitespace-nowrap">#{user.userId}</span>
                                     <span className="badge badge-outline font-semibold border-0 bg-base-content/30 text-xs badge-sm">{user.status === "UNAUTHORIZED" ? "Inactivo" : "Activo"}</span>

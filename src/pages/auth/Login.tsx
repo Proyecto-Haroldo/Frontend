@@ -96,47 +96,12 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-dvh p-6 md:p-8 md:pb-6 flex flex-col items-center justify-center bg-base-200 relative overflow-hidden font-family">
-      {/* Animated background elements */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.1 }}
-        transition={{ duration: 1 }}
-        className="absolute inset-0 flex items-center justify-center"
-      >
-        <div className="grid grid-cols-2 gap-8">
-          <motion.div
-            animate={{ y: [0, -20, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <Banknote className="w-32 h-32 text-success" />
-          </motion.div>
-          <motion.div
-            animate={{ y: [0, 20, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          >
-            <Wallet className="w-32 h-32 text-primary" />
-          </motion.div>
-          <motion.div
-            animate={{ y: [0, 20, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          >
-            <PiggyBank className="w-32 h-32 text-primary" />
-          </motion.div>
-          <motion.div
-            animate={{ y: [0, -20, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-          >
-            <TrendingUp className="w-32 h-32 text-accent" />
-          </motion.div>
-        </div>
-      </motion.div>
-
+    <div className="min-h-dvh p-6 md:p-8 md:pb-6 bg-base-100 sm:bg-base-200 flex flex-col items-center justify-center font-family relative overflow-hidden">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md p-8 space-y-4 bg-base-100 rounded-xl shadow-xl relative z-10"
+        className="w-full max-w-md space-y-4 p-4 sm:p-8 sm:shadow-lg bg-base-100 rounded-xl relative z-10"
       >
         <div className="text-center">
           <motion.div
@@ -161,7 +126,7 @@ const Login: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="alert alert-error shadow-lg"
+            className="alert alert-error"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -305,7 +270,7 @@ const Login: React.FC = () => {
 
       {/* Footer */}
       <footer className='text-base-content/70 w-full text-center flex flex-col items-center justify-center'>
-        <div className="pt-6">
+        <div className="pt-2 sm:pt-6">
           <ThemeToggle />
         </div>
       </footer>

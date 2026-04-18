@@ -222,11 +222,11 @@ const Questionnaire = () => {
 
   if (loading) {
     return (
-      <div className="min-h-dvh bg-base-200 flex items-center justify-center p-4">
-        <div className="card w-full container bg-base-100 shadow-xl p-6">
+      <div className="bg-base-200 flex items-center justify-center p-4">
+        <div className="card w-full container bg-base-100 p-6">
           <div className="card-body items-center text-center">
             <span className="loading loading-spinner loading-lg text-primary"></span>
-            <p className="mt-4">Cargando cuestionario...</p>
+            <p className="mt-2">Cargando cuestionario...</p>
           </div>
         </div>
       </div>
@@ -236,7 +236,7 @@ const Questionnaire = () => {
   if (error) {
     return (
       <div className="min-h-dvh bg-base-200 flex items-center justify-center p-4">
-        <div className="card w-full container bg-base-100 shadow-xl p-6">
+        <div className="card w-full container bg-base-100 p-6">
           <div className="card-body items-center text-center">
             <div className="alert alert-error mb-6">
               <AlertCircle className="h-6 w-6" />
@@ -404,7 +404,7 @@ const Questionnaire = () => {
   if (isComplete) {
     return (
       <div className="min-h-[calc(100dvh-4rem)] bg-base-200 flex items-center justify-center p-4">
-        <div className="card w-full container bg-base-100 shadow-xl p-6">
+        <div className="card w-full container bg-base-100 p-6">
           <div className="card-body items-center text-center">
             <div className="mb-6">
               <CheckCircle2 className="h-16 w-16 text-success mx-auto" />
@@ -444,7 +444,7 @@ const Questionnaire = () => {
           animate="animate"
           exit="exit"
         >
-          <div className="card w-full container bg-base-100 shadow-xl">
+          <div className="card w-full container bg-base-100 ">
             <div className="card-body items-center text-center">
               <div className="mb-6">
                 <Loader2 className="h-16 w-16 text-primary animate-spin mx-auto" />
@@ -471,7 +471,7 @@ const Questionnaire = () => {
         animate="animate"
         exit="exit"
       >
-        <div className="card w-full container bg-base-100 shadow-xl">
+        <div className="card w-full container bg-base-100 ">
           <div className="card-body">
             {/* Progress Bar */}
             <div className="w-full bg-base-200 rounded-full h-2.5 mb-6">

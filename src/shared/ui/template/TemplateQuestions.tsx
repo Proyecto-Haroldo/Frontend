@@ -239,10 +239,10 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
     return (
       <div className="container mx-auto space-y-6 overflow-hidden">
         <div className="flex items-center justify-center">
-          <div className="card w-full bg-base-100 shadow-sm border border-base-200">
+          <div className="card w-full bg-base-100 border border-base-200">
             <div className="card-body items-center text-center">
               <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
-              <p className="mt-4">Cargando preguntas...</p>
+              <p className="mt-2">Cargando preguntas...</p>
             </div>
           </div>
         </div>
@@ -254,7 +254,7 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
     return (
       <div className="container mx-auto space-y-6 overflow-hidden">
         <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="card w-full max-w-2xl bg-base-100 shadow-sm border border-base-200">
+          <div className="card w-full max-w-2xl bg-base-100 border border-base-200">
             <div className="card-body items-center text-center">
               <p className="mb-4">ID de cuestionario no proporcionado</p>
             </div>
@@ -310,7 +310,7 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
 
       {/* Questions Table */}
       {!editingQuestion && !viewingQuestion && (
-        <div className="card bg-base-100 shadow-sm border border-base-200">
+        <div className="card bg-base-100 border border-base-200">
           <div className="card-body p-3 md:p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 flex-wrap">
               <h2 className="card-title text-lg flex-shrink-0">
@@ -424,7 +424,7 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
                 {/* Mobile Cards */}
                 <div className="lg:hidden space-y-2">
                   {filteredQuestions.map((question) => (
-                    <div key={question.id} className="card bg-base-200 border border-base-300 shadow-sm">
+                    <div key={question.id} className="card bg-base-200/70 border border-base-300">
                       <div className="card-body p-3 space-y-2">
                         <div className="flex justify-between items-start gap-2">
                           <div className="flex-1 min-w-0">
@@ -491,7 +491,7 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="card bg-base-100 shadow-sm border border-base-200"
+          className="card bg-base-100 border border-base-200"
         >
           <div className="card-body p-3 md:p-6">
             <h2 className="card-title text-lg sm:text-xl">
@@ -565,7 +565,7 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="card bg-base-100 shadow-sm border border-base-200"
+          className="card bg-base-100 border border-base-200"
         >
           <div className="card-body p-3 md:p-6">
             <h2 className="card-title text-lg sm:text-xl">
@@ -594,22 +594,74 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
                 <label className="label" htmlFor='question-type'>
                   <span className="label-text">Tipo de Pregunta</span>
                 </label>
-                <select
-                  className="select select-bordered w-full mt-2"
-                  title='question-type'
-                  value={editingQuestion.questionType}
-                  onChange={(e) =>
-                    setEditingQuestion({
-                      ...editingQuestion,
-                      questionType: e.target.value as QuestionType,
-                      options: editingQuestion.options || []
-                    })
-                  }
-                >
-                  <option value="OPEN">Abierta</option>
-                  <option value="SINGLE">Opción Única</option>
-                  <option value="MULTIPLE">Opción Múltiple</option>
-                </select>
+                <div className="dropdown w-full mt-2">
+                  <button
+                    tabIndex={0}
+                    type="button"
+                    className="select select-bordered w-full flex items-center"
+                  >
+                    <span>
+                      {editingQuestion.questionType === "OPEN"
+                        ? "Abierta"
+                        : editingQuestion.questionType === "SINGLE"
+                          ? "Opción Única"
+                          : "Opción Múltiple"}
+                    </span>
+                  </button>
+
+                  <ul className="dropdown-content z-[1] menu p-2 bg-base-300 mt-2 rounded-box w-full shadow-lg">
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!editingQuestion) return;
+
+                          setEditingQuestion({
+                            ...editingQuestion,
+                            questionType: "OPEN" as QuestionType,
+                            options: editingQuestion.options || [],
+                          });
+                        }}
+                      >
+                        Abierta
+                      </button>
+                    </li>
+
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!editingQuestion) return;
+
+                          setEditingQuestion({
+                            ...editingQuestion,
+                            questionType: "SINGLE" as QuestionType,
+                            options: editingQuestion.options || [],
+                          });
+                        }}
+                      >
+                        Opción Única
+                      </button>
+                    </li>
+
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!editingQuestion) return;
+
+                          setEditingQuestion({
+                            ...editingQuestion,
+                            questionType: "MULTIPLE" as QuestionType,
+                            options: editingQuestion.options || [],
+                          });
+                        }}
+                      >
+                        Opción Múltiple
+                      </button>
+                    </li>
+                  </ul>
+                </div>
               </div>
 
               {/* Options for single/multiple */}

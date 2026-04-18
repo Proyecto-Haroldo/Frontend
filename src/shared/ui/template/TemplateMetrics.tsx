@@ -93,21 +93,12 @@ const TemplateMetricsSkeleton: React.FC = () => {
     return (
         <SkeletonTheme baseColor={base} highlightColor={base}>
             <div className="w-full box-border">
-                <div className="relative w-full overflow-hidden">
-                    <div className="flex flex-col gap-5">
-                        <div className="flex w-full gap-4 bg-base-100 w-full shadow-xl rounded-[18px] box-border flex gap-4 p-4 pb-8">
-                            <div className="w-full flex flex-col gap-3">
-                                <Skeleton height={204} style={{ width: '100%', borderRadius: '14px' }} />
-                                <div className='w-7/10'>
-                                    <Skeleton height={28} />
-                                </div>
-                                <div className='w-95/100'>
-                                    <Skeleton height={20} />
-                                </div>
-                            </div>
-                            {Array.from({ length: 2 }).map((_, i) => (
-                                <div key={i} className="w-full hidden md:flex flex-col gap-3">
-                                    <Skeleton height={204} style={{ width: '100%', borderRadius: '14px' }} />
+                <div className="relative w-full overflow-hidden bg-base-100 rounded-[18px]">
+                    <div className="flex flex-col gap-5 p-4 pb-3">
+                        <div className='flex md:w-[93vw]'>
+                            <div className="flex w-full box-border flex gap-4">
+                                <div className="w-full flex flex-col gap-3 md:min-w-[300px]">
+                                    <Skeleton height={210} style={{ width: '100%', borderRadius: '14px' }} />
                                     <div className='w-7/10'>
                                         <Skeleton height={28} />
                                     </div>
@@ -115,6 +106,22 @@ const TemplateMetricsSkeleton: React.FC = () => {
                                         <Skeleton height={20} />
                                     </div>
                                 </div>
+                                {Array.from({ length: 2 }).map((_, i) => (
+                                    <div key={i} className="w-full hidden md:flex flex-col gap-3 md:min-w-[300px]">
+                                        <Skeleton height={210} style={{ width: '100%', borderRadius: '14px' }} />
+                                        <div className='w-7/10'>
+                                            <Skeleton height={28} />
+                                        </div>
+                                        <div className='w-95/100'>
+                                            <Skeleton height={20} />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="w-full flex items-center justify-center gap-2 mt-2">
+                            {Array.from({ length: 5 }).map((_, index) => (
+                                <Skeleton key={index} circle width={10} height={10} />
                             ))}
                         </div>
                     </div>
@@ -152,7 +159,7 @@ function MetricCardShell({
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35 }}
-            className="bg-base-200 w-[80vw] shadow-xl rounded-xl box-border flex flex-col gap-3 md:w-[30vw] max-w-[544px] p-4"
+            className="bg-base-200 w-[80vw] rounded-xl box-border flex flex-col gap-3 md:w-[30vw] md:min-w-[300px] max-w-[544px] h-full p-4"
         >
             <div className="h-[180px] w-full rounded-xl overflow-hidden flex items-center justify-center md:h-[200px]">
                 {chart}
@@ -741,14 +748,14 @@ export default function TemplateMetrics({
                 <button
                     onClick={scrollPrev}
                     aria-label="Anterior"
-                    className="absolute top-1/2 left-2 w-[42px] h-[42px] rounded-full border-none grid place-items-center shadow-[0_6px_18px_rgba(16,24,40,0.08)] btn btn-primary cursor-pointer z-30 pointer-events-auto"
+                    className="absolute top-1/2 left-2 w-[42px] h-[42px] rounded-full border-none grid place-items-center shadow-md btn btn-primary cursor-pointer z-10 pointer-events-auto"
                 >
                     <ArrowLeft />
                 </button>
                 <button
                     onClick={scrollNext}
                     aria-label="Siguiente"
-                    className="absolute top-1/2 right-2 w-[42px] h-[42px] rounded-full border-none grid place-items-center shadow-[0_6px_18px_rgba(16,24,40,0.08)] btn btn-primary cursor-pointer z-30 pointer-events-auto"
+                    className="absolute top-1/2 right-2 w-[42px] h-[42px] rounded-full border-none grid place-items-center shadow-md btn btn-primary cursor-pointer z-10 pointer-events-auto"
                 >
                     <ArrowRight />
                 </button>
