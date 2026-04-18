@@ -102,7 +102,7 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
         return (
             <div className="container mx-auto space-y-4 md:space-y-6">
                 {/* Buscador y Filtros */}
-                <div className="card bg-base-100 shadow-sm border border-base-200">
+                <div className="card bg-base-100 border border-base-200">
                     <div className="card-body p-3 md:p-6 space-y-3">
                         {/* Search Input */}
                         <div className="relative">
@@ -128,7 +128,7 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
                             </div>
                             <ul
                                 tabIndex={0}
-                                className="dropdown-content z-[1] menu p-2 shadow-md bg-base-300 mt-2 rounded-box w-52"
+                                className="dropdown-content z-[1] menu p-2 bg-base-300 mt-2 rounded-box w-52 shadow-lg"
                             >
                                 {categories.map((cat) => (
                                     <li key={cat}>
@@ -147,10 +147,10 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
 
                 <div className="container mx-auto space-y-6 overflow-hidden">
                     <div className="flex items-center justify-center">
-                        <div className="card w-full bg-base-100 shadow-sm border border-base-200">
+                        <div className="card w-full bg-base-100 border border-base-200">
                             <div className="card-body items-center text-center">
                                 <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
-                                <p className="mt-4">Cargando servicios...</p>
+                                <p className="mt-2">Cargando servicios...</p>
                             </div>
                         </div>
                     </div>
@@ -164,7 +164,7 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="alert alert-error shadow-lg"
+                    className="alert alert-error "
                 >
                     <span>{error}</span>
                 </motion.div>
@@ -175,7 +175,7 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
         <div className="container mx-auto space-y-4 md:space-y-6">
             {/* Header Admin for Categories */}
             {canManage && (
-                <div className="card bg-base-100/95 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 shadow-sm flex-wrap">
+                <div className="card bg-base-100/95 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 flex-wrap">
                     <div className="w-full p-3 md:p-6">
                         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                             <h1 className="text-lg sm:text-xl font-semibold">
@@ -186,7 +186,7 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
                             </h1>
                             <button
                                 onClick={() => setShowModalCategory(true)}
-                                className="btn btn-primary shadow-sm btn-sm gap-2"
+                                className="btn btn-primary btn-sm gap-2"
                             >
                                 <Settings className="h-4 w-4" />
                                 <span className="hidden sm:inline">Gestionar Categorías</span>
@@ -198,7 +198,7 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
             )}
 
             {/* Buscador y Filtros */}
-            <div className="card bg-base-100 shadow-sm border border-base-200">
+            <div className="card bg-base-100 border border-base-200">
                 <div className="card-body p-3 md:p-6 space-y-3">
                     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
                         <div className="flex-1 w-full">
@@ -228,7 +228,7 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
                                 </div>
                                 <ul
                                     tabIndex={0}
-                                    className="dropdown-content z-[1] menu p-2 shadow-md bg-base-300 mt-2 rounded-box w-52"
+                                    className="dropdown-content z-[1] menu p-2 bg-base-300 mt-2 rounded-box w-52 shadow-lg"
                                 >
                                     {categories.map((cat) => (
                                         <li key={cat}>
@@ -244,7 +244,7 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
                             {canManage && (
                                 <button
                                     onClick={handleCreateQuestionnaire}
-                                    className="btn btn-outline bg-base-content/10 text-base-content/70 shadow-sm btn-sm gap-2 border-base-content/50 hover:text-base-content hover:border-base-content"
+                                    className="btn btn-outline bg-base-content/10 text-base-content/70 btn-sm gap-2 border-base-content/50 hover:text-base-content hover:border-base-content"
                                 >
                                     <Plus className="h-4 w-4" />
                                     <span className="hidden sm:inline">Nuevo Cuestionario</span>

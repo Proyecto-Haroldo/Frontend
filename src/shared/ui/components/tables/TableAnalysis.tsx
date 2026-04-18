@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Clock, CheckCircle, Eye } from "lucide-react";
+import { CheckCircle, Eye, CircleDashed, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { IAnalysis } from "../../../../core/models/analysis";
 
@@ -36,7 +36,8 @@ const TableAnalysis: React.FC<TableAnalysisProps> = ({
                 );
             default:
                 return (
-                    <span className="badge badge-neutral font-semibold p-2 badge-sm text-xs">
+                    <span className="badge badge-secondary font-semibold p-2 badge-sm gap-1 text-xs">
+                        <CircleDashed className="h-3 w-3" />
                         <span className="hidden sm:inline">Desconocido</span>
                         <span className="sm:hidden">Desc.</span>
                     </span>
@@ -55,12 +56,12 @@ const TableAnalysis: React.FC<TableAnalysisProps> = ({
                     <span className="badge badge-warning font-semibold p-2 badge-sm text-xs">Amarillo</span>
                 );
             case "rojo":
-                return <span className="badge badge-error font-semibold p-2 badge-sm text-xs">Rojo</span>;
+                return (
+                    <span className="badge badge-error font-semibold p-2 badge-sm text-xs">Rojo</span>
+                );
             default:
                 return (
-                    <span className="badge badge-neutral font-semibold p-2 badge-sm text-xs">
-                        Sin clasificar
-                    </span>
+                    <span className="badge badge-secondary font-semibold p-2 badge-sm text-xs">Desconocido</span>
                 );
         }
     };
@@ -74,7 +75,7 @@ const TableAnalysis: React.FC<TableAnalysisProps> = ({
     };
 
     return (
-        <div className="card bg-base-100 shadow-sm border border-base-200">
+        <div className="card bg-base-100 border border-base-200">
             <div className="card-body p-3 md:p-6">
                 <h2 className="card-title mb-2 lg:mb-4 text-lg">Análisis</h2>
 
@@ -127,7 +128,7 @@ const TableAnalysis: React.FC<TableAnalysisProps> = ({
                         {/* Mobile */}
                         <div className="lg:hidden space-y-3">
                             {analysis.map((a) => (
-                                <div key={a.analysisId} className="card bg-base-200 p-4">
+                                <div key={a.analysisId} className="card bg-base-200/70 p-4">
                                     <div className="space-y-2">
                                         <div className="flex justify-between items-start">
                                             <div className="flex-1 min-w-0">

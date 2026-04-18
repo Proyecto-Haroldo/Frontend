@@ -110,7 +110,7 @@ function QuestionnaireResults() {
     if (!analysisData) {
         return (
             <div className="min-h-dvh bg-base-200 flex items-center justify-center p-4">
-                <div className="card w-full max-w-lg bg-base-100 shadow-xl">
+                <div className="card w-full max-w-lg bg-base-100 ">
                     <div className="card-body items-center text-center">
                         <div className="mb-6">
                             <div className="w-16 h-16 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -135,7 +135,6 @@ function QuestionnaireResults() {
     }
 
     const currentStatus = statusConfig[analysisData.colorSemaforo];
-    const StatusIcon = currentStatus.icon;
 
     // Unified list for the Answers Section from API
     const displayAnswers =
@@ -206,13 +205,6 @@ function QuestionnaireResults() {
             <motion.div className="flex flex-col items-center justify-center space-y-6 h-full" variants={itemVariants}>
                 {/* Status Header */}
                 <motion.div className="text-center space-y-4" variants={itemVariants}>
-                    <motion.div
-                        className={`inline-flex items-center justify-center w-20 h-20 bg-base-200 rounded-full text-sm font-medium border ${currentStatus.bgColor} ${currentStatus.borderColor} ${currentStatus.color}`}
-                        whileHover={{ scale: 1.05 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                    >
-                        <StatusIcon className={`w-10 h-10 ${currentStatus.color}`} />
-                    </motion.div>
                     <motion.div variants={itemVariants}>
                         <h2 className="text-2xl font-bold mb-4">Estado del análisis</h2>
                         <motion.div
@@ -240,7 +232,7 @@ function QuestionnaireResults() {
                 variants={itemVariants}
             >
                 <motion.div
-                    className="rounded-xl p-8 bg-base-200 shadow-md w-full"
+                    className={`rounded-xl p-8 border w-full ${currentStatus.bgColor} ${currentStatus.borderColor}`}
                     variants={itemVariants}
                     whileHover={{ scale: 1.01 }}
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
@@ -262,25 +254,25 @@ function QuestionnaireResults() {
             transition={{ duration: 0.5 }}
         >
             <div className="container mx-auto space-y-8">
-                <div className="card bg-base-100 shadow-xl">
+                <div className="card bg-base-100 ">
                     <div className="card-body">
                         {/* Header */}
                         <motion.div
-                            className="flex items-center justify-between mb-2"
+                            className="flex flex col items-start flex-wrap gap-4 mb-2"
                             initial={{ y: -20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ duration: 0.6, ease: "easeOut" }}
                         >
                             <motion.button
                                 onClick={() => navigate(-1)}
-                                className="btn btn-outline btn-sm gap-2 text-base-content/50"
+                                className="btn btn-outline btn-sm gap-2 opacity-50"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                             >
                                 <ArrowLeft className="w-4 h-4" />
                                 Volver
                             </motion.button>
-                            <div className="flex items-center gap-4 text-base-content/60 text-sm">
+                            <div className="flex items-center justify-center w-full text-base-content/60 text-sm">
                                 <div className="flex items-center gap-2">
                                     <Clock className="w-4 h-4" />
                                     {formatDate(analysisData.timestamp)} - {formatTime(analysisData.timestamp)}
@@ -303,17 +295,17 @@ function QuestionnaireResults() {
                                 animate={{ scale: 1, opacity: 1 }}
                                 transition={{ duration: 0.6, delay: 0.3, type: "spring", stiffness: 200 }}
                             >
-                                <h1 className="text-3xl font-bold mb-2">
+                                <h1 className="text-2xl font-bold mb-2">
                                     Resultados - {analysisData.categoria}
                                 </h1>
-                                <p className="text-base-content/60">
+                                <p className="text-base-content/60 font-medium text-md">
                                     {analysisData.questionnaire}
                                 </p>
                             </motion.div>
 
                             {/* Stoplight Section */}
                             <motion.div
-                                className="card bg-base-200/50 backdrop-blur-sm shadow-md"
+                                className="card bg-base-200/50 backdrop-blur-sm"
                                 initial={{ y: 30, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
@@ -325,7 +317,7 @@ function QuestionnaireResults() {
 
                             {/* Risk Assessment Card */}
                             <motion.div
-                                className="card bg-base-200/50 shadow-md"
+                                className="card bg-base-200/50"
                                 initial={{ y: 30, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ duration: 0.7, delay: 0.6, ease: "easeOut" }}
@@ -348,7 +340,7 @@ function QuestionnaireResults() {
 
                             {/* Answers Section - Optional placeholder */}
                             <motion.div
-                                className="card bg-base-200/50 shadow-md"
+                                className="card bg-base-200/50"
                                 initial={{ y: 30, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ duration: 0.7, delay: 0.8, ease: "easeOut" }}
@@ -374,7 +366,7 @@ function QuestionnaireResults() {
                                             >
                                                 <ChevronDown className="w-5 h-5" />
                                             </motion.div>
-                                            <span className="font-medium">
+                                            <span className="font-semibold">
                                                 {showAnswers ? 'Ocultar' : 'Ver'} Respuestas del Cuestionario
                                             </span>
                                         </motion.div>
@@ -382,7 +374,7 @@ function QuestionnaireResults() {
                                         <AnimatePresence>
                                             {showAnswers && (
                                                 <motion.div
-                                                    className="collapse-content pt-4"
+                                                    className="collapse-content p-0"
                                                     initial={{ opacity: 0, height: 0 }}
                                                     animate={{ opacity: 1, height: "auto" }}
                                                     exit={{ opacity: 0, height: 0 }}
@@ -394,23 +386,19 @@ function QuestionnaireResults() {
                                                             <p>No hay respuestas guardadas para este análisis.</p>
                                                         </div>
                                                     ) : (
-                                                        <ul className="space-y-3">
+                                                        <ul className="space-y-6 mt-4">
                                                             {displayAnswers.map((a, idx) => (
                                                                 <motion.li
                                                                     key={`ans-${idx}`}
-                                                                    className="bg-base-100 rounded-lg p-4"
+                                                                    className="bg-primary/10 border-primary/50 border rounded-xl p-4"
                                                                     initial={{ opacity: 0, y: 8 }}
                                                                     animate={{ opacity: 1, y: 0 }}
                                                                     transition={{ delay: idx * 0.03 }}
                                                                 >
-                                                                    <p className="text-sm font-medium text-base-content/70 mb-1">
-                                                                        Pregunta {idx + 1}
-                                                                    </p>
-                                                                    <p className="text-base-content/90 mb-2">{a.questionText}</p>
-                                                                    <p className="text-sm font-medium text-primary">Respuesta:</p>
-                                                                    <p className="text-base-content/80 whitespace-pre-wrap card border p-4 mt-2 bg-primary/10 border-primary/50">
-                                                                        {a.answerText || '—'}
-                                                                    </p>
+                                                                    <p className="text-sm font-semibold text-base-content/80 mb-1">Pregunta {idx + 1}</p>
+                                                                    <p className="text-base-content/90 mb-2">{a.questionText ?? ''}</p>
+                                                                    <p className="text-sm text-primary font-semibold">Respuesta:</p>
+                                                                    <p className="text-sm whitespace-pre-wrap text-primary">{a.answerText ?? ''}</p>
                                                                 </motion.li>
                                                             ))}
                                                         </ul>

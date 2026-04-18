@@ -171,9 +171,6 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
         analysis={analysis}
         role={role}
       />
-
-      <hr className="text-accent/25 mx-4" />
-
       <AnimatePresence mode="wait">
         {/* --------------------- SELECTOR ---------------------- */}
         {view === "selector" && (
@@ -183,7 +180,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, x: -100 }}
             transition={{ duration: 0.4 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4 py-2"
+            className="grid grid-cols-1 md:grid-cols-3 gap-4"
           >
             {/* Card Usuarios */}
             <motion.div
@@ -194,7 +191,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
               transition={{ duration: 0.4 }}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
-              className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg overflow-visible"
+              className="card bg-base-100 border border-base-200 cursor-pointer hover:overflow-visible"
               onClick={() => {
                 navigate("/m/users");
                 setView("users");
@@ -218,7 +215,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
               transition={{ duration: 0.4 }}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
-              className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg overflow-visible"
+              className="card bg-base-100 border border-base-200 cursor-pointer hover:overflow-visible"
               onClick={() => {
                 navigate("/m/questionnaires");
                 setView("questionnaires");
@@ -242,7 +239,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
               transition={{ duration: 0.4 }}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
-              className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg overflow-visible"
+              className="card bg-base-100 border border-base-200 cursor-pointer hover:overflow-visible"
               onClick={() => {
                 navigate("/m/analysis");
                 setView("analysis");
@@ -276,7 +273,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
                   navigate("/m");
                   setView("selector");
                 }}
-                className="btn btn-outline btn-sm gap-2 text-base-content/50"
+                className="btn btn-outline btn-sm gap-2 opacity-50"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Volver
@@ -308,7 +305,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
                   navigate("/m");
                   setView("selector");
                 }}
-                className="btn btn-outline btn-sm gap-2 text-base-content/50"
+                className="btn btn-outline btn-sm gap-2 opacity-50"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Volver
@@ -340,7 +337,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
                   navigate("/m");
                   setView("selector");
                 }}
-                className="btn btn-outline btn-sm gap-2 text-base-content/50"
+                className="btn btn-outline btn-sm gap-2 opacity-50"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Volver
@@ -371,7 +368,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
                 navigate("/m/questionnaires");
                 setView("questionnaires");
               }}
-              className="btn btn-outline btn-sm gap-2 text-base-content/50"
+              className="btn btn-outline btn-sm gap-2 opacity-50"
             >
               <ArrowLeft className="h-4 w-4" />
               Volver
@@ -396,7 +393,7 @@ function AdminDashboard({ view: forcedView }: { view?: string }) {
                 navigate("/m/analysis");
                 setView("analysis");
               }}
-              className="btn btn-outline btn-sm gap-2 text-base-content/50"
+              className="btn btn-outline btn-sm gap-2 opacity-50"
             >
               <ArrowLeft className="h-4 w-4" />
               Volver

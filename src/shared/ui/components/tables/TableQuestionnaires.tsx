@@ -29,7 +29,7 @@ const TableQuestionnaires: React.FC<TableQuestionnairesProps> = ({
     };
 
     return (
-        <div className="card bg-base-100 shadow-sm border border-base-200">
+        <div className="card bg-base-100 border border-base-200">
             <div className="card-body p-3 md:p-6">
                 <h2 className="card-title mb-2 lg:mb-4 text-lg">Cuestionarios ({questionnaires.length}) </h2>
 
@@ -94,7 +94,7 @@ const TableQuestionnaires: React.FC<TableQuestionnairesProps> = ({
                         {/* Mobile Cards */}
                         <div className="lg:hidden space-y-3">
                             {questionnaires.map((q) => (
-                                <div key={q.id} className="card bg-base-200 p-4 space-y-2">
+                                <div key={q.id} className="card bg-base-200/70 p-4 space-y-2">
                                     <div className="flex justify-between items-start">
                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                                             <span className="text-xs text-base-content/50">

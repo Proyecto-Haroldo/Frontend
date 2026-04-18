@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from './shared/context/AuthContext';
 import Navbar from './shared/ui/layout/navigation/Navbar';
@@ -115,23 +115,50 @@ function AnimatedRoutes({ role }: { role: number | null }) {
 }
 
 // ProtectedRoute and PublicRoute to check auth & roles
-function ProtectedRoute({ children, allowedRoles }: { children: React.ReactNode, allowedRoles?: number[] }) {
+function ProtectedRoute({
+    children,
+    allowedRoles,
+}: {
+    children: React.ReactNode;
+    allowedRoles?: number[];
+}) {
     const { token, role } = useAuth();
-    if (!token) return <Navigate to="/login" replace />;
-    if (allowedRoles && (!role || !allowedRoles.includes(role))) {
-        return <Navigate to="/login" replace />;
-    }
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!token) {
+            navigate('/login', { replace: true });
+            return;
+        }
+
+        if (allowedRoles && (!role || !allowedRoles.includes(role))) {
+            navigate('/login', { replace: true });
+        }
+    }, [token, role, allowedRoles, navigate]);
+
+    const isUnauthorized =
+        !token || (allowedRoles && (!role || !allowedRoles.includes(role)));
+
+    if (isUnauthorized) return null;
+
     return <>{children}</>;
 }
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
     const { token, role } = useAuth();
+    const navigate = useNavigate();
 
-    if (token) {
-        if (role === 1) return <Navigate to="/m" replace />;
-        if (role === 2) return <Navigate to="/c" replace />;
-        if (role === 3) return <Navigate to="/a" replace />;
-    }
+    useEffect(() => {
+        if (token) {
+            if (role === 1) navigate('/m', { replace: true });
+            else if (role === 2) navigate('/c', { replace: true });
+            else if (role === 3) navigate('/a', { replace: true });
+        }
+    }, [token, role, navigate]);
+
+    const isAuthenticated = !!token;
+
+    if (isAuthenticated) return null;
 
     return <>{children}</>;
 }

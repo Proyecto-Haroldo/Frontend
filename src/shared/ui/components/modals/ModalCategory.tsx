@@ -142,7 +142,7 @@ const ModalCategory: React.FC<ModalCategoryProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 m-0">
             <div className="bg-base-200 rounded-lg p-4 pr-3 md:p-6 md:pr-5 max-w-3xl w-full max-h-[80vh] flex flex-col">
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4 shrink-0">
@@ -295,16 +295,16 @@ const ModalCategory: React.FC<ModalCategoryProps> = ({
                         <div className="space-y-3">
                             {loading ? (
                                 <div className="min-h-[40dvh] bg-base-200 flex items-center justify-center p-4">
-                                    <div className="card w-full container bg-base-100 shadow-xl p-6">
+                                    <div className="card w-full container bg-base-100 p-6">
                                         <div className="card-body items-center text-center">
                                             <span className="loading loading-spinner loading-lg text-primary"></span>
-                                            <p className="mt-4">Cargando categorías...</p>
+                                            <p className="mt-2">Cargando categorías...</p>
                                         </div>
                                     </div>
                                 </div>
                             ) : categories.length === 0 ? (
                                 <div className="min-h-[40dvh] bg-base-200 flex items-center justify-center p-4">
-                                    <div className="card w-full container bg-base-100 shadow-xl p-6">
+                                    <div className="card w-full container bg-base-100 p-6">
                                         <div className="card-body items-center text-center">
                                             <p className="mt-4 text-base-content/50">No hay categorías registradas.</p>
                                         </div>

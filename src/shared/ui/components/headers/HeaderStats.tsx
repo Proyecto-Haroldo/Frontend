@@ -25,7 +25,7 @@ interface HeaderStatsProps {
 }
 
 const SkeletonCard: React.FC = () => (
-    <div className="card bg-base-100 shadow-sm border border-base-200">
+    <div className="card bg-base-100">
         <div className="card-body">
             <Skeleton width="60%" height={14} />
             <Skeleton width="80%" height={18} />
@@ -67,7 +67,7 @@ const HeaderStatsSkeleton: React.FC = () => {
                 </div>
 
                 {/* Risk Distribution */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                <div className="hidden lg:grid lg:grid-cols-3 gap-4">
                     <SkeletonCard />
                     <SkeletonCard />
                     <SkeletonCard />
@@ -83,7 +83,7 @@ const StatCard: React.FC<{
     icon?: React.ReactNode;
     valueClass?: string;
 }> = ({ label, value, icon, valueClass }) => (
-    <div className="card bg-base-100 shadow-sm border border-base-200">
+    <div className="card bg-base-100 border border-base-200">
         <div className="card-body">
             <div className="flex items-center justify-between">
                 <div>
@@ -101,7 +101,7 @@ const RiskCard: React.FC<{
     value: number;
     colorClass: string;
 }> = ({ label, value, colorClass }) => (
-    <div className="card bg-base-100 shadow-sm border border-base-200">
+    <div className="card bg-base-100 border border-base-200">
         <div className="card-body">
             <div className="flex items-center justify-between">
                 <div>
@@ -133,7 +133,7 @@ const HeaderStats: React.FC<HeaderStatsProps> = ({
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="alert alert-error shadow-lg"
+                    className="alert alert-error"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -199,7 +199,7 @@ const HeaderStats: React.FC<HeaderStatsProps> = ({
             </div>
 
             {/* Risk Distribution */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+            <div className="hidden lg:grid lg:grid-cols-3 gap-4">
                 <RiskCard label="Riesgo Verde" value={stats.green} colorClass="text-success" />
                 <RiskCard label="Riesgo Amarillo" value={stats.yellow} colorClass="text-warning" />
                 <RiskCard label="Riesgo Rojo" value={stats.red} colorClass="text-error" />

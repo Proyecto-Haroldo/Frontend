@@ -54,7 +54,7 @@ function ThemeToggle() {
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="dropdown dropdown-top"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -71,8 +71,8 @@ function ThemeToggle() {
         <span>{getThemeLabel()}</span>
         <ChevronDown className="h-4 w-4" />
       </motion.div>
-      
-      <ul tabIndex={0} className="dropdown-content bg-base-300 rounded-box z-40 w-52 p-2 shadow-2xl">
+
+      <ul tabIndex={0} className="dropdown-content bg-base-300 rounded-box z-40 w-52 p-2 shadow-lg">
         <li>
           <input
             type="radio"

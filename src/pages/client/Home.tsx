@@ -1,4 +1,4 @@
-import { Calendar, Clock, ArrowRight, AlertCircle, ArrowDownCircle, HelpCircle } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, ArrowDownCircle, HelpCircle, CheckCircle, VideoIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 function Home() {
@@ -17,16 +17,16 @@ function Home() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
-          {/* Latest Analysis */}
-          <div className="card bg-base-100 shadow-sm border border-base-200 col-span-full lg:col-span-1">
+          {/* Latest Analysis - Completed */}
+          <div className="card bg-base-100 border border-base-200 col-span-full lg:col-span-1">
             <div className="card-body">
               <div className="flex items-center justify-between">
-                <h2 className="card-title text-base">Último análisis</h2>
-                <div className="badge rounded-full badge-success text-xs">Completado</div>
+                <h2 className="card-title text-base">Completado</h2>
+                <CheckCircle className="h-5 w-5 text-success" />
               </div>
               <div className="space-y-3">
                 <p className="text-sm text-base-content/70">
-                  Análisis Personal - 15 Mar 2024
+                  Análisis Contabilidad - 15 Mar 2024
                 </p>
                 <div className="flex items-center gap-2">
                   <progress className="progress progress-success w-full" value="100" max="100"></progress>
@@ -39,12 +39,12 @@ function Home() {
             </div>
           </div>
 
-          {/* In Progress */}
-          <div className="card bg-base-100 shadow-sm border border-base-200">
+          {/* Latest Analysis - Pending */}
+          <div className="card bg-base-100 border border-base-200">
             <div className="card-body">
               <div className="flex items-center justify-between">
                 <h2 className="card-title text-base">En revisión</h2>
-                <AlertCircle className="h-5 w-5 text-warning" />
+                <Clock className="h-5 w-5 text-warning" />
               </div>
               <div className="space-y-3">
                 <p className="text-sm text-base-content/70">
@@ -61,8 +61,8 @@ function Home() {
             </div>
           </div>
 
-          {/* Next Meeting */}
-          <div className="card bg-base-100 shadow-sm border border-base-200">
+          {/* Questionnaires */}
+          <div className="card bg-base-100 border border-base-200">
             <div className="card-body">
               <div className="flex items-center justify-between">
                 <h2 className="card-title text-base">#Learn</h2>
@@ -86,11 +86,11 @@ function Home() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5">
           {/* Financial Overview */}
-          <div className="card bg-base-100 shadow-sm border border-base-200">
+          <div className="card bg-base-100 border border-base-200">
             <div className="card-body">
               <div className="flex items-center justify-between mb-2">
                 <h2 className="card-title text-base">Resumen Financiero</h2>
-                <HelpCircle className="h-5 w-5 text-accent/60" />
+                <HelpCircle className="h-5 w-5 text-secondary" />
               </div>
               <div className="space-y-4">
                 <div>
@@ -119,7 +119,7 @@ function Home() {
           </div>
 
           {/* Next Meeting */}
-          <div className="card bg-base-100 shadow-sm border border-base-200">
+          <div className="card bg-base-100 border border-base-200">
             <div className="card-body">
               <div className="flex items-center justify-between">
                 <h2 className="card-title text-base">Próximas Consultas</h2>
@@ -129,7 +129,7 @@ function Home() {
                 <div className="flex justify-between">
                   <div className="flex items-center gap-3">
                     <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
-                      <Clock className="h-5 w-5 text-primary" />
+                      <VideoIcon className="h-5 w-5 text-primary" />
                     </div>
                     <div>
                       <p className="font-medium">Consulta Virtual</p>
@@ -140,11 +140,11 @@ function Home() {
                     Ver detalles
                   </button>
                 </div>
-                <hr className="text-base-300 m-0"></hr>
+                <hr className="text-base-200 m-0"></hr>
                 <div className="flex justify-between">
                   <div className="flex items-center gap-3">
                     <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
-                      <Clock className="h-5 w-5 text-primary" />
+                      <VideoIcon className="h-5 w-5 text-primary" />
                     </div>
                     <div>
                       <p className="font-medium">Consulta Virtual</p>
@@ -155,7 +155,7 @@ function Home() {
                     Ver detalles
                   </button>
                 </div>
-                <hr className="text-base-300 m-0"></hr>
+                <hr className="text-base-200 m-0"></hr>
               </div>
             </div>
           </div>

@@ -27,7 +27,6 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-
   const [token, setTokenState] = useState<string | null>(() =>
     localStorage.getItem('token')
   );
@@ -87,6 +86,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     localStorage.removeItem('questionnaireData');
     localStorage.removeItem('aiRecommendation');
+
   }, [setAuth]);
 
   // Sync token with API client
@@ -123,8 +123,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Ejecutar inmediatamente
     checkTokenExpiration();
 
-    // Luego cada cierto tiempo (ej: 30s)
-    const interval = setInterval(checkTokenExpiration, 30000);
+    // Luego cada cierto tiempo (ej: 10s)
+    const interval = setInterval(checkTokenExpiration, 10000);
 
     return () => clearInterval(interval);
   }, [token, logout]);

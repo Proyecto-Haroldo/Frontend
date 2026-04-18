@@ -53,7 +53,7 @@ const TemplateAnalysis: React.FC<TemplateAnalysisProps> = ({
         return (
             <div className="container mx-auto space-y-4 md:space-y-6">
                 {/* Filtros y búsqueda */}
-                <div className="card bg-base-100 shadow-sm border border-base-200">
+                <div className="card bg-base-100 border border-base-200">
                     <div className="card-body p-3 md:p-6">
                         <div className="flex flex-col gap-3">
                             <div className="relative">
@@ -75,7 +75,7 @@ const TemplateAnalysis: React.FC<TemplateAnalysisProps> = ({
                                         className="btn btn-outline btn-sm gap-2 text-base-content/50"
                                     >
                                         <Filter className="h-4 w-4" />
-                                        <span className="hidden sm:inline">
+                                        <span className="inline">
                                             {filter === "all"
                                                 ? "Todos"
                                                 : filter === "pending"
@@ -85,7 +85,7 @@ const TemplateAnalysis: React.FC<TemplateAnalysisProps> = ({
                                     </div>
                                     <ul
                                         tabIndex={0}
-                                        className="dropdown-content z-[1] menu p-2 shadow-md bg-base-300 mt-2 rounded-box w-52"
+                                        className="dropdown-content z-[1] menu p-2 bg-base-300 mt-2 rounded-box w-52 shadow-lg"
                                     >
                                         <li>
                                             <button onClick={() => setFilter("all")}>Todos</button>
@@ -109,10 +109,10 @@ const TemplateAnalysis: React.FC<TemplateAnalysisProps> = ({
 
                 <div className="container mx-auto space-y-6 overflow-hidden">
                     <div className="flex items-center justify-center">
-                        <div className="card w-full bg-base-100 shadow-sm border border-base-200">
+                        <div className="card w-full bg-base-100 border border-base-200">
                             <div className="card-body items-center text-center">
                                 <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
-                                <p className="mt-4">Cargando análisis...</p>
+                                <p className="mt-2">Cargando análisis...</p>
                             </div>
                         </div>
                     </div>
@@ -126,7 +126,7 @@ const TemplateAnalysis: React.FC<TemplateAnalysisProps> = ({
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="alert alert-error shadow-lg"
+                    className="alert alert-error "
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -149,7 +149,7 @@ const TemplateAnalysis: React.FC<TemplateAnalysisProps> = ({
     return (
         <div className="container mx-auto space-y-4 md:space-y-6">
             {/* Filtros y búsqueda */}
-            <div className="card bg-base-100 shadow-sm border border-base-200">
+            <div className="card bg-base-100 border border-base-200">
                 <div className="card-body p-3 md:p-6">
                     <div className="flex flex-col gap-3">
                         <div className="relative">
@@ -165,23 +165,23 @@ const TemplateAnalysis: React.FC<TemplateAnalysisProps> = ({
 
                         <div className="flex gap-2">
                             <div className="dropdown dropdown-start">
-                                <div
+                                <button
                                     tabIndex={0}
-                                    role="button"
-                                    className="btn btn-outline btn-sm gap-2 text-base-content/50"
+                                    type="button"
+                                    className="btn btn-outline btn-sm gap-2 text-base-content/50 cursor-pointer"
                                 >
                                     <Filter className="h-4 w-4" />
-                                    <span className="hidden sm:inline">
+                                    <span className="inline">
                                         {filter === "all"
                                             ? "Todos"
                                             : filter === "pending"
                                                 ? "Pendientes"
                                                 : "Completados"}
                                     </span>
-                                </div>
+                                </button>
                                 <ul
                                     tabIndex={0}
-                                    className="dropdown-content z-[1] menu p-2 shadow-md bg-base-300 mt-2 rounded-box w-52"
+                                    className="dropdown-content z-[1] menu p-2 bg-base-300 mt-2 rounded-box w-52 shadow-lg"
                                 >
                                     <li>
                                         <button onClick={() => setFilter("all")}>Todos</button>

@@ -178,7 +178,6 @@ function Services() {
   const cardVariants = {
     hover: {
       y: -5,
-      boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
       transition: { duration: 0.2 }
     }
   };
@@ -188,18 +187,17 @@ function Services() {
       <h2 className="text-2xl mb-2 mt-0 font-semibold text-start">
         Nuestros Servicios
       </h2>
-      <p className="text-start text-sm text-base-content/70 pb-2">
+      <p className="text-start text-base-content/70 pb-2">
         Selecciona una categoría para comenzar. Cada módulo cuenta con cuestionarios que te permitirán conocer tu situación financiera con análisis personalizados.
       </p>
-      <hr className="text-accent/25 mx-4 pt-2" />
 
       {loadingCategories && (
         <div className="container min-w-full mx-auto space-y-6 overflow-hidden">
           <div className="flex items-center justify-center">
-            <div className="card w-full bg-base-100 shadow-sm border border-base-200">
+            <div className="card w-full bg-base-100 border border-base-200">
               <div className="card-body items-center text-center">
                 <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
-                <p className="mt-4">Cargando categorías...</p>
+                <p className="mt-2">Cargando categorías...</p>
               </div>
             </div>
           </div>
@@ -211,7 +209,7 @@ function Services() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="alert alert-error shadow-lg"
+            className="alert alert-error "
           >
             <AlertCircle className="h-5 w-5" />
             {errorQuestionnaires}
@@ -220,7 +218,7 @@ function Services() {
       )}
 
       <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 2xl:gap-6"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 2xl:gap-8"
         key={currentView}
         custom={direction}
         variants={pageVariants}
@@ -232,7 +230,7 @@ function Services() {
           <motion.button
             key={category.id}
             onClick={() => handleCategorySelect(category.id)}
-            className="card bg-base-100 shadow-sm cursor-pointer 2xl:aspect-[3/2] flex flex-col items-center justify-center"
+            className="card bg-base-100 cursor-pointer 2xl:aspect-[3/2] flex flex-col items-center justify-center"
             variants={cardVariants}
             whileHover="hover"
             layout
@@ -250,7 +248,7 @@ function Services() {
                 {category.icon.svg}
               </motion.div>
 
-              <h3 className="card-title text-lg 2xl:text-2xl 2xl:mb-4">
+              <h3 className="card-title text-lg 2xl:text-xl 2xl:mb-3">
                 {category.name}
               </h3>
 
@@ -269,11 +267,9 @@ function Services() {
       <h2 className="text-2xl mb-2 mt-0 font-semibold text-start">
         {selectedCategory?.name}
       </h2>
-      <p className="text-start text-sm text-base-content/70 pb-2">
+      <p className="text-start text-base-content/70">
         {selectedCategory?.description}. Busca y selecciona un cuestionario de este módulo.
       </p>
-
-      <hr className="text-accent/25 mx-4" />
 
       <motion.div
         key={currentView}
@@ -286,7 +282,7 @@ function Services() {
       >
         <button
           onClick={handleBackToCategories}
-          className="btn btn-outline btn-xs gap-2 text-base-content/50 mt-2"
+          className="btn btn-outline btn-xs gap-2 text-base-content/50"
         >
           <ChevronLeft className="h-4 w-4" /> Volver
         </button>
@@ -302,15 +298,15 @@ function Services() {
           />
         </div>
 
-        <div className="card bg-base-100 shadow-sm">
+        <div className="card bg-base-100">
           <div className="card-body p-0">
             {loadingQuestionnaires && (
               <div className="container mx-auto space-y-6 overflow-hidden">
                 <div className="flex items-center justify-center">
-                  <div className="card w-full bg-base-100 shadow-sm border border-base-200">
+                  <div className="card w-full bg-base-100 border border-base-200">
                     <div className="card-body items-center text-center">
                       <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
-                      <p className="mt-4">Cargando cuestionarios...</p>
+                      <p className="mt-2">Cargando cuestionarios...</p>
                     </div>
                   </div>
                 </div>
@@ -322,7 +318,7 @@ function Services() {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="alert alert-error shadow-lg"
+                  className="alert alert-error "
                 >
                   <AlertCircle className="h-5 w-5" />
                   {errorQuestionnaires}
@@ -333,10 +329,7 @@ function Services() {
             {!loadingQuestionnaires && filteredQuestionnaires.map((item, index) => (
               <div key={item.id}>
                 <div
-                  className={`flex items-center gap-4 p-6 hover:bg-base-200/70 transition-colors cursor-pointer ${index !== filteredQuestionnaires.length - 1
-                    ? 'border-b border-base-200'
-                    : ''
-                    }`}
+                  className='flex items-center gap-4 p-6 hover:bg-base-200/70 transition-colors cursor-pointer'
                   onClick={() => handleQuestionnaireClick(item)}
                 >
 
@@ -353,7 +346,7 @@ function Services() {
                   </div>
                   <ArrowRight className="h-5 w-5 text-base-content/40" />
                 </div>
-                <hr className="text-base-300 mx-4"></hr>
+                {index !== filteredQuestionnaires.length - 1 ? <hr className="text-base-200 mx-4"></hr> : ''}
               </div>
             ))}
           </div>
@@ -398,7 +391,7 @@ function Services() {
 
   const renderAnalysisForm = () => (
     <motion.div
-      className="card shadow-sm min-h-[calc(100dvh-4rem)] flex justify-center"
+      className="card min-h-[calc(100dvh-4rem)] flex justify-center"
       key={currentView}
       custom={direction}
       variants={pageVariants}

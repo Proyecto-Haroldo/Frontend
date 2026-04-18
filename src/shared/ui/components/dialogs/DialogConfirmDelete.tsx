@@ -22,13 +22,13 @@ const DialogConfirmDelete: React.FC<DialogConfirmDeleteProps> = ({
     loading = false,
 }) => {
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 m-0">
             <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: -10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 10 }}
                 transition={{ duration: 0.25 }}
-                className="card bg-base-100 border border-base-200 shadow-md max-w-sm w-full p-6 space-y-4 rounded-2xl"
+                className="card bg-base-100 border border-base-200 max-w-sm w-full p-6 space-y-4 rounded-2xl"
             >
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-error/10 rounded-full">

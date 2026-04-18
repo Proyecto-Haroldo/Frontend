@@ -13,7 +13,7 @@ import {
 import { User, BarChart2, XCircle, Loader2 } from "lucide-react";
 import { IUser } from "../../../../core/models/user";
 import { IAnalysis } from "../../../../core/models/analysis";
-import { normalizeUserRole } from "../../../../api/usersApi";
+import { normalizeUserRole, normalizeUserStatus } from "../../../../api/usersApi";
 import SelectCategories from "../selects/SelectCategories";
 import useCategories from "../../../hooks/useCategories";
 
@@ -97,7 +97,7 @@ const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 m-0">
             <div className="bg-base-200 rounded-lg p-4 pr-3 md:p-6 md:pr-5 max-w-3xl w-full max-h-[80vh] flex flex-col">
 
                 {/* Header fijo */}
@@ -111,7 +111,7 @@ const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error
                 <div className="overflow-y-auto overflow-x-hidden pr-1 flex-1">
                     {/* Info básica */}
                     <h3 className="font-semibold mb-2">Información Personal</h3>
-                    <div className="flex flex-col gap-3 md:gap-4 p-4 shadow-sm card bg-base-100 mb-6">
+                    <div className="flex flex-col gap-3 md:gap-4 p-4 card bg-base-100 mb-6">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                             <div>
                                 <label className="text-sm font-medium text-base-content">Nombre Legal</label>
@@ -147,7 +147,7 @@ const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-base-content">Estado</label>
-                                <p className="text-sm text-base-content/70">{user.status || "N/A"}</p>
+                                <p className="text-sm text-base-content/70">{normalizeUserStatus(user.status)}</p>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-base-content">Rol</label>
@@ -175,7 +175,7 @@ const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error
 
                     {loading ? (
                         <div className="flex items-center justify-center">
-                            <div className="card w-full bg-base-100 shadow-sm border border-base-200">
+                            <div className="card w-full bg-base-100 border border-base-200">
                                 <div className="card-body items-center text-center">
                                     <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
                                     <p className="mt-4">Buscando métricas...</p>
@@ -183,7 +183,7 @@ const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error
                             </div>
                         </div>
                     ) : error ? (
-                        <div className="card w-full bg-base-100 shadow-xl text-center">
+                        <div className="card w-full bg-base-100 text-center">
                             <div className="card-body">
                                 <div className="w-16 h-16 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <XCircle className="h-8 w-8 text-error" />
@@ -206,7 +206,7 @@ const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error
                             className="card border border-base-200 rounded-2xl space-y-6"
                         >
                             {/* Header */}
-                            <div className="card bg-base-100 shadow-sm flex flex-row p-4 gap-3 border-b border-base-200">
+                            <div className="card bg-base-100 flex flex-row p-4 gap-3 border-b border-base-200">
                                 <div className="p-2 h-10 w-10 bg-primary/10 rounded-full">
                                     <User className="text-primary h-6 w-6" />
                                 </div>
@@ -220,7 +220,7 @@ const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Doughnut Chart */}
-                                <div className="card bg-base-100 shadow-md p-4 space-y-4">
+                                <div className="card bg-base-100 p-4 space-y-4">
                                     <div>
                                         <div className="flex items-center gap-2 pb-1">
                                             <div className="p-2 bg-primary/10 rounded-full">
@@ -242,7 +242,7 @@ const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error
                                 </div>
 
                                 {/* Bar Chart */}
-                                <div className="card bg-base-100 shadow-md p-4 space-y-4">
+                                <div className="card bg-base-100 p-4 space-y-4">
                                     <div>
                                         <div className="flex items-center gap-2 pb-1">
                                             <div className="p-2 bg-primary/10 rounded-full">

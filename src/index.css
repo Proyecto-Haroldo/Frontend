@@ -23,9 +23,9 @@
   --color-info-content: oklch(23% 0.141 255);
   --color-success: oklch(76% 0.155 162.12);
   --color-success-content: oklch(32% 0.077 168.94);
-  --color-warning: oklch(81% 0.158 81.79);
+  --color-warning: oklch(82% 0.158 81.79);
   --color-warning-content: oklch(32% 0.112 45.904);
-  --color-error: oklch(71% 0.194 13.428);
+  --color-error: oklch(72% 0.194 13.428);
   --color-error-content: oklch(30% 0.105 12.094);
   --color-navbar: oklch(0 0.000 0 / 0.7);
   --radius-selector: 0.5rem;

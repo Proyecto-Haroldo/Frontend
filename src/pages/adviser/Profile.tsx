@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import {
   User, Mail, Phone, Building2, Settings, Key, Trash,
-  IdCard, MapPin, Globe
+  IdCard, MapPin, Globe,
+  Loader2
 } from 'lucide-react';
 import { useAuth } from '../../shared/context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
@@ -19,8 +20,8 @@ interface JwtPayload {
 function AdviserProfile() {
   const { token, logout, userId } = useAuth();
   const [email, setEmail] = useState<string>('');
-  const [name, setName] = useState<string>('');
   const [userData, setUserData] = useState<IUser | null>(null);
+  const [loading, setLoading] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
 
   const navigate = useNavigate();
@@ -43,19 +44,23 @@ function AdviserProfile() {
 
   // Obtener userId desde AuthContext y cargar datos del usuario
   useEffect(() => {
-    if (userId == null) return;
+    if (userId == null) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
 
     getUserById(userId)
       .then(user => {
         setUserData(user);
-        setName(user.legalName);
       })
-      .catch(err => console.error('Error al obtener cliente:', err));
+      .catch(err => console.error('Error al obtener cliente:', err))
+      .finally(() => setLoading(false));
   }, [userId]);
 
   const handleUpdate = (updatedUser: IUser) => {
     setUserData(updatedUser);
-    setName(updatedUser.legalName);
   };
 
   // Eliminar cuenta
@@ -87,63 +92,86 @@ function AdviserProfile() {
       <div className="container space-y-4 md:space-y-5">
         <h1 className="text-2xl font-semibold">Perfil de Asesor</h1>
 
-        {/* Profile Section */}
-        <div className="card bg-base-100 shadow-sm">
-          <div className="card-body">
-            <div className="flex items-start w-full gap-4">
-              <div className="h-12 w-12 rounded-full aspect-[1/1] bg-primary/10 flex items-center justify-center">
-                <User className="h-6 w-6 text-primary" />
-              </div>
-              <div className='flex flex-col w-full'>
-                <h2 className="font-medium text-xl">{name}</h2>
-                <span className='text-base-content/50 capitalize'>{userData?.clientType.toLocaleLowerCase() || 'No disponible'}</span>
-              </div>
-            </div>
-
-            <hr className="text-accent/30 w-full max-w-100 my-4" />
-
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-base-content/50" />
-                <span>{email || 'No disponible'}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <IdCard className="h-5 w-5 text-base-content/50" />
-                <span>{userData?.cedulaOrNIT || 'No específicado'}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Building2 className="h-5 w-5 text-base-content/50" />
-                <span>{userData?.sector || 'No específicado'}</span>
-              </div>
-              {userData?.network && (
-                <div className="flex items-center gap-3">
-                  <Globe className="h-5 w-5 text-base-content/50" />
-                  <a target='_blank' href={userData.network} className='link'>LinkedIn</a>
+        {loading ? (
+          <div className="container min-w-full mx-auto space-y-6 overflow-hidden">
+            <div className="flex items-center justify-center">
+              <div className="card w-full bg-base-100 border border-base-200">
+                <div className="min-h-[60dvh] flex flex-col justify-center items-center text-center">
+                  <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
+                  <p className="mt-4 text-sm">Cargando perfil...</p>
                 </div>
-              )}
-              <div className="flex items-center gap-3">
-                <Phone className="h-5 w-5 text-base-content/50" />
-                <span>{userData?.phone || 'No específicado'}</span>
               </div>
-              <div className="flex items-center gap-3">
-                <MapPin className="h-5 w-5 text-base-content/50" />
-                <span>{userData?.location || 'No específicado'}</span>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <button
-                onClick={() => setShowEditModal(true)}
-                className="btn btn-link p-0 text-sm font-semibold text-primary"
-              >
-                Editar información
-              </button>
             </div>
           </div>
-        </div>
+        ) : (
+          <>
+            {/* Profile Section */}
+            <div className="card bg-base-100">
+              <div className="card-body">
+                <div className="flex items-start w-full gap-4">
+                  <div className="h-12 w-12 rounded-full aspect-[1/1] bg-primary/10 flex items-center justify-center">
+                    <User className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="flex flex-col w-full">
+                    <h2 className="font-medium text-xl">{userData?.legalName || 'No disponible'}</h2>
+                    <span className="text-base-content/50 capitalize">
+                      {userData?.clientType?.toLocaleLowerCase() || 'No disponible'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-4 mt-6">
+                  <div className="flex items-center gap-3">
+                    <Mail className="h-5 w-5 text-base-content/50" />
+                    <span>{email || 'No disponible'}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <IdCard className="h-5 w-5 text-base-content/50" />
+                    <span>{userData?.cedulaOrNIT || 'No especificado'}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Building2 className="h-5 w-5 text-base-content/50" />
+                    <span>{userData?.sector || 'No especificado'}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <MapPin className="h-5 w-5 text-base-content/50" />
+                    <span>{userData?.location || 'No especificado'}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Phone className="h-5 w-5 text-base-content/50" />
+                    <span>{userData?.phone || 'No especificado'}</span>
+                  </div>
+
+                  {userData?.network && (
+                    <div className="flex items-center gap-3">
+                      <Globe className="h-5 w-5 text-base-content/50" />
+                      <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href={userData.network}
+                        className="link"
+                      >
+                        LinkedIn
+                      </a>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-6">
+                  <button
+                    onClick={() => setShowEditModal(true)}
+                    className="btn btn-link p-0 text-sm font-semibold text-primary"
+                  >
+                    Editar información
+                  </button>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Admin Settings */}
-        <div className="card bg-base-100 shadow-sm">
+        <div className="card bg-base-100">
           <div className="card-body">
             <h2 className="font-medium mb-6">Configuración Administrativa</h2>
 
@@ -167,7 +195,7 @@ function AdviserProfile() {
         </div>
 
         {/* Quick Actions */}
-        <div className="card bg-base-100 shadow-sm">
+        <div className="card bg-base-100">
           <div className="card-body">
             <h2 className="font-medium mb-6">Acciones Rápidas</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -184,7 +212,7 @@ function AdviserProfile() {
         </div>
 
         {/* Danger Zone */}
-        <div className="card bg-base-100 shadow-sm">
+        <div className="card bg-base-100">
           <div className="card-body">
             <h2 className="font-medium text-error mb-4">Zona de Peligro</h2>
             <div className="flex items-center justify-between">

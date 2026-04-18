@@ -8,7 +8,7 @@ import { IAnalysis } from "../../core/models/analysis";
 import { IQuestionnaire } from "../../core/models/questionnaire";
 import { useAuth } from "../../shared/context/AuthContext";
 import { motion, AnimatePresence } from "motion/react";
-import { ClipboardList, ArrowLeft, Briefcase } from "lucide-react";
+import { ClipboardList, ArrowLeft, Briefcase, Loader2, Lock } from "lucide-react";
 import Questions from "../../shared/ui/template/TemplateQuestions";
 import AnalysisReview from "../../shared/ui/template/TemplateAnalysisReview";
 import HeaderStats from "../../shared/ui/components/headers/HeaderStats";
@@ -24,6 +24,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
   const [errorQuestionnaires, setErrorQuestionnaires] = useState("");
   const [loadingAnalysis, setLoadingAnalysis] = useState(true);
   const [errorAnalysis, setErrorAnalysis] = useState("");
+  const [loadingStatus, setLoadingStatus] = useState(false);
   const { role, userStatus, token, userId, userSpecialities, setAuth } = useAuth();
   const { id } = useParams();
 
@@ -38,10 +39,10 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
           console.warn('Error fetching user specialities:', error);
         }
       };
-      
+
       fetchAndCacheSpecialities();
     }
-  }, [userId, userSpecialities, setAuth]);
+  }, [userId, userSpecialities, role, token, userStatus, setAuth]);
 
   useEffect(() => {
     fetchQuestionnaires();
@@ -134,28 +135,34 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
   const visibleAnalysis = useMemo(() => {
     // If specialities haven't loaded yet, show nothing
     if (!userSpecialities || userSpecialities.length === 0) return [];
-    
+
     const specialityNames = new Set(userSpecialities.map(s => s.title));
-    
+
     const filtered = analysis.filter(a => {
       // Check if analysis category matches adviser specialities
       return specialityNames.has(a.categoryName);
     });
-    
+
     return filtered;
-  }, [analysis, userSpecialities, role]);
+  }, [analysis, userSpecialities]);
+
+  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
   const checkUserStatus = async () => {
     if (!userId) return;
 
     try {
+      setLoadingStatus(true);
+      await sleep(2000);
+
       const statusData = await getUserStatus(userId);
       setAuth(token, role, userId, statusData.status);
-      
-      // Reload page to update UI
+
       window.location.reload();
     } catch (error) {
       console.error("Error checking user status:", error);
+    } finally {
+      setLoadingStatus(false);
     }
   };
 
@@ -172,7 +179,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
     };
 
     fetchStatus();
-  }, []);
+  }, [role, setAuth, token, userId, userStatus]);
 
   const stats = {
     total: visibleAnalysis.length,
@@ -193,33 +200,38 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
   // Check if user is UNAUTHORIZED and show authorization message
   if (userStatus === "UNAUTHORIZED") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-base-200">
+      <div className="min-h-[calc(100dvh-8rem)] md:min-h-[calc(100dvh-4rem)] py-4 flex items-center justify-center bg-base-200">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
-          className="max-w-md w-full mx-4 p-8 bg-base-100 rounded-xl shadow-xl text-center"
+          className="max-w-md w-full mx-4 p-8 bg-base-100 rounded-xl text-center"
         >
           <div className="mb-6">
-            <div className="w-20 h-20 bg-warning/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <ClipboardList className="w-10 h-10 text-warning" />
+            <div className="w-20 h-20 bg-primary/15 rounded-full flex items-center justify-center mx-auto mb-5">
+              <Lock className="w-10 h-10 text-primary" />
             </div>
-            <h2 className="text-2xl font-bold text-base-content mb-2">
+            <h2 className="text-2xl font-bold text-base-content mb-3">
               Autorización Pendiente
             </h2>
-            <p className="text-base-content/70 mb-6">
-              Tu cuenta está pendiente de autorización. Por favor, contacta al administrador para obtener acceso completo a la plataforma.
+            <p className="text-base-content/70 mb-7">
+              Tu cuenta está pendiente de autorización. Por favor, espera a que un administrador te habilite para obtener acceso completo a la plataforma.
             </p>
           </div>
-          
-          <div className="space-y-4">
+
+          <div className="space-y-4 px-2">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={checkUserStatus}
-              className="btn btn-primary w-full"
+              disabled={loadingStatus}
+              className="btn btn-primary w-full flex items-center justify-center gap-2"
             >
-              Verificar estado
+              {loadingStatus ? (
+                <Loader2 className="h-6 w-6 text-secondary animate-spin mx-auto" />
+              ) : (
+                "Verificar estado"
+              )}
             </motion.button>
           </div>
         </motion.div>
@@ -237,8 +249,6 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
         analysis={visibleAnalysis}
         role={role}
       />
-
-      <hr className="text-accent/25 mx-4"></hr>
       <AnimatePresence mode="wait">
         <motion.div
           key={view}
@@ -249,7 +259,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
           className="w-full"
         >
           {view === "selector" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Card Cuestionarios */}
               <motion.div
                 variants={cardVariants}
@@ -259,7 +269,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
                 transition={{ duration: 0.4 }}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
-                className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg overflow-visible"
+                className="card bg-base-100 border border-base-200 cursor-pointer hover:overflow-visible"
                 onClick={() => {
                   navigate("/a/questionnaires");
                   setView("questionnaires");
@@ -283,7 +293,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
                 transition={{ duration: 0.4 }}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
-                className="card bg-base-100 border border-base-200 shadow-md cursor-pointer hover:shadow-lg overflow-visible"
+                className="card bg-base-100 border border-base-200 cursor-pointer hover:overflow-visible"
                 onClick={() => {
                   navigate("/a/analysis");
                   setView("analysis");
@@ -310,7 +320,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
                     setView("selector");
                   }
                   }
-                  className="btn btn-outline btn-sm gap-2 text-base-content/50"
+                  className="btn btn-outline btn-sm gap-2 opacity-50"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   Volver
@@ -336,7 +346,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
                     navigate("/a");
                     setView("selector");
                   }}
-                  className="btn btn-outline btn-sm gap-2 text-base-content/50"
+                  className="btn btn-outline btn-sm gap-2 opacity-50"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   Volver
@@ -360,7 +370,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
                   navigate("/a/questionnaires");
                   setView("questionnaires");
                 }}
-                className="btn btn-outline btn-sm gap-2 text-base-content/50"
+                className="btn btn-outline btn-sm gap-2 opacity-50"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Volver
@@ -377,7 +387,7 @@ function AdviserDashboard({ view: forcedView }: { view?: string }) {
                   navigate("/a/analysis");
                   setView("analysis");
                 }}
-                className="btn btn-outline btn-sm gap-2 text-base-content/50"
+                className="btn btn-outline btn-sm gap-2 opacity-50"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Volver

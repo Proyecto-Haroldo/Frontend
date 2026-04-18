@@ -29,7 +29,7 @@ function Schedule() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Form */}
         <div className="lg:col-span-2">
-          <div className="card bg-base-100 shadow-sm">
+          <div className="card bg-base-100">
             <div className="card-body space-y-6">
               {/* Client Type */}
               <div>
@@ -144,7 +144,7 @@ function Schedule() {
                         {selectedTime || 'Selecciona una hora'}
                         <ChevronDown className="h-4 w-4" />
                       </div>
-                      <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-200 rounded-box w-full max-h-60 overflow-y-auto">
+                      <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-200 rounded-box w-full max-h-60 overflow-y-auto shadow-lg">
                         {timeSlots.map((time) => (
                           <li key={time}>
                             <a onClick={() => setSelectedTime(time)}>
@@ -168,7 +168,7 @@ function Schedule() {
                     {selectedService ? services.find(s => s.value === selectedService)?.label : 'Selecciona un servicio'}
                     <ChevronDown className="h-4 w-4" />
                   </div>
-                  <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-200 rounded-box w-full">
+                  <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-200 rounded-box w-full shadow-lg">
                     {services.map((service) => (
                       <li key={service.value}>
                         <a onClick={() => setSelectedService(service.value)}>
@@ -207,7 +207,7 @@ function Schedule() {
         {/* Side Information */}
         <div className="space-y-6">
           {/* Meeting Types */}
-          <div className="card bg-base-100 shadow-sm">
+          <div className="card bg-base-100">
             <div className="card-body">
               <h2 className="card-title text-lg mb-4">Tipos de Reuniones</h2>
               <div className="space-y-4">
@@ -234,7 +234,7 @@ function Schedule() {
           </div>
 
           {/* Important Information */}
-          <div className="card bg-base-100 shadow-sm">
+          <div className="card bg-base-100">
             <div className="card-body">
               <h2 className="card-title text-lg mb-4">Información Importante</h2>
               <div className="space-y-4">
