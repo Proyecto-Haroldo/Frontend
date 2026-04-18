@@ -20,6 +20,7 @@ import {
 import { IQuestion, QuestionType } from '../../../core/models/question';
 import { IQuestionnaire } from '../../../core/models/questionnaire';
 import { useAuth } from '../../context/AuthContext';
+import DialogConfirmDelete from '../components/dialogs/DialogConfirmDelete';
 
 interface TemplateQuestionsProps {
   questionnaireId: number | null;
@@ -37,6 +38,10 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [questionnaire, setQuestionnaire] = useState<IQuestionnaire | null>(null);
   const { userId, role } = useAuth();
+  const [confirmDialog, setConfirmDialog] = useState<{
+    message: string;
+    onConfirm: () => void;
+  } | null>(null);
 
   const isAdmin = role === 1;
 
@@ -135,20 +140,21 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
     setIsCreating(false);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = (id: number) => {
     if (!canManage) return;
-
-    if (!confirm('¿Está seguro de que desea eliminar esta pregunta?')) {
-      return;
-    }
-
-    try {
-      await deleteQuestion(id);
-      await fetchQuestions();
-    } catch (err) {
-      console.error('Error deleting question:', err);
-      setError('Error al eliminar la pregunta');
-    }
+    setConfirmDialog({
+        message: '¿Está seguro de que desea eliminar esta pregunta?',
+        onConfirm: async () => {
+            try {
+                await deleteQuestion(id);
+                await fetchQuestions();
+            } catch {
+                setError('Error al eliminar la pregunta');
+            } finally {
+                setConfirmDialog(null);
+            }
+        }
+    });
   };
 
   const handleSave = async () => {
@@ -735,6 +741,14 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
             </div>
           </div>
         </motion.div>
+      )}
+
+      {confirmDialog && (
+        <DialogConfirmDelete
+          message={confirmDialog.message}
+          onConfirm={confirmDialog.onConfirm}
+          onCancel={() => setConfirmDialog(null)}
+        />
       )}
     </div>
   );

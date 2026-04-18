@@ -6,6 +6,8 @@ import { deleteQuestionnaire } from "../../../api/questionnairesApi";
 import TableQuestionnaires from "../components/tables/TableQuestionnaires";
 import ModalCategory from "../components/modals/ModalCategory";
 import ModalQuestionnaire from "../components/modals/ModalQuestionnaire";
+import DialogConfirmDelete from '../components/dialogs/DialogConfirmDelete';
+
 
 interface TemplateQuestionnairesProps {
     questionnaires: IQuestionnaire[];
@@ -27,6 +29,10 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
     const [showModalCategory, setShowModalCategory] = useState(false);
     const [showQuestionnaireModal, setShowQuestionnaireModal] = useState(false);
     const [editQuestionnaire, setEditQuestionnaire] = useState<IQuestionnaire | null>(null);
+    const [confirmDialog, setConfirmDialog] = useState<{
+        message: string;
+        onConfirm: () => void;
+    } | null>(null);
 
     const isAdmin = role === 1;
     const canManage = isAdmin;
@@ -73,18 +79,17 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
     const handleDeleteQuestionnaire = async (questionnaire: IQuestionnaire) => {
         if (!canManage || !questionnaire.id) return;
 
-        const confirmDelete = confirm(
-            '¿Está seguro de que desea eliminar este cuestionario? Esta acción también eliminará todas las preguntas asociadas.'
-        );
-
-        if (!confirmDelete) return;
-
-        try {
-            await deleteQuestionnaire(questionnaire.id);
-            onQuestionnairesChange?.();
-        } catch {
-            console.error('Error eliminando cuestionario');
-        }
+        setConfirmDialog({
+            message: '¿Está seguro de que desea eliminar este cuestionario? Esta acción también eliminará todas las preguntas asociadas.',
+            onConfirm: async () => {
+                try {
+                    await deleteQuestionnaire(questionnaire.id);
+                    onQuestionnairesChange?.();
+                } catch {
+                    console.error('Error eliminando cuestionario');
+                }
+            }
+        });
     };
 
     const handleQuestionnaireSaved = () => {
@@ -278,6 +283,14 @@ const TemplateQuestionnaires: React.FC<TemplateQuestionnairesProps> = ({
                 questionnaire={editQuestionnaire}
                 onQuestionnaireSaved={handleQuestionnaireSaved}
             />
+
+            {confirmDialog && (
+                <DialogConfirmDelete
+                    message={confirmDialog.message}
+                    onConfirm={confirmDialog.onConfirm}
+                    onCancel={() => setConfirmDialog(null)}
+                />
+            )}
         </div>
     );
 };
