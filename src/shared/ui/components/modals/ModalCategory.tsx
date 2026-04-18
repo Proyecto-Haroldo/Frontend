@@ -16,11 +16,12 @@ import {
     X,
     Loader2
 } from 'lucide-react';
+import DialogConfirmDelete from '../dialogs/DialogConfirmDelete';   
 
 interface ModalCategoryProps {
     isOpen: boolean;
     onClose: () => void;
-    onCategoryCreated?: (category: ICategory) => void;
+    onCategoryCreated?: (category: ICategory) => void;  
 }
 
 const ModalCategory: React.FC<ModalCategoryProps> = ({
@@ -35,9 +36,15 @@ const ModalCategory: React.FC<ModalCategoryProps> = ({
     const [editingCategory, setEditingCategory] = useState<ICategory | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const { role } = useAuth();
+    const [confirmDialog, setConfirmDialog] = useState<{
+        message: string;
+        onConfirm: () => void;
+    } | null>(null);
 
     const isAdmin = role === 1;
     const canManage = isAdmin;
+
+    
 
     const fetchCategories = async () => {
         try {
@@ -79,20 +86,21 @@ const ModalCategory: React.FC<ModalCategoryProps> = ({
         setIsCreating(false);
     };
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = (id: number) => {
         if (!canManage) return;
-
-        if (!confirm('¿Está seguro de que desea eliminar esta categoría? Esta acción podría afectar a los cuestionarios asociados.')) {
-            return;
-        }
-
-        try {
-            await deleteCategory(id);
-            await fetchCategories();
-        } catch (err) {
-            console.error('Error deleting category:', err);
-            setError('Error al eliminar la categoría');
-        }
+        setConfirmDialog({
+            message: '¿Está seguro de que desea eliminar esta categoría? Esta acción podría afectar a los cuestionarios asociados.',
+            onConfirm: async () => {
+                try {
+                    await deleteCategory(id);
+                    await fetchCategories();
+                } catch {
+                    setError('Error al eliminar la categoría');
+                } finally {
+                    setConfirmDialog(null);
+                }
+            }
+        });
     };
 
     const handleSave = async () => {
@@ -354,6 +362,14 @@ const ModalCategory: React.FC<ModalCategoryProps> = ({
                     )}
                 </div>
             </div>
+
+            {confirmDialog && (
+                <DialogConfirmDelete
+                    message={confirmDialog.message}
+                    onConfirm={confirmDialog.onConfirm}
+                    onCancel={() => setConfirmDialog(null)}
+                />
+            )}
         </div>
     );
 };

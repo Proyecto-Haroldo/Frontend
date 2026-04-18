@@ -7,6 +7,7 @@ import {
 import { IQuestionnaire, ICategory } from '../../../../core/models/questionnaire';
 import { IQuestion, QuestionType } from '../../../../core/models/question';
 import { useAuth } from '../../../context/AuthContext';
+import DialogConfirmDelete from '../dialogs/DialogConfirmDelete';
 
 interface ModalQuestionnaireProps {
     isOpen: boolean;
@@ -37,6 +38,10 @@ const ModalQuestionnaire: React.FC<ModalQuestionnaireProps> = ({
     const { userId, role } = useAuth();
     const isAdmin = role === 1;
     const canManage = isAdmin;
+    const [confirmDialog, setConfirmDialog] = useState<{
+        message: string;
+        onConfirm: () => void;
+    } | null>(null);
 
     const fetchCategories = async () => {
         try {
@@ -143,9 +148,13 @@ const ModalQuestionnaire: React.FC<ModalQuestionnaireProps> = ({
     };
 
     const handleDeleteQuestion = (questionId: number) => {
-        if (!confirm('¿Eliminar esta pregunta?')) return;
-
-        setQuestions(prev => prev.filter(q => q.id !== questionId));
+        setConfirmDialog({
+            message: '¿Eliminar esta pregunta?',
+            onConfirm: () => {
+                setQuestions(prev => prev.filter(q => q.id !== questionId));
+                setConfirmDialog(null);
+            }
+        });
     };
 
     const handleSaveQuestion = () => {
@@ -530,6 +539,14 @@ const ModalQuestionnaire: React.FC<ModalQuestionnaireProps> = ({
                     </div>
                 )}
             </div>
+
+            {confirmDialog && (
+                <DialogConfirmDelete
+                    message={confirmDialog.message}
+                    onConfirm={confirmDialog.onConfirm}
+                    onCancel={() => setConfirmDialog(null)}
+                />
+            )}
         </div>
     );
 };
