@@ -1,21 +1,83 @@
 import { useEffect, useState } from 'react';
 import {
   User, Mail, Phone, Building2, Settings, Key, Trash,
-  IdCard, MapPin, Globe,
-  Loader2
+  IdCard, MapPin, Globe
 } from 'lucide-react';
 import { useAuth } from '../../shared/context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
 import { getUserById, deleteUserById } from '../../api/usersApi';
-import { useNavigate } from 'react-router-dom';
 import { IUser } from '../../core/models/user';
+import { useNavigate } from 'react-router-dom';
+import { useThemeColors } from '../../shared/hooks/useThemeColors';
 import ModalEditUser from '../../shared/ui/components/modals/ModalEditUser';
 import DialogConfirmDelete from '../../shared/ui/components/dialogs/DialogConfirmDelete';
+
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 interface JwtPayload {
   sub: string; // email
   [key: string]: unknown;
 }
+
+const ProfileSkeleton: React.FC = () => {
+  const { base } = useThemeColors();
+
+  return (
+    <SkeletonTheme baseColor={base} highlightColor={base}>
+      <div className="card bg-base-100">
+        <div className="card-body">
+
+          {/* Header (avatar + name + type) */}
+          <div className="flex items-start w-full gap-4">
+            <Skeleton
+              circle
+              width={48}
+              height={48}
+            />
+
+            <div className="flex flex-col w-full gap-2">
+              <div className="w-2/5 max-w-[280px]">
+                <Skeleton height={24} />
+              </div>
+              <div className="w-1/4 max-w-[220px]">
+                <Skeleton height={16} />
+              </div>
+            </div>
+          </div>
+
+          {/* Info list */}
+          <div className="space-y-4 mt-4">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <Skeleton circle width={20} height={20} />
+                <div className="w-3/5 max-w-[200px]">
+                  <Skeleton height={18} />
+                </div>
+              </div>
+            ))}
+
+            {/* Optional network */}
+            <div className="flex items-center gap-3">
+              <Skeleton circle width={20} height={20} />
+              <div className="w-1/4 max-w-[160px]">
+                <Skeleton height={18} />
+              </div>
+            </div>
+          </div>
+
+          {/* Edit Button */}
+          <div className="mt-6 mb-1">
+            <div className="w-1/3 max-w-[270px]">
+              <Skeleton height={18} />
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </SkeletonTheme>
+  );
+};
 
 function AdviserProfile() {
   const { token, logout, userId } = useAuth();
@@ -93,16 +155,7 @@ function AdviserProfile() {
         <h1 className="text-2xl font-semibold">Perfil de Asesor</h1>
 
         {loading ? (
-          <div className="container min-w-full mx-auto space-y-6 overflow-hidden">
-            <div className="flex items-center justify-center">
-              <div className="card w-full bg-base-100 border border-base-200">
-                <div className="min-h-[60dvh] flex flex-col justify-center items-center text-center">
-                  <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto" />
-                  <p className="mt-4 text-sm">Cargando perfil...</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <ProfileSkeleton />
         ) : (
           <>
             {/* Profile Section */}

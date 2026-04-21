@@ -989,43 +989,41 @@ const SignUp: React.FC = () => {
                 Siguiente
               </motion.button>
             ) : (
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                type="button"
-                onClick={handleManualSubmit}
-                className={`btn btn-primary transition-all duration-300 flex-1 ${currentStep > 1 ? "ml-auto" : ""}`}
-                disabled={loading}
-              >
-                {loading ? (
-                  <div>
-                    <span>Registrando...</span>
-                    {loading && (
-                      <div className="absolute inset-0 overflow-hidden rounded-btn pointer-events-none">
-                        <AnimatePresence mode="sync">
-                          {(() => {
-                            const Icon = loadingIcons[loadingIconIndex % loadingIcons.length];
-                            return (
-                              <motion.div
-                                key={loadingIconIndex}
-                                initial={{ x: -40, opacity: 0, rotate: -10, scale: 0.8 }}
-                                animate={{ x: 420, opacity: 1, rotate: 10, scale: 1.1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 1, ease: 'linear' }}
-                                className="absolute inset-y-0 left-0 flex items-center"
-                              >
-                                <Icon className="w-6 h-6 text-primary" />
-                              </motion.div>
-                            );
-                          })()}
-                        </AnimatePresence>
-                      </div>
-                    )}
+              <div className={`relative flex-1 ${currentStep > 1 ? "ml-auto" : ""}`}>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="button"
+                  onClick={handleManualSubmit}
+                  className={`btn btn-primary transition-all duration-300 w-full ${loading ? "cursor-not-allowed" : ""
+                    }`}
+                  disabled={loading}
+                >
+                  {!loading && "Registrarse"}
+                </motion.button>
+
+                {loading && (
+                  <div className="absolute inset-0 overflow-hidden rounded-btn pointer-events-none">
+                    <AnimatePresence mode="sync">
+                      {(() => {
+                        const Icon = loadingIcons[loadingIconIndex % loadingIcons.length];
+                        return (
+                          <motion.div
+                            key={loadingIconIndex}
+                            initial={{ x: -40, opacity: 0, rotate: -10, scale: 0.8 }}
+                            animate={{ x: 420, opacity: 1, rotate: 10, scale: 1.1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 1, ease: "linear" }}
+                            className="absolute inset-y-0 z-2 left-0 flex items-center"
+                          >
+                            <Icon className="w-6 h-6 text-primary" />
+                          </motion.div>
+                        );
+                      })()}
+                    </AnimatePresence>
                   </div>
-                ) : (
-                  "Registrarse"
                 )}
-              </motion.button>
+              </div>
             )}
           </div>
         </motion.form>
