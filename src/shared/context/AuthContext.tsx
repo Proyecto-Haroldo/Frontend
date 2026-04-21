@@ -1,12 +1,9 @@
 import {
-  createContext,
-  useContext,
-  useState,
-  type ReactNode,
-  useEffect,
-  useCallback,
+  createContext, useContext, useState, useMemo,
+  type ReactNode, useEffect, useCallback
 } from 'react';
 import { setApiToken } from '../../api/apiClient';
+import { isTokenExpired } from '../utils/checkTokenExpiration';
 
 interface AuthContextType {
   token: string | null;
@@ -41,11 +38,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return storedUserId ? parseInt(storedUserId, 10) : null;
   });
 
-  const [userStatus, setUserStatusState] = useState<string | null>(() =>
+  const [userStatus, setUserStatus] = useState<string | null>(() =>
     localStorage.getItem('userStatus')
   );
 
-  const [userSpecialities, setUserSpecialitiesState] = useState<any[] | null>(() => {
+  const [userSpecialities, setUserSpecialities] = useState<any[] | null>(() => {
     const storedSpecialities = localStorage.getItem('userSpecialities');
     return storedSpecialities ? JSON.parse(storedSpecialities) : null;
   });
@@ -55,10 +52,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setTokenState(newToken);
       setRoleState(newRole);
       setUserIdState(newUserId);
-      setUserStatusState(newUserStatus || null);
+      setUserStatus(newUserStatus || null);
 
       if (userSpecialities !== undefined) {
-        setUserSpecialitiesState(userSpecialities);
+        setUserSpecialities(userSpecialities);
         if (userSpecialities) {
           localStorage.setItem('userSpecialities', JSON.stringify(userSpecialities));
         } else {
@@ -101,36 +98,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    const checkTokenExpiration = () => {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        const exp = payload.exp;
-
-        if (!exp) return;
-
-        const isExpired = exp * 1000 <= Date.now();
-
-        if (isExpired) {
-          console.warn("Token expired → logout");
-          logout();
-        }
-      } catch (error) {
-        console.warn("Invalid token → ignoring", error);
-        setApiToken(null);
+    const check = () => {
+      if (isTokenExpired(token)) {
+        console.warn("Token expired → logout");
+        logout();
       }
     };
 
-    // Ejecutar inmediatamente
-    checkTokenExpiration();
+    check();
 
-    // Luego cada cierto tiempo (ej: 10s)
-    const interval = setInterval(checkTokenExpiration, 10000);
+    const interval = setInterval(check, 10000);
 
     return () => clearInterval(interval);
   }, [token, logout]);
 
+  const contextValue = useMemo(() => ({
+    token, role, userId, userStatus, userSpecialities, setAuth, logout
+  }), [token, role, userId, userStatus, userSpecialities, setAuth, logout]);
+
   return (
-    <AuthContext.Provider value={{ token, role, userId, userStatus, userSpecialities, setAuth, logout }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

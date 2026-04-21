@@ -19,6 +19,7 @@ import AdviserDashboard from './pages/adviser/Dashboard';
 import AdviserProfile from './pages/adviser/Profile';
 import AdviserReports from './pages/adviser/Reports';
 import QuestionnaireResults from './pages/client/QuestionnaireResults';
+import { isTokenExpired } from './shared/utils/checkTokenExpiration';
 
 // AnimatedRoutes component wraps the nested Routes with AnimatePresence
 function AnimatedRoutes({ role }: { role: number | null }) {
@@ -125,8 +126,10 @@ function ProtectedRoute({
     const { token, role } = useAuth();
     const navigate = useNavigate();
 
+    const expired = isTokenExpired(token);
+
     useEffect(() => {
-        if (!token) {
+        if (!token || expired) {
             navigate('/login', { replace: true });
             return;
         }
@@ -134,7 +137,7 @@ function ProtectedRoute({
         if (allowedRoles && (!role || !allowedRoles.includes(role))) {
             navigate('/login', { replace: true });
         }
-    }, [token, role, allowedRoles, navigate]);
+    }, [token, role, allowedRoles, expired, navigate]);
 
     const isUnauthorized =
         !token || (allowedRoles && (!role || !allowedRoles.includes(role)));
@@ -148,13 +151,15 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
     const { token, role } = useAuth();
     const navigate = useNavigate();
 
+    const expired = isTokenExpired(token);
+
     useEffect(() => {
-        if (token) {
+        if (token && !expired) {
             if (role === 1) navigate('/m', { replace: true });
             else if (role === 2) navigate('/c', { replace: true });
             else if (role === 3) navigate('/a', { replace: true });
         }
-    }, [token, role, navigate]);
+    }, [token, role, expired, navigate]);
 
     const isAuthenticated = !!token;
 
