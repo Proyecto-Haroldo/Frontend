@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { IUser } from "../../../../core/models/user";
+import { ICategoryDTO } from "../../../../core/models/questionnaire";
 import { putUserById } from "../../../../api/usersApi";
 import DialogConfirmEdit from "../dialogs/DialogConfirmEdit";
 import SelectCategories from "../selects/SelectCategories";
@@ -40,7 +41,25 @@ const ModalEditUser: React.FC<ModalEditUserProps> = ({
     const handleConfirmEdit = async () => {
         setLoading(true);
         try {
-            const selectedFullCategories = (formData.specialities ?? []).filter((cat) => selectedCategories.includes(cat.categoryId));
+            const selectedFullCategories: ICategoryDTO[] = selectedCategories.map(categoryId => {
+                const existingSpeciality = formData.specialities?.find(s => s.categoryId === categoryId);
+                if (existingSpeciality) {
+                    return existingSpeciality;
+                }
+                
+                const category = categories.find(cat => cat.id === categoryId);
+                if (category) {
+                    return {
+                        categoryId: category.id,
+                        title: category.name,
+                        description: category.description,
+                    };
+                }
+                
+                return null;
+            }).filter((item): item is ICategoryDTO => item !== null);
+            
+            
             const updated = await putUserById(formData.userId, {
                 ...formData,
                 specialities: selectedFullCategories,
