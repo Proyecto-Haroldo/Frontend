@@ -96,12 +96,16 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-dvh p-6 md:p-8 md:pb-6 bg-base-100 sm:bg-base-200 flex flex-col items-center justify-center font-family relative overflow-hidden">
+    <div
+      style={{ backgroundImage: "var(--fade-image)" }}
+      className="min-h-dvh p-6 md:p-8 md:pb-4 backdrop-blur-xl bg-cover bg-center flex flex-col transition-all duration-600 ease-in-out items-center justify-center font-family relative overflow-hidden"
+    >
+      <div className="min-h-dvh transition-all duration-600 ease-in-out absolute inset-0 bg-base-100/70 sm:bg-base-100/10 backdrop-blur-sm z-0" />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md space-y-4 p-4 sm:p-8 sm:shadow-lg bg-base-100 rounded-xl relative z-10"
+        className="w-full max-w-md space-y-4 p-4 sm:py-8 sm:px-10 sm:shadow-xl sm:bg-base-100/75 rounded-xl relative z-10"
       >
         <div className="text-center">
           <motion.div
@@ -140,7 +144,7 @@ const Login: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
           onSubmit={handleSubmit}
-          className="mt-8 space-y-6"
+          className="mt-8 space-y-6 [&_input]:bg-base-100/60"
           noValidate
         >
           <div className="space-y-4">
@@ -200,7 +204,7 @@ const Login: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="btn btn-square join-item"
+                  className="btn btn-square join-item bg-base-100/70"
                   disabled={loading}
                 >
                   {showPassword ? (
@@ -260,7 +264,7 @@ const Login: React.FC = () => {
           className="text-center pt-2"
         >
           <p className="text-sm text-base-content/70">
-            ¿No tienes cuenta?{' '}
+            ¿No tienes cuenta? {' '}
             <Link to="/signup" className="text-primary font-semibold hover:underline">
               Regístrate
             </Link>
@@ -269,8 +273,8 @@ const Login: React.FC = () => {
       </motion.div>
 
       {/* Footer */}
-      <footer className='text-base-content/70 w-full text-center flex flex-col items-center justify-center'>
-        <div className="pt-2 sm:pt-6">
+      <footer className='text-base-content/70 sm:text-base-content/90 w-full text-center flex flex-col items-center justify-center'>
+        <div className='pt-2 sm:pt-4'>
           <ThemeToggle />
         </div>
       </footer>
