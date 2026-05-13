@@ -1048,7 +1048,7 @@ const SignUp: React.FC = () => {
       </motion.div>
 
       {/* Footer */}
-      <footer className='text-base-content/70 sm:text-base-content/90 w-full text-center flex flex-col items-center justify-center'>
+      <footer className='text-base-content/70 sm:text-base-content/80 w-full text-center flex flex-col items-center justify-center'>
         <div className='pt-2 sm:pt-4'>
           <ThemeToggle />
         </div>
