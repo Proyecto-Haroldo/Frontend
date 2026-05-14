@@ -1,4 +1,5 @@
 import { apiClient } from "./apiClient";
+import { buildQuestionTreeFromFlatList } from "../core/utils/questionnaireTree";
 import { IQuestion, QuestionType } from "../core/models/question";
 import { IQuestionnaire, ICategory, ICategoryDTO, mapCategoryFromDTO } from "../core/models/questionnaire";
 import { IRecommendationAI, IWebAnswer } from '../core/models/answers';
@@ -17,7 +18,9 @@ const normalizeQuestionType = (value?: string): QuestionType => {
     }
 };
 
-const mapQuestionFromDTO = (question: any): IQuestion => {
+const mapQuestionFromDTO = (question: any, parentFromWalker?: number): IQuestion => {
+    const id = typeof question.id === 'string' ? Number(question.id) : (question.id || 0);
+
     const options =
         question.options
             ?.filter((option: any) => option != null)
@@ -34,15 +37,33 @@ const mapQuestionFromDTO = (question: any): IQuestion => {
             }))
             .filter((keyword: { title: string; description: string }) => keyword.title);
 
+    const parentQuestionId =
+        typeof parentFromWalker === 'number'
+            ? parentFromWalker
+            : question.parentQuestionId != null
+                ? Number(question.parentQuestionId)
+                : undefined;
+
+    const childrenRaw = question.children;
+    const children =
+        Array.isArray(childrenRaw) && childrenRaw.length > 0
+            ? childrenRaw.map((c: any) => mapQuestionFromDTO(c, id))
+            : undefined;
+
     return {
-        id: question.id || 0,
+        id,
         categoryId: question.categoryId,
         categoryName: question.categoryName,
         question: question.question || question.title || '',
         questionType: normalizeQuestionType(question.questionType),
         questionnaireId: question.questionnaireId,
         options: options.length > 0 ? options : undefined,
-        keywords
+        keywords,
+        parentQuestionId,
+        parentAnswerTrigger: question.parentAnswerTrigger ?? undefined,
+        displayOrder: question.displayOrder != null ? Number(question.displayOrder) : undefined,
+        section: question.section ?? undefined,
+        children
     };
 };
 
@@ -151,10 +172,42 @@ export const fetchQuestionsByCategory = async (category: string): Promise<IQuest
 export const fetchQuestionsByQuestionnaire = async (questionnaireId: number): Promise<IQuestion[]> => {
     try {
         const response = await apiClient.get<any[]>(`/preguntas/questionnaire/${questionnaireId}`);
-        return response.data.map(mapQuestionFromDTO);
+        return response.data.map((q: any) => mapQuestionFromDTO(q));
     } catch (error) {
         console.error('Error fetching questions by questionnaire:', error);
         throw new Error('Error al obtener preguntas por cuestionario');
+    }
+};
+
+/**
+ * Loads question roots for the client questionnaire screen.
+ * Tries `GET …/questionnaire/{id}/tree` first (nested `children`; every question without a parent is a root,
+ * so classic linear questionnaires work too). If that fails or returns empty, uses the flat endpoint and
+ * builds the same shape on the client via `buildQuestionTreeFromFlatList`.
+ */
+export const fetchQuestionnaireRootsReliable = async (questionnaireId: number): Promise<IQuestion[]> => {
+    try {
+        const response = await apiClient.get<any[]>(`/preguntas/questionnaire/${questionnaireId}/tree`);
+        const roots = response.data.map((root: any) => mapQuestionFromDTO(root));
+        if (roots.length > 0) {
+            return roots;
+        }
+    } catch {
+        console.error('Error al obtener preguntas por cuestionario tree');
+        throw new Error('Error al obtener preguntas por cuestionario');
+    }
+    const flat = await fetchQuestionsByQuestionnaire(questionnaireId);
+    return buildQuestionTreeFromFlatList(flat);
+};
+
+/** Direct call to `GET …/tree` (throws on failure). Prefer `fetchQuestionnaireRootsReliable` for the UI. */
+export const fetchQuestionsTreeByQuestionnaire = async (questionnaireId: number): Promise<IQuestion[]> => {
+    try {
+        const response = await apiClient.get<any[]>(`/preguntas/questionnaire/${questionnaireId}/tree`);
+        return response.data.map((root: any) => mapQuestionFromDTO(root));
+    } catch (error) {
+        console.error('Error fetching questionnaire question tree:', error);
+        throw new Error('Error al obtener el árbol de preguntas del cuestionario');
     }
 };
 

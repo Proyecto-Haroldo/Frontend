@@ -258,7 +258,7 @@ function QuestionnaireResults() {
                     <div className="card-body">
                         {/* Header */}
                         <motion.div
-                            className="flex flex col items-start flex-wrap gap-4 mb-2"
+                            className="flex col items-start flex-wrap gap-4 mb-2"
                             initial={{ y: -20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ duration: 0.6, ease: "easeOut" }}

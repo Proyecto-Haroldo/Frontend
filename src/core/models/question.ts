@@ -19,4 +19,10 @@ export interface IQuestion {
     questionnaireId?: number;
     options: IOption[];
     keywords: Keyword[];
+    // Set for conditional flows
+    parentQuestionId?: number;
+    parentAnswerTrigger?: string;
+    displayOrder?: number;
+    section?: string;
+    children?: IQuestion[];
 }

@@ -279,7 +279,7 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
             <h1 className="text-lg sm:text-xl font-semibold">
               Gestor de Cuestionario
               {questionnaire && (
-                <div className="flex mt-1 gap-2 capitalize text-base text-sm font-normal text-base-content/70">
+                <div className="flex mt-1 gap-2 capitalize text-base font-normal text-base-content/70">
                   {questionnaire.title || "Sin determinar"}
                   <div className={`badge font-semibold text-xs badge-md transition-all duration-300 badge-primary`}>
                     # {questionnaire.id}
@@ -512,7 +512,7 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
                   <span className="label-text">Pregunta</span>
                 </label>
 
-                <div className="textarea textarea-bordered text-start w-full bg-base-200 text-base-content/80 overflow-y-auto mt-2 bg-primary/10 border-primary/50">                  {viewingQuestion.question}
+                <div className="textarea textarea-bordered text-start w-full text-base-content/80 overflow-y-auto mt-2 bg-primary/10 border-primary/50">                  {viewingQuestion.question}
                 </div>
               </div>
 
@@ -586,7 +586,7 @@ function TemplateQuestions({ questionnaireId }: TemplateQuestionsProps) {
                 </label>
                 <textarea
                   title={editingQuestion.question}
-                  className="textarea textarea-bordered text-start w-full bg-base-200 text-base-content/80 overflow-y-auto mt-2 bg-primary/10 border-primary/50"
+                  className="textarea textarea-bordered text-start w-full text-base-content/80 overflow-y-auto mt-2 bg-primary/10 border-primary/50"
                   value={editingQuestion.question}
                   onChange={(e) =>
                     setEditingQuestion({ ...editingQuestion, question: e.target.value })

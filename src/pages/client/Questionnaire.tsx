@@ -1,7 +1,17 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { fetchQuestionsByQuestionnaire, getQuestionnaireById, submitIQuestionnaireAnswers, } from '../../api/questionnairesApi';
+import {
+  fetchQuestionnaireRootsReliable,
+  getQuestionnaireById,
+  submitIQuestionnaireAnswers
+} from '../../api/questionnairesApi';
+import {
+  flattenQuestionTree,
+  matchingChildren,
+  reconcileQueueAfterAnswer,
+  sortQuestionsByDisplayOrder
+} from '../../core/utils/questionnaireTree';
 import type { IQuestionnaireResult } from '../../core/types/questionnaire';
 import {
   ArrowLeft,
@@ -100,7 +110,8 @@ const Questionnaire = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const [isComplete, setIsComplete] = useState(false);
-  const [questions, setQuestions] = useState<IQuestion[]>([]);
+  const [questionnaireRoots, setQuestionnaireRoots] = useState<IQuestion[]>([]);
+  const [stepQueue, setStepQueue] = useState<IQuestion[]>([]);
   const [questionnaire, setQuestionnaire] = useState<IQuestionnaire | null>(null);
   const [clientType, setClientType] = useState<ClientType | null>(null);
   const [loading, setLoading] = useState(true);
@@ -112,24 +123,52 @@ const Questionnaire = () => {
   const { id } = useParams();
   const questId = Number(id);
 
-  // Fetch de preguntas según cuestionario
   useEffect(() => {
-    if (questId) {
-      setLoading(true);
-      fetchQuestionsByQuestionnaire(questId)
-        .then(fetchedQuestions => {
-          setQuestions(fetchedQuestions);
-          setLoading(false);
-        })
-        .catch(err => {
-          setError('Error al cargar las preguntas');
-          setLoading(false);
-          console.error('Error fetching questions:', err);
-        });
-    } else {
+    if (!questId) {
       navigate('/c/services');
+      return;
     }
+
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+
+    (async () => {
+      try {
+        const roots = await fetchQuestionnaireRootsReliable(questId);
+        if (cancelled) return;
+        if (!roots.length) {
+          setError('No hay preguntas para este cuestionario');
+          return;
+        }
+        setQuestionnaireRoots(roots);
+        setStepQueue(sortQuestionsByDisplayOrder(roots));
+        setCurrentQuestionIndex(0);
+        setAnswers({});
+      } catch (err) {
+        if (!cancelled) {
+          setError('Error al cargar las preguntas');
+          console.error('Error fetching questions:', err);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [navigate, questId]);
+
+  const allQuestionsFlat = useMemo(
+    () => flattenQuestionTree(questionnaireRoots),
+    [questionnaireRoots]
+  );
+
+  useEffect(() => {
+    if (stepQueue.length === 0) return;
+    setCurrentQuestionIndex((i) => Math.min(i, stepQueue.length - 1));
+  }, [stepQueue]);
 
   useEffect(() => {
     if (questId == null) return;
@@ -159,14 +198,27 @@ const Questionnaire = () => {
 
   const currentQuestion = useMemo(
     () =>
-      questions[currentQuestionIndex] || {
+      stepQueue[currentQuestionIndex] || {
         id: 0,
         question: '',
         questionType: 'OPEN' as const,
         keywords: []
       },
-    [questions, currentQuestionIndex]
+    [stepQueue, currentQuestionIndex]
   );
+
+  const pendingChildrenAfterCurrent = useMemo(
+    () =>
+      currentQuestion.id
+        ? matchingChildren(currentQuestion, answers[String(currentQuestion.id)] || [])
+        : [],
+    [currentQuestion, answers]
+  );
+
+  const isLastQuestion =
+    stepQueue.length > 0 &&
+    currentQuestionIndex === stepQueue.length - 1 &&
+    pendingChildrenAfterCurrent.length === 0;
 
   // Pre-calculate which keywords should be highlighted to ensure each appears only once
   const keywordAllocation = useMemo(() => {
@@ -215,10 +267,7 @@ const Questionnaire = () => {
   }, [currentQuestion]);
 
   const progress =
-    questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
-
-  const isLastQuestion =
-    questions.length > 0 ? currentQuestionIndex === questions.length - 1 : false;
+    stepQueue.length > 0 ? ((currentQuestionIndex + 1) / stepQueue.length) * 100 : 0;
 
   if (loading) {
     return (
@@ -269,7 +318,7 @@ const Questionnaire = () => {
             clientType: clientType || "N/A",
             timestamp: new Date().toISOString()
           },
-          answers: questions.map(question => ({
+          answers: allQuestionsFlat.map(question => ({
             questionId: question.id,
             questionTitle: question.question,
             answer: question.questionType === 'OPEN'
@@ -310,10 +359,22 @@ const Questionnaire = () => {
 
   const handleAnswerChange = (value: string | string[]) => {
     const answerValue = Array.isArray(value) ? value : [value];
-    setAnswers(prev => ({
-      ...prev,
-      [currentQuestion.id]: answerValue
-    }));
+    const qid = currentQuestion.id;
+    if (!qid) return;
+
+    setAnswers((prev) => {
+      const next = { ...prev, [String(qid)]: answerValue };
+      setStepQueue((prevQueue) => {
+        const nextQueue = reconcileQueueAfterAnswer(
+          prevQueue,
+          qid,
+          next,
+          questionnaireRoots
+        );
+        return nextQueue;
+      });
+      return next;
+    });
   };
 
   const renderQuestionInput = () => {
@@ -483,7 +544,7 @@ const Questionnaire = () => {
 
             {/* Progress Text */}
             <div className="text-sm text-gray-500 mb-2">
-              Pregunta {currentQuestionIndex + 1} de {questions.length}
+              Pregunta {currentQuestionIndex + 1} de {stepQueue.length}
             </div>
 
             {/* Question - Question text is rendered first to establish keyword priority */}
