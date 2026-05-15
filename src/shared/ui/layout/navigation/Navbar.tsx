@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Home, Compass, Briefcase,
-  Calendar, ClipboardList, User, LogOut, Menu, X,
+  Calendar, CalendarClock, ClipboardList, User, LogOut, Menu, X,
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { BarChart } from 'lucide-react';
@@ -18,14 +18,10 @@ function Navbar() {
   const { logout, role, userStatus } = useAuth();
 
   const isActive = (path: string) => {
-    if (
-      location.pathname.startsWith('/a/questionnaires') ||
-      location.pathname.startsWith('/a/analysis') ||
-      location.pathname.startsWith('/m/users') ||
-      location.pathname.startsWith('/m/questionnaires') ||
-      location.pathname.startsWith('/m/analysis')
-    ) return location.pathname.includes(path);
-    return location.pathname === path;
+    if (location.pathname === path) return true;
+    // Root entries (/a, /m, /c) must not match child routes like /a/meetings
+    if (path === '/a' || path === '/m' || path === '/c') return false;
+    return location.pathname.startsWith(`${path}/`);
   };
 
   // Navigation items based on user role
@@ -47,6 +43,7 @@ function Navbar() {
     } else if (role === 3) { // Adviser
       const baseItems = [
         { path: '/a', icon: Compass, label: 'Dashboard' },
+        { path: '/a/meetings', icon: CalendarClock, label: 'Mis citas' },
         { path: '/a/profile', icon: User, label: 'Perfil' },
       ];
 

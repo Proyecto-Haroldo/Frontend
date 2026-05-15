@@ -16,6 +16,7 @@ import AdminDashboard from './pages/admin/Dashboard';
 import AdminProfile from './pages/admin/Profile';
 import AdminReports from './pages/admin/Reports';
 import AdviserDashboard from './pages/adviser/Dashboard';
+import AdviserMeetings from './pages/adviser/Meetings';
 import AdviserProfile from './pages/adviser/Profile';
 import AdviserReports from './pages/adviser/Reports';
 import QuestionnaireResults from './pages/client/QuestionnaireResults';
@@ -102,6 +103,7 @@ function AnimatedRoutes({ role }: { role: number | null }) {
                     {/* Ojo: rutas relativas, no empiezan con / */}
                     <Routes location={location}>
                         <Route path="" element={<AdviserDashboard view="selector" />} />
+                        <Route path="meetings" element={<AdviserMeetings />} />
                         <Route path="questionnaires" element={<AdviserDashboard view="questionnaires" />} />
                         <Route path="questionnaires/:id" element={<AdviserDashboard view="questions" />} />
                         <Route path="analysis" element={<AdviserDashboard view="analysis" />} />
@@ -273,6 +275,7 @@ function AppContent() {
                                 {isFirstMount ? (
                                     <Routes>
                                         <Route path="" element={<AdviserDashboard view="selector" />} />
+                                        <Route path="meetings" element={<AdviserMeetings />} />
                                         <Route path="questionnaires" element={<AdviserDashboard view="questionnaires" />} />
                                         <Route path="questionnaires/:id" element={<AdviserDashboard view="questions" />} />
                                         <Route path="analysis" element={<AdviserDashboard view="analysis" />} />
