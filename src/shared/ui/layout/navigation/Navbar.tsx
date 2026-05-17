@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Home, Compass, Briefcase,
-  Calendar, CalendarClock, ClipboardList, User, LogOut, Menu, X,
+  CalendarClock, ClipboardList, User, LogOut, Menu, X,
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { BarChart } from 'lucide-react';
@@ -36,7 +36,7 @@ function Navbar() {
       return [
         { path: '/c', icon: Home, label: 'Inicio' },
         { path: '/c/services', icon: Briefcase, label: 'Servicios' },
-        { path: '/c/schedule', icon: Calendar, label: 'Agendar' },
+        { path: '/c/meetings', icon: CalendarClock, label: 'Citas' },
         { path: '/c/analysis', icon: ClipboardList, label: 'Análisis' },
         { path: '/c/profile', icon: User, label: 'Perfil' },
       ];

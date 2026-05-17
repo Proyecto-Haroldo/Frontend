@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { CalendarClock, Loader2 } from 'lucide-react';
+import { CalendarClock, Loader2, Plus } from 'lucide-react';
 import { defaultScheduleRange, fetchMySchedules } from '../../api/schedulesApi';
+import { useAuth } from '../../shared/context/AuthContext';
 import type { ScheduleRow } from '../../core/types/schedule';
 import MeetingCalendar from '../../shared/ui/components/calendar/MeetingCalendar';
 import MeetingDetailModal from '../../shared/ui/components/calendar/MeetingDetailModal';
 
 function Meetings() {
+  const { userId } = useAuth();
+  const navigate = useNavigate();
   const [rows, setRows] = useState<ScheduleRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -14,6 +18,12 @@ function Meetings() {
 
   useEffect(() => {
     let cancelled = false;
+    
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
+
     const { from, to } = defaultScheduleRange();
     setLoading(true);
     setError(null);
@@ -38,22 +48,35 @@ function Meetings() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [userId]);
 
   function handleEventClick(meeting: ScheduleRow) {
     setSelectedMeeting(meeting);
   }
 
+  function handleScheduleMeeting() {
+    navigate('/c/schedule');
+  }
+
   return (
     <div className="h-full flex flex-col">
-      <div className="flex items-center gap-3 mb-6">
-        <CalendarClock className="h-8 w-8 text-primary" />
-        <div>
-          <h1 className="text-2xl font-semibold">Calendario de Citas</h1>
-          <p className="text-sm text-base-content/70">
-            Citas donde usted es el asesor.
-          </p>
+      <div className="flex items-center justify-between gap-3 mb-6">
+        <div className="flex items-center gap-3">
+          <CalendarClock className="h-8 w-8 text-primary" />
+          <div>
+            <h1 className="text-2xl font-semibold">Mis Citas</h1>
+            <p className="text-sm text-base-content/70">
+              Calendario de tus reuniones programadas.
+            </p>
+          </div>
         </div>
+        <button
+          onClick={handleScheduleMeeting}
+          className="btn btn-primary gap-2"
+        >
+          <Plus className="h-5 w-5" />
+          Agendar Consulta
+        </button>
       </div>
 
       {loading && (

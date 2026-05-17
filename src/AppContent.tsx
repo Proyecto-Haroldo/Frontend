@@ -6,6 +6,7 @@ import Navbar from './shared/ui/layout/navigation/Navbar';
 import Home from './pages/client/Home';
 import Services from './pages/client/Services';
 import Schedule from './pages/client/Schedule';
+import Meetings from './pages/client/Meetings';
 import Analysis from './pages/client/Analysis';
 import Profile from './pages/client/Profile';
 import Questionnaire from './pages/client/Questionnaire';
@@ -77,6 +78,7 @@ function AnimatedRoutes({ role }: { role: number | null }) {
                     <Routes location={location}>
                         <Route path="" element={<Home />} />
                         <Route path="services" element={<Services />} />
+                        <Route path="meetings" element={<Meetings />} />
                         <Route path="schedule" element={<Schedule />} />
                         <Route path="profile" element={<Profile />} />
                         <Route path="analysis" element={<Analysis />} />
@@ -249,6 +251,7 @@ function AppContent() {
                                 <Routes>
                                     <Route path="" element={<Home />} />
                                     <Route path="services" element={<Services />} />
+                                    <Route path="meetings" element={<Meetings />} />
                                     <Route path="schedule" element={<Schedule />} />
                                     <Route path="profile" element={<Profile />} />
                                     <Route path="analysis" element={<Analysis />} />
