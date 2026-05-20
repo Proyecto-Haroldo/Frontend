@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { CalendarClock, Loader2, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { defaultScheduleRange, fetchMySchedules } from '../../api/schedulesApi';
 import { useAuth } from '../../shared/context/AuthContext';
 import type { ScheduleRow } from '../../core/types/schedule';
-import MeetingCalendar from '../../shared/ui/components/calendar/MeetingCalendar';
-import MeetingDetailModal from '../../shared/ui/components/calendar/MeetingDetailModal';
+import CalendarMeeting from '../../shared/ui/components/calendar/CalendarMeeting';
+import ModalDetailMeeting from '../../shared/ui/components/modals/ModalDetailMeeting';
 
 function Meetings() {
   const { userId } = useAuth();
@@ -18,7 +18,7 @@ function Meetings() {
 
   useEffect(() => {
     let cancelled = false;
-    
+
     if (!userId) {
       setLoading(false);
       return;
@@ -61,15 +61,12 @@ function Meetings() {
   return (
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between gap-3 mb-6">
-        <div className="flex items-center gap-3">
-          <CalendarClock className="h-8 w-8 text-primary" />
-          <div>
-            <h1 className="text-2xl font-semibold">Mis Citas</h1>
-            <p className="text-sm text-base-content/70">
-              Calendario de tus reuniones programadas.
-            </p>
-          </div>
-        </div>
+        <header className="mb-2">
+          <h1 className="text-2xl font-bold">Mis Citas</h1>
+          <p className="text-base-content/70 mt-1">
+            Consulta el calendario de tus reuniones programadas y visualiza la información relevante de cada sesión.
+          </p>
+        </header>
         <button
           onClick={handleScheduleMeeting}
           className="btn btn-primary gap-2"
@@ -80,9 +77,13 @@ function Meetings() {
       </div>
 
       {loading && (
-        <div className="flex items-center gap-2 text-base-content/70">
-          <Loader2 className="h-5 w-5 animate-spin" />
-          <span>Cargando calendario…</span>
+        <div className="bg-base-200 flex items-center justify-center">
+          <div className="card w-full container bg-base-100 p-6">
+            <div className="card-body items-center text-center">
+              <span className="loading loading-spinner loading-lg text-primary"></span>
+              <p className="mt-2">Cargando calendario...</p>
+            </div>
+          </div>
         </div>
       )}
 
@@ -93,8 +94,8 @@ function Meetings() {
       )}
 
       {!loading && !error && (
-        <div className="flex-1 bg-base-100 rounded-lg shadow-sm border border-base-300 overflow-hidden">
-          <MeetingCalendar
+        <div className="flex-1 bg-base-100 rounded-lg border border-base-content/15 overflow-hidden">
+          <CalendarMeeting
             events={rows}
             onEventClick={handleEventClick}
           />
@@ -102,7 +103,7 @@ function Meetings() {
       )}
 
       {selectedMeeting && (
-        <MeetingDetailModal
+        <ModalDetailMeeting
           meeting={selectedMeeting}
           onClose={() => setSelectedMeeting(null)}
         />

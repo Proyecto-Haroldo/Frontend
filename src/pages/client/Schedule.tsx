@@ -7,6 +7,7 @@ import {
   ChevronDown,
   Info,
   MapPin,
+  Briefcase,
   User,
   Building2,
   Loader2,
@@ -367,8 +368,8 @@ function Schedule() {
             <div className="card-body">
               <h2 className="card-title text-lg mb-4">Tipos de Reuniones</h2>
               <div className="space-y-4">
-                <div className="flex gap-3">
-                  <VideoIcon className="h-8 w-8 text-primary mt-1 shrink-0" />
+                <div className="flex items-start gap-3">
+                  <VideoIcon className="h-6 w-6 text-primary mt-1 shrink-0" />
                   <div>
                     <h3 className="font-medium">Reunión Virtual</h3>
                     <p className="text-sm text-base-content/70">
@@ -376,8 +377,8 @@ function Schedule() {
                     </p>
                   </div>
                 </div>
-                <div className="flex gap-3">
-                  <MapPin className="h-8 w-8 text-primary mt-1 shrink-0" />
+                <div className="flex items-start gap-3">
+                  <MapPin className="h-6 w-6 text-primary mt-1 shrink-0" />
                   <div>
                     <h3 className="font-medium">Reunión Presencial</h3>
                     <p className="text-sm text-base-content/70">
@@ -393,20 +394,20 @@ function Schedule() {
             <div className="card-body">
               <h2 className="card-title text-lg mb-4">Información Importante</h2>
               <div className="space-y-4">
-                <div className="flex gap-3">
-                  <Clock className="h-8 w-8 text-primary mt-1 shrink-0" />
+                <div className="flex items-center gap-3">
+                  <Clock className="h-6 w-6 text-primary mt-1 shrink-0" />
                   <p className="text-sm text-base-content/70">
                     La duración estándar de una reunión es de 45 minutos.
                   </p>
                 </div>
-                <div className="flex gap-3">
-                  <Info className="h-8 w-8 text-primary mt-1 shrink-0" />
+                <div className="flex items-center gap-3">
+                  <Info className="h-6 w-6 text-primary mt-1 shrink-0" />
                   <p className="text-sm text-base-content/70">
                     Puede reprogramar o cancelar su reunión con al menos 24 horas de anticipación.
                   </p>
                 </div>
-                <div className="flex gap-3">
-                  <Users className="h-8 w-8 text-primary mt-1 shrink-0" />
+                <div className="flex items-center gap-3">
+                  <Briefcase className="h-6 w-6 text-primary mt-1 shrink-0" />
                   <p className="text-sm text-base-content/70">
                     Elija el asesor con el que desea la sesión.
                   </p>

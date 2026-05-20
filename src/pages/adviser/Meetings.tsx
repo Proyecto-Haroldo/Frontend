@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { CalendarClock, Loader2 } from 'lucide-react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../../shared/context/AuthContext';
 import { defaultScheduleRange, fetchMySchedules } from '../../api/schedulesApi';
 import type { ScheduleRow } from '../../core/types/schedule';
-import MeetingCalendar from '../../shared/ui/components/calendar/MeetingCalendar';
-import MeetingDetailModal from '../../shared/ui/components/calendar/MeetingDetailModal';
+import ModalDetailMeeting from '../../shared/ui/components/modals/ModalDetailMeeting';
+import CalendarMeeting from '../../shared/ui/components/calendar/CalendarMeeting';
+import axios from 'axios';
 
 function Meetings() {
+  const { userStatus } = useAuth();
   const [rows, setRows] = useState<ScheduleRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,22 +46,25 @@ function Meetings() {
     setSelectedMeeting(meeting);
   }
 
+  if (userStatus === "UNAUTHORIZED") {
+    return <Navigate to="/a" replace />;
+  }
+
   return (
     <div className="h-full flex flex-col">
-      <div className="flex items-center gap-3 mb-6">
-        <CalendarClock className="h-8 w-8 text-primary" />
-        <div>
-          <h1 className="text-2xl font-semibold">Calendario de Citas</h1>
-          <p className="text-sm text-base-content/70">
-            Citas donde usted es el asesor.
-          </p>
-        </div>
-      </div>
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold">Calendario de Citas</h1>
+        <p className="text-base-content/70 mt-2">Visualiza las citas en las que participas como asesor y consulta la información relevante de cada sesión.</p>
+      </header>
 
       {loading && (
-        <div className="flex items-center gap-2 text-base-content/70">
-          <Loader2 className="h-5 w-5 animate-spin" />
-          <span>Cargando calendario…</span>
+        <div className="bg-base-200 flex items-center justify-center">
+          <div className="card w-full container bg-base-100 p-6">
+            <div className="card-body items-center text-center">
+              <span className="loading loading-spinner loading-lg text-primary"></span>
+              <p className="mt-2">Cargando calendario...</p>
+            </div>
+          </div>
         </div>
       )}
 
@@ -70,8 +75,8 @@ function Meetings() {
       )}
 
       {!loading && !error && (
-        <div className="flex-1 bg-base-100 rounded-lg shadow-sm border border-base-300 overflow-hidden">
-          <MeetingCalendar
+        <div className="flex-1 bg-base-100 rounded-lg border border-base-content/15 overflow-hidden">
+          <CalendarMeeting
             events={rows}
             onEventClick={handleEventClick}
           />
@@ -79,7 +84,7 @@ function Meetings() {
       )}
 
       {selectedMeeting && (
-        <MeetingDetailModal
+        <ModalDetailMeeting
           meeting={selectedMeeting}
           onClose={() => setSelectedMeeting(null)}
         />

@@ -347,7 +347,7 @@ const SignUp: React.FC = () => {
               </div>
               {step < totalSteps && (
                 <div
-                  className={`${totalSteps == 5 ? "w-6" : "w-8"} sm:w-12 h-0.75 transition-all duration-300 ${currentStep > step ? "bg-primary" : "bg-primary/20"}`}
+                  className={`${totalSteps == 5 ? "w-6" : "w-8"} sm:w-11 h-0.75 transition-all duration-300 ${currentStep > step ? "bg-primary" : "bg-primary/20"}`}
                 />
               )}
             </React.Fragment>
@@ -449,7 +449,7 @@ const SignUp: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="btn btn-square join-item bg-base-100/70"
+            className="btn btn-square join-item bg-base-200/80"
             disabled={loading}
           >
             {showPassword ? (
@@ -513,7 +513,7 @@ const SignUp: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="btn btn-square join-item bg-base-100/70"
+            className="btn btn-square join-item bg-base-200/80"
             disabled={loading}
           >
             {showConfirmPassword ? (
@@ -871,16 +871,12 @@ const SignUp: React.FC = () => {
   );
 
   return (
-    <div
-      style={{ backgroundImage: "var(--fade-image)" }}
-      className="min-h-dvh p-6 md:p-8 md:pb-4 backdrop-blur-xl bg-cover bg-center flex flex-col transition-all duration-600 ease-in-out items-center justify-center font-family relative overflow-hidden"
-    >
-      <div className="min-h-dvh transition-all duration-600 ease-in-out absolute inset-0 bg-base-100/70 sm:bg-base-100/10 backdrop-blur-sm z-0" />
+    <div className="min-h-dvh p-6 md:p-8 md:pb-4 bg-base-100 sm:bg-base-200 bg-center flex flex-col items-center justify-center font-family relative overflow-hidden">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md space-y-4 p-4 sm:py-8 sm:px-10 sm:shadow-xl sm:bg-base-100/75 rounded-xl relative z-10"
+        className="w-full max-w-md space-y-4 p-4 sm:py-8 sm:px-10 sm:shadow-xl sm:bg-base-100 rounded-xl relative z-10"
       >
         <div className="text-center mb-2">
           <motion.div
@@ -958,7 +954,7 @@ const SignUp: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
           onSubmit={handleSubmit}
-          className="mt-8 space-y-6 [&_input]:bg-base-100/60"
+          className="mt-8 space-y-6"
           noValidate
         >
           {currentStep === 1 && renderStep1()}

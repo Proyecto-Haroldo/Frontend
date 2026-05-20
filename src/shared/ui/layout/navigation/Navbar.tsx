@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Home, Compass, Briefcase,
-  CalendarClock, ClipboardList, User, LogOut, Menu, X,
+  Calendar, ClipboardList, User, LogOut, Menu, X,
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { BarChart } from 'lucide-react';
@@ -36,20 +36,30 @@ function Navbar() {
       return [
         { path: '/c', icon: Home, label: 'Inicio' },
         { path: '/c/services', icon: Briefcase, label: 'Servicios' },
-        { path: '/c/meetings', icon: CalendarClock, label: 'Citas' },
+        { path: '/c/meetings', icon: Calendar, label: 'Citas' },
         { path: '/c/analysis', icon: ClipboardList, label: 'Análisis' },
         { path: '/c/profile', icon: User, label: 'Perfil' },
       ];
     } else if (role === 3) { // Adviser
       const baseItems = [
         { path: '/a', icon: Compass, label: 'Dashboard' },
-        { path: '/a/meetings', icon: CalendarClock, label: 'Mis citas' },
         { path: '/a/profile', icon: User, label: 'Perfil' },
       ];
 
-      // Only add Reportes if user is AUTHORIZED
       if (userStatus === "AUTHORIZED") {
-        baseItems.splice(1, 0, { path: '/a/reports', icon: BarChart, label: 'Reportes' });
+        // Solo mostrar Reportes si está AUTHORIZED
+        baseItems.splice(1, 0, {
+          path: '/a/reports',
+          icon: BarChart,
+          label: 'Reportes'
+        });
+
+        // Solo mostrar Citas si está AUTHORIZED
+        baseItems.splice(2, 0, {
+          path: '/a/meetings',
+          icon: Calendar,
+          label: 'Citas'
+        });
       }
 
       return baseItems;

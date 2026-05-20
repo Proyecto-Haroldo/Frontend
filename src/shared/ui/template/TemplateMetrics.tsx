@@ -52,15 +52,16 @@ interface MetricsCarouselProps {
 }
 
 const MAIN_COLORS = [
-    "#A167E8DD", // Violeta 
-    "#6F4FAFDD", // Añil 
-    "#5565A8DD", // Navy
-    "#4FA7FFDD", // Azul
-    "#4FC8BFDD", // Celeste
-    "#FFE066DD", // Amarillo 
-    "#FFB366DD", // Naranja 
-    "#FF6161DD", // Rojo 
-    "#DC4FD4DD", // Rosa 
+    "#9C6EE4DD", // Violeta
+    "#735AD2DD", // Índigo
+    "#5F84DBDD", // Azul
+    "#5DAFE3DD", // Celeste
+    "#63D79EDD", // Verde
+    "#BFE46DDD", // Lima
+    "#FFD36FDD", // Amarillo
+    "#FF9A68DD", // Naranja
+    "#F46C6CDD", // Rojo
+    "#D06FE0DD", // Rosa
 ];
 
 const baseChartOptions: any = {

@@ -9,7 +9,6 @@ import {
   AlertTriangle,
   XCircle,
   AlertCircle,
-  MessageSquare
 } from 'lucide-react';
 import {
   ColorSemaforo,
@@ -414,19 +413,21 @@ function AnalysisReview() {
               {/* Adviser comment (only after adviser has graded; pending analyses show AI text, not adviser) */}
               {analysis?.comentarioAsesor && analysis?.status?.toUpperCase() === 'CHECKED' && (
                 <motion.div
-                  className="card bg-primary/5 border border-primary/20"
+                  className="card bg-base-200/50 border border-base-200"
                   initial={{ y: 30, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.7, delay: 0.65, ease: "easeOut" }}
                 >
-                  <div className="card-body">
-                    <h3 className="card-title text-lg mb-2 flex items-center gap-2">
-                      <MessageSquare className="w-5 h-5 text-primary" />
-                      Comentario del asesor
-                    </h3>
-                    <p className="text-base-content/80 text-justify whitespace-pre-wrap">
-                      {analysis.comentarioAsesor}
-                    </p>
+                  <div className='card-body'>
+                    <div className='flex flex-wrap gap-2 items-center mb-2'>
+                      <h3 className="card-title text-lg">
+                        Comentarios del Asesor
+                      </h3>
+                      <small className="card-title text-xs badge badge-primary badge-md">
+                        {analysis.comentarioAsesor.split(" ").length} palabras
+                      </small>
+                    </div>
+                    <p className="text-sm text-base-content/80 whitespace-pre-wrap card border p-4 mt-2 bg-primary/10 border-primary/50">{analysis.comentarioAsesor}</p>
                   </div>
                 </motion.div>
               )}

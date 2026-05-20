@@ -254,7 +254,7 @@ export default function AdminReports() {
 
                 {/* Advanced Filter Modal */}
                 {showAdvancedFilters && (
-                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 m-0">
                         <div className="bg-base-200 rounded-lg w-[90%] max-w-4xl h-[85%] flex flex-col p-6">
 
                             {/* Header fijo */}

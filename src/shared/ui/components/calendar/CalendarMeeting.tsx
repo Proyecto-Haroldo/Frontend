@@ -4,17 +4,17 @@ import interactionPlugin from '@fullcalendar/interaction';
 import type { EventInput } from '@fullcalendar/core';
 import type { ScheduleRow } from '../../../../core/types/schedule';
 
-interface MeetingCalendarProps {
+interface CalendarMeetingProps {
   events: ScheduleRow[];
   onEventClick?: (event: ScheduleRow) => void;
   headerToolbar?: boolean;
 }
 
-function MeetingCalendar({
+function CalendarMeeting({
   events,
   onEventClick,
   headerToolbar = true,
-}: MeetingCalendarProps) {
+}: CalendarMeetingProps) {
   const calendarEvents: EventInput[] = events
     .map((schedule) => {
       try {
@@ -115,6 +115,11 @@ function MeetingCalendar({
         .mc .fc-theme-standard .fc-scrollgrid {
           border: none !important;
         }
+
+        .fc .fc-scrollgrid-section-sticky > * {
+          background: transparent;
+        }
+
         /* Inner cell borders: only subtle horizontal lines between rows */
         .mc .fc-theme-standard td,
         .mc .fc-theme-standard th {
@@ -141,7 +146,7 @@ function MeetingCalendar({
           border-bottom: 1px solid color-mix(in oklch, var(--color-base-content) 10%, transparent) !important;
         }
         .mc .fc-col-header-cell-cushion {
-          color: color-mix(in oklch, var(--color-base-content) 45%, transparent);
+          color: color-mix(in oklch, var(--color-base-content) 70%, transparent);
           font-size: 0.68rem;
           font-weight: 700;
           letter-spacing: 0.1em;
@@ -161,10 +166,10 @@ function MeetingCalendar({
           background-color: transparent;
         }
         .mc .fc-day-other .fc-daygrid-day-number {
-          opacity: 0.3;
+          opacity: 0.8;
         }
         .mc .fc-daygrid-day-number {
-          color: var(--color-base-content);
+          color: color-mix(in oklch, var(--color-base-content) 70%, transparent);
           font-size: 0.78rem;
           font-weight: 500;
           padding: 0.5rem 0.6rem;
@@ -227,7 +232,6 @@ function MeetingCalendar({
           background-color: var(--color-base-100);
           border: 1px solid color-mix(in oklch, var(--color-base-content) 10%, transparent);
           border-radius: var(--radius-box);
-          box-shadow: 0 8px 32px color-mix(in oklch, var(--color-base-content) 10%, transparent);
         }
         .mc .fc-popover-header {
           background-color: var(--color-base-200);
@@ -270,27 +274,34 @@ function MeetingCalendar({
           border-radius: 0 !important;
         }
         .mc .fc-button-group .fc-button-primary:first-child {
-          border-radius: var(--radius-field) 0 0 var(--radius-field) !important;
+          color: color-mix(in oklch, var(--color-base-content) 70%, transparent) !important;
+          border-radius: 50% !important;
+          aspect-ratio: 1;
         }
         .mc .fc-button-group .fc-button-primary:last-child {
-          border-radius: 0 var(--radius-field) var(--radius-field) 0 !important;
+          color: color-mix(in oklch, var(--color-base-content) 70%, transparent) !important;
+          border-radius: 50% !important;
+          aspect-ratio: 1;
+          margin-left: 0.5rem;
         }
 
         /* ── Toolbar title ── */
         .mc .fc-toolbar-title {
           font-size: 0.95rem !important;
           font-weight: 700 !important;
-          color: var(--color-base-content) !important;
+          color: color-mix(in oklch, var(--color-base-content) 70%, transparent) !important;
           letter-spacing: -0.01em;
         }
 
         /* ── Toolbar layout ── */
         .mc .fc-toolbar {
-          margin-bottom: 1rem !important;
+          padding: 0.75rem !important;
+          margin: 0 !important;
           align-items: center;
         }
-        .mc .fc-toolbar-chunk:first-child {
-          padding-left: 0.75rem;
+
+        .mc .fc-header-toolbar {
+          border-bottom: 1px solid color-mix(in oklch, var(--color-base-content) 10%, transparent) !important;
         }
 
         /* ── Responsive ── */
@@ -308,7 +319,7 @@ function MeetingCalendar({
         }
       `}</style>
 
-      <div className="mc w-full pt-4">
+      <div className="mc w-full">
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
@@ -334,4 +345,4 @@ function MeetingCalendar({
   );
 }
 
-export default MeetingCalendar;
+export default CalendarMeeting;

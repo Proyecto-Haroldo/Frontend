@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { Navigate } from "react-router-dom";
 import { IAnalysis } from "../../core/models/analysis";
 import { IQuestionnaire } from "../../core/models/questionnaire";
 import { IUser } from "../../core/models/user";
@@ -7,9 +8,13 @@ import { getAllAnalysis } from "../../api/analysisApi";
 import { fetchAllQuestions, getAllQuestionnaires } from "../../api/questionnairesApi";
 import { getAllUsers } from "../../api/usersApi";
 import { X, Search, ClipboardList, FileText } from "lucide-react";
+import { useAuth } from "../../shared/context/AuthContext";
 import TemplateMetrics from "../../shared/ui/template/TemplateMetrics";
 
 export default function AdviserReports() {
+    // Privilege check
+    const { userStatus } = useAuth();
+
     // States
     const [analysis, setAnalysis] = useState<IAnalysis[]>([]);
     const [questionnaires, setQuestionnaires] = useState<IQuestionnaire[]>([]);
@@ -183,6 +188,10 @@ export default function AdviserReports() {
         setSearchText("");
     };
 
+    if (userStatus === "UNAUTHORIZED") {
+        return <Navigate to="/a" replace />;
+    }
+
     return (
         <div className="min-h-[calc(100dvh-4rem)] flex items-start justify-center">
             <div className="container space-y-6">
@@ -249,7 +258,7 @@ export default function AdviserReports() {
 
                 {/* Advanced Filter Modal */}
                 {showAdvancedFilters && (
-                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 m-0">
                         <div className="bg-base-200 rounded-lg w-[90%] max-w-4xl h-[85%] flex flex-col p-6">
 
                             {/* Header fijo */}
@@ -278,9 +287,9 @@ export default function AdviserReports() {
                                 {/* GRID */}
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-                                    {/* Usuarios */}
+                                    {/* Clientes */}
                                     <div className="col-span-3 flex flex-col bg-base-100 card p-4 h-42">
-                                        <h3 className="font-semibold mb-2">Usuarios</h3>
+                                        <h3 className="font-semibold mb-2">Clientes</h3>
                                         <div className="flex flex-row gap-2 flex-wrap overflow-y-auto">
                                             {users
                                                 .filter(u => u.legalName.toLowerCase().includes(searchText.toLowerCase()))

@@ -269,12 +269,21 @@ const ModalDetailUser: React.FC<ModalDetailUserProps> = ({ user, analysis, error
                                                 },
                                                 scales: {
                                                     x: {
-                                                        ticks: { color: '#ccc' },
+                                                        ticks: {
+                                                            color: '#ccc',
+                                                            callback: function (value) {
+                                                                const label = this.getLabelForValue(value as number);
+
+                                                                return label.length > 5
+                                                                    ? label.slice(0, 5) + '.'
+                                                                    : label;
+                                                            },
+                                                        },
                                                         grid: { display: false },
                                                     },
                                                     y: {
                                                         ticks: { color: '#ccc' },
-                                                        grid: { color: '#333' },
+                                                        grid: { display: false },
                                                         beginAtZero: true,
                                                     },
                                                 },

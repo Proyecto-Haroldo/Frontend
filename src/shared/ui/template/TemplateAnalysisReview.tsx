@@ -6,7 +6,6 @@ import {
   AlertTriangle,
   XCircle,
   Loader2,
-  MessageSquare,
   Send,
   CircleDashed
 } from 'lucide-react';
@@ -513,10 +512,14 @@ function TemplateAnalysisReview({
         {/* Formulario de revisión (solo si está pendiente) */}
         {isAdvisor && analysis.status?.toUpperCase() === 'PENDING' && (
           <div className="card bg-base-200/50 p-6">
-            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-base-content/70" />
-              Revisar análisis
-            </h3>
+            <div className='flex flex-wrap gap-2 items-center mb-2'>
+              <h3 className="card-title font-semibold text-lg">
+                Revisar Análisis
+              </h3>
+              <small className="card-title text-xs badge badge-primary badge-md">
+                {gradingComment ? gradingComment.split(" ").length : 0} palabras
+              </small>
+            </div>
             <p className="text-sm text-base-content/70 mb-6">
               Escriba sus comentarios para el cliente y opcionalmente ajuste el semáforo. Al enviar, el análisis quedará marcado como revisado.
             </p>
@@ -646,10 +649,14 @@ function TemplateAnalysisReview({
         {/* Revisión enviada (solo si está completada) */}
         {analysis.status?.toUpperCase() === 'CHECKED' && analysis.comentarioAsesor && (
           <div className="card bg-base-200/50 p-6 border border-base-200">
-            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-base-content/70" />
-              Comentarios del Asesor
-            </h3>
+            <div className='flex flex-wrap gap-2 items-center mb-2'>
+              <h3 className="card-title text-lg">
+                Comentarios del Asesor
+              </h3>
+              <small className="card-title text-xs badge badge-primary badge-md">
+                {analysis.comentarioAsesor.split(" ").length} palabras
+              </small>
+            </div>
             <p className="text-sm text-base-content/80 whitespace-pre-wrap card border p-4 mt-2 bg-primary/10 border-primary/50">{analysis.comentarioAsesor}</p>
           </div>
         )}

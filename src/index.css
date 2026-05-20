@@ -9,8 +9,8 @@
   color-scheme: "light";
   --color-base-100: oklch(98% 0.003 306);
   --color-base-200: oklch(94% 0.006 306);
-  --color-base-300: oklch(89% 0.055 306);
-  --color-base-content: oklch(40% 0.006 55);
+  --color-base-300: oklch(90% 0.055 306);
+  --color-base-content: oklch(42% 0.006 55);
   --color-primary: oklch(64% 0.12 306);
   --color-primary-content: oklch(98% 0.006 306);
   --color-secondary: oklch(70% 0.02 306);
@@ -28,7 +28,6 @@
   --color-error: oklch(72% 0.194 13.428);
   --color-error-content: oklch(30% 0.105 12.094);
   --color-navbar: oklch(0 0.000 0 / 0.7);
-  --fade-image: url("/img/bg-light.png");
   --radius-selector: 0.5rem;
   --radius-field: 1rem;
   --radius-box: 1rem;
@@ -44,10 +43,10 @@
   default: false;
   prefersdark: true;
   color-scheme: "dark";
-  --color-base-100: oklch(25% 0.005 245);
+  --color-base-100: oklch(26% 0.005 245);
   --color-base-200: oklch(22% 0.005 250);
-  --color-base-300: oklch(19% 0.005 255);
-  --color-base-content: oklch(97.5% 0 0);
+  --color-base-300: oklch(18% 0.005 255);
+  --color-base-content: oklch(98% 0 0);
   --color-primary: oklch(60% 0.12 306);
   --color-primary-content: oklch(100% 0.010 306);
   --color-secondary: oklch(65% 0.02 306);
@@ -65,7 +64,6 @@
   --color-error: oklch(72% 0.194 13.428);
   --color-error-content: oklch(27% 0.105 12.094);
   --color-navbar: oklch(100.00% 0.000 0 / 0.8);
-  --fade-image: url("/img/bg-dark.png");
   --radius-selector: 0.5rem;
   --radius-field: 1rem;
   --radius-box: 1rem;
