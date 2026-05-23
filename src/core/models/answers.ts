@@ -1,11 +1,12 @@
-import { QuestionnaireResult } from "../../shared/types/questionnaire";
+import { IQuestionnaireResult } from "../types/questionnaire";
 
-export interface WebAnswersDTO {
+export interface IWebAnswer {
     userId: number;
-    questionnaireData: QuestionnaireResult;
+    questionnaireData: IQuestionnaireResult;
 }
 
-export interface AIRecommendationResult {
+export interface IRecommendationAI {
     resumenUsuario: string;
     colorSemaforo: string; // 'verde' | 'amarillo' | 'rojo'
+    analisisAsesor?: string;
 }

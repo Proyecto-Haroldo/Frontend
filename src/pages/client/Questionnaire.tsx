@@ -1,8 +1,18 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { fetchQuestionsByCategory, submitQuestionnaireAnswers } from '../../api/analysisApi';
-import type { QuestionnaireResult } from '../../shared/types/questionnaire';
+import { useNavigate, useParams } from 'react-router-dom';
+import {
+  fetchQuestionnaireRootsReliable,
+  getQuestionnaireById,
+  submitIQuestionnaireAnswers
+} from '../../api/questionnairesApi';
+import {
+  flattenQuestionTree,
+  matchingChildren,
+  reconcileQueueAfterAnswer,
+  sortQuestionsByDisplayOrder
+} from '../../core/utils/questionnaireTree';
+import type { IQuestionnaireResult } from '../../core/types/questionnaire';
 import {
   ArrowLeft,
   ArrowRight,
@@ -14,6 +24,9 @@ import {
 } from 'lucide-react';
 import { IQuestion } from '../../core/models/question';
 import { useAuth } from '../../shared/context/AuthContext';
+import { IQuestionnaire } from '../../core/models/questionnaire';
+import { getUserById } from '../../api/usersApi';
+import { ClientType } from '../../core/models/user';
 
 const pageVariants = {
   initial: {
@@ -77,7 +90,7 @@ const HighlightedText = ({
           return (
             <span
               key={index}
-              className="tooltip tooltip-info inline-block"
+              className="tooltip tooltip-accent inline-block z-30"
               data-tip={keyword.description}
             >
               <span className="text-primary cursor-help underline decoration-dotted underline-offset-2 inline-block hover:bg-base-300 hover:text-primary transition-all duration-200 rounded-sm px-0.5 -mx-0.5">
@@ -97,43 +110,115 @@ const Questionnaire = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const [isComplete, setIsComplete] = useState(false);
-  const [questions, setQuestions] = useState<IQuestion[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [questionnaireRoots, setQuestionnaireRoots] = useState<IQuestion[]>([]);
+  const [stepQueue, setStepQueue] = useState<IQuestion[]>([]);
+  const [questionnaire, setQuestionnaire] = useState<IQuestionnaire | null>(null);
+  const [clientType, setClientType] = useState<ClientType | null>(null);
+  const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { userId } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
-  // Fetch de preguntas según categoría
+  const { id } = useParams();
+  const questId = Number(id);
+
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const category = params.get('category');
-
-    if (category) {
-      setIsLoading(true);
-      fetchQuestionsByCategory(category)
-        .then(fetchedQuestions => {
-          setQuestions(fetchedQuestions);
-          setIsLoading(false);
-        })
-        .catch(err => {
-          setError('Error al cargar las preguntas');
-          setIsLoading(false);
-          console.error('Error fetching questions:', err);
-        });
-    } else {
+    if (!questId) {
       navigate('/c/services');
+      return;
     }
-  }, [location, navigate]);
 
-  const currentQuestion = questions[currentQuestionIndex] || {
-    id: 0,
-    question: '',
-    questionType: 'open' as const,
-    keywords: []
-  };
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
 
+    (async () => {
+      try {
+        const roots = await fetchQuestionnaireRootsReliable(questId);
+        if (cancelled) return;
+        if (!roots.length) {
+          setError('No hay preguntas para este cuestionario');
+          return;
+        }
+        setQuestionnaireRoots(roots);
+        setStepQueue(sortQuestionsByDisplayOrder(roots));
+        setCurrentQuestionIndex(0);
+        setAnswers({});
+      } catch (err) {
+        if (!cancelled) {
+          setError('Error al cargar las preguntas');
+          console.error('Error fetching questions:', err);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate, questId]);
+
+  const allQuestionsFlat = useMemo(
+    () => flattenQuestionTree(questionnaireRoots),
+    [questionnaireRoots]
+  );
+
+  useEffect(() => {
+    if (stepQueue.length === 0) return;
+    setCurrentQuestionIndex((i) => Math.min(i, stepQueue.length - 1));
+  }, [stepQueue]);
+
+  useEffect(() => {
+    if (questId == null) return;
+
+    getQuestionnaireById(questId)
+      .then((q) => {
+        setQuestionnaire(q);
+      })
+      .catch((err) => {
+        console.error('Error fetching questionnaire category:', err);
+      });
+  }, [questId]);
+
+  useEffect(() => {
+    if (userId == null) return;
+
+    getUserById(userId)
+      .then((u) => {
+        if (u.clientType) {
+          setClientType(u.clientType);
+        }
+      })
+      .catch((err) => {
+        console.error('Error fetching client type from user:', err);
+      });
+  }, [userId]);
+
+  const currentQuestion = useMemo(
+    () =>
+      stepQueue[currentQuestionIndex] || {
+        id: 0,
+        question: '',
+        questionType: 'OPEN' as const,
+        keywords: []
+      },
+    [stepQueue, currentQuestionIndex]
+  );
+
+  const pendingChildrenAfterCurrent = useMemo(
+    () =>
+      currentQuestion.id
+        ? matchingChildren(currentQuestion, answers[String(currentQuestion.id)] || [])
+        : [],
+    [currentQuestion, answers]
+  );
+
+  const isLastQuestion =
+    stepQueue.length > 0 &&
+    currentQuestionIndex === stepQueue.length - 1 &&
+    pendingChildrenAfterCurrent.length === 0;
 
   // Pre-calculate which keywords should be highlighted to ensure each appears only once
   const keywordAllocation = useMemo(() => {
@@ -174,7 +259,7 @@ const Questionnaire = () => {
     allocation.title = findKeywordsInText(currentQuestion.question);
 
     // Then, allocate keywords found in options (excluding those already used in question)
-    currentQuestion.options?.forEach(option => {
+    currentQuestion.options?.sort((a, b) => b.id - a.id).forEach(option => {
       allocation.options.set(String(option.id), findKeywordsInText(option.text));
     });
 
@@ -182,17 +267,15 @@ const Questionnaire = () => {
   }, [currentQuestion]);
 
   const progress =
-    questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
-  const isLastQuestion =
-    questions.length > 0 ? currentQuestionIndex === questions.length - 1 : false;
+    stepQueue.length > 0 ? ((currentQuestionIndex + 1) / stepQueue.length) * 100 : 0;
 
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
-        <div className="card w-full max-w-2xl bg-base-100 shadow-xl p-6">
+      <div className="bg-base-200 flex items-center justify-center p-4">
+        <div className="card w-full container bg-base-100 p-6">
           <div className="card-body items-center text-center">
             <span className="loading loading-spinner loading-lg text-primary"></span>
-            <p className="mt-4">Cargando cuestionario...</p>
+            <p className="mt-2">Cargando cuestionario...</p>
           </div>
         </div>
       </div>
@@ -201,8 +284,8 @@ const Questionnaire = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
-        <div className="card w-full max-w-2xl bg-base-100 shadow-xl p-6">
+      <div className="min-h-dvh bg-base-200 flex items-center justify-center p-4">
+        <div className="card w-full container bg-base-100 p-6">
           <div className="card-body items-center text-center">
             <div className="alert alert-error mb-6">
               <AlertCircle className="h-6 w-6" />
@@ -224,21 +307,21 @@ const Questionnaire = () => {
     } else {
       try {
         setIsSubmitting(true);
-        const params = new URLSearchParams(location.search);
-        const category = params.get('category');
+        const category = questionnaire?.categoryName?.trim();
 
         if (!category) throw new Error('Información de categoría no encontrada');
 
-        const questionnaireData: QuestionnaireResult = {
+        const questionnaireData: IQuestionnaireResult = {
           metadata: {
             category,
-            clientType: 'N/A',
+            title: questionnaire?.title?.trim() || "Sin Determinar",
+            clientType: clientType || "N/A",
             timestamp: new Date().toISOString()
           },
-          answers: questions.map(question => ({
+          answers: allQuestionsFlat.map(question => ({
             questionId: question.id,
             questionTitle: question.question,
-            answer: question.questionType === 'open'
+            answer: question.questionType === 'OPEN'
               ? answers[question.id] || []
               : (answers[question.id] || []).map(
                 id => question.options?.find(opt => String(opt.id) === String(id))?.text || String(id)
@@ -254,7 +337,7 @@ const Questionnaire = () => {
           return;
         }
 
-        const aiRecommendation = await submitQuestionnaireAnswers(questionnaireData, userId);
+        const aiRecommendation = await submitIQuestionnaireAnswers(userId, questionnaireData);
 
         // Store the full JSON returned by backend: { resumenUsuario, colorSemaforo }
         localStorage.setItem('aiRecommendation', JSON.stringify(aiRecommendation));
@@ -276,15 +359,27 @@ const Questionnaire = () => {
 
   const handleAnswerChange = (value: string | string[]) => {
     const answerValue = Array.isArray(value) ? value : [value];
-    setAnswers(prev => ({
-      ...prev,
-      [currentQuestion.id]: answerValue
-    }));
+    const qid = currentQuestion.id;
+    if (!qid) return;
+
+    setAnswers((prev) => {
+      const next = { ...prev, [String(qid)]: answerValue };
+      setStepQueue((prevQueue) => {
+        const nextQueue = reconcileQueueAfterAnswer(
+          prevQueue,
+          qid,
+          next,
+          questionnaireRoots
+        );
+        return nextQueue;
+      });
+      return next;
+    });
   };
 
   const renderQuestionInput = () => {
     switch (currentQuestion.questionType) {
-      case 'open':
+      case 'OPEN':
         return (
           <textarea
             className="textarea textarea-bordered w-full h-32"
@@ -294,14 +389,14 @@ const Questionnaire = () => {
           />
         );
 
-      case 'single':
+      case 'SINGLE':
         return (
-          <div className="space-y-1">
+          <div className="space-y-2">
             {currentQuestion.options?.map(option => (
               <div key={option.id} className="form-control">
                 <label
                   htmlFor={String(option.id)}
-                  className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg"
+                  className="label cursor-pointer justify-start items-start gap-3 p-2 hover:bg-base-200 rounded-lg w-full"
                 >
                   <input
                     type="radio"
@@ -312,7 +407,7 @@ const Questionnaire = () => {
                     onChange={() => handleAnswerChange(String(option.id))}
                     className="radio radio-primary"
                   />
-                  <span className="label-text text-left">
+                  <span className="label-text text-left break-words whitespace-normal flex-1">
                     <HighlightedText
                       text={option.text}
                       keywords={currentQuestion.keywords || []}
@@ -325,14 +420,14 @@ const Questionnaire = () => {
           </div>
         );
 
-      case 'multiple':
+      case 'MULTIPLE':
         return (
-          <div className="space-y-1">
+          <div className="space-y-2">
             {currentQuestion.options?.map(option => (
               <div key={option.id} className="form-control">
                 <label
                   htmlFor={String(option.id)}
-                  className="label cursor-pointer justify-start gap-3 p-2 hover:bg-base-200 rounded-lg"
+                  className="label cursor-pointer justify-start items-start gap-3 p-2 hover:bg-base-200 rounded-lg w-full"
                 >
                   <input
                     type="checkbox"
@@ -349,7 +444,7 @@ const Questionnaire = () => {
                     }}
                     className="checkbox checkbox-primary"
                   />
-                  <span className="label-text text-left">
+                  <span className="label-text text-left break-words whitespace-normal flex-1">
                     <HighlightedText
                       text={option.text}
                       keywords={currentQuestion.keywords || []}
@@ -369,8 +464,8 @@ const Questionnaire = () => {
 
   if (isComplete) {
     return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
-        <div className="card w-full max-w-2xl bg-base-100 shadow-xl p-6">
+      <div className="min-h-[calc(100dvh-4rem)] bg-base-200 flex items-center justify-center p-4">
+        <div className="card w-full container bg-base-100 p-6">
           <div className="card-body items-center text-center">
             <div className="mb-6">
               <CheckCircle2 className="h-16 w-16 text-success mx-auto" />
@@ -386,11 +481,11 @@ const Questionnaire = () => {
                 Volver al Inicio
               </button>
               <button
-                onClick={() => navigate('/c/analysis-review?id=1')}
+                onClick={() => navigate(`/c/questionnaire/results/${questId}`)}
                 className="btn btn-outline gap-2"
               >
                 <FileText className="h-5 w-5" />
-                Ver análisis
+                Ver Análisis
               </button>
             </div>
           </div>
@@ -404,13 +499,13 @@ const Questionnaire = () => {
       <AnimatePresence mode="wait">
         <motion.div
           key="submitting"
-          className="min-h-screen bg-base-200 flex items-center justify-center p-4"
+          className="min-h-[calc(100dvh-4rem)] bg-base-200 flex items-center justify-center p-4"
           variants={pageVariants}
           initial="initial"
           animate="animate"
           exit="exit"
         >
-          <div className="card w-full max-w-2xl bg-base-100 shadow-xl">
+          <div className="card w-full container bg-base-100 ">
             <div className="card-body items-center text-center">
               <div className="mb-6">
                 <Loader2 className="h-16 w-16 text-primary animate-spin mx-auto" />
@@ -431,13 +526,13 @@ const Questionnaire = () => {
     <AnimatePresence mode="wait">
       <motion.div
         key="questionnaire"
-        className="min-h-screen bg-base-200 flex items-center justify-center p-4"
+        className="min-h-[calc(100dvh-4rem)] bg-base-200 flex items-center justify-center"
         variants={pageVariants}
         initial="initial"
         animate="animate"
         exit="exit"
       >
-        <div className="card w-full max-w-4xl bg-base-100 shadow-xl">
+        <div className="card w-full container bg-base-100 ">
           <div className="card-body">
             {/* Progress Bar */}
             <div className="w-full bg-base-200 rounded-full h-2.5 mb-6">
@@ -449,7 +544,7 @@ const Questionnaire = () => {
 
             {/* Progress Text */}
             <div className="text-sm text-gray-500 mb-2">
-              Pregunta {currentQuestionIndex + 1} de {questions.length}
+              Pregunta {currentQuestionIndex + 1} de {stepQueue.length}
             </div>
 
             {/* Question - Question text is rendered first to establish keyword priority */}

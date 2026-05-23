@@ -3,12 +3,12 @@ export interface Keyword {
     description: string;
 }
 
-export interface QuestionOption {
+export interface IOption {
     id: number;
     text: string;
 }
 
-export type QuestionType = 'open' | 'single' | 'multiple';
+export type QuestionType = 'OPEN' | 'SINGLE' | 'MULTIPLE';
 
 export interface IQuestion {
     id: number;
@@ -17,6 +17,12 @@ export interface IQuestion {
     question: string;
     questionType: QuestionType;
     questionnaireId?: number;
-    options: QuestionOption[];
+    options: IOption[];
     keywords: Keyword[];
+    // Set for conditional flows
+    parentQuestionId?: number;
+    parentAnswerTrigger?: string;
+    displayOrder?: number;
+    section?: string;
+    children?: IQuestion[];
 }

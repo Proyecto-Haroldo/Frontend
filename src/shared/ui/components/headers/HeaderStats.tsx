@@ -25,7 +25,7 @@ interface HeaderStatsProps {
 }
 
 const SkeletonCard: React.FC = () => (
-    <div className="card bg-base-100 shadow-sm border border-base-200">
+    <div className="card bg-base-100">
         <div className="card-body">
             <Skeleton width="60%" height={14} />
             <Skeleton width="80%" height={18} />
@@ -37,18 +37,28 @@ const HeaderStatsSkeleton: React.FC = () => {
     const { base, highlight } = useThemeColors();
 
     return (
-        <SkeletonTheme baseColor={base} highlightColor={highlight}>
-            <div className="container mx-auto space-y-4 md:space-y-6">
-                {/* Header */}
+        <div className="container mx-auto space-y-4 md:space-y-5">
+            {/* Header */}
+            <SkeletonTheme baseColor={highlight} highlightColor={highlight}>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <h1 className="text-2xl font-semibold">Panel Administrativo</h1>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-4">
+
+                    {/* BEFORE SM */}
+                    <div className="inline w-full sm:hidden">
+                        <Skeleton className="w-full" height={32} borderRadius={16} style={{ marginBottom: "8px" }} />
+                        <Skeleton className="w-full" height={32} borderRadius={16} />
+                    </div>
+
+                    {/* SM AND UP */}
+                    <div className="hidden sm:flex items-center justify-end gap-4 w-[105px]">
                         <Skeleton width={105} height={32} borderRadius={16} />
                         <Skeleton width={105} height={32} borderRadius={16} />
                     </div>
                 </div>
+            </SkeletonTheme>
 
-                {/* Statistics Section */}
+            {/* Statistics Section */}
+            <SkeletonTheme baseColor={base} highlightColor={base}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
                     <SkeletonCard />
                     <SkeletonCard />
@@ -57,14 +67,13 @@ const HeaderStatsSkeleton: React.FC = () => {
                 </div>
 
                 {/* Risk Distribution */}
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                <div className="hidden lg:grid lg:grid-cols-3 gap-4">
                     <SkeletonCard />
                     <SkeletonCard />
                     <SkeletonCard />
                 </div>
-            </div>
-        </SkeletonTheme>
+            </SkeletonTheme >
+        </div>
     );
 };
 
@@ -74,7 +83,7 @@ const StatCard: React.FC<{
     icon?: React.ReactNode;
     valueClass?: string;
 }> = ({ label, value, icon, valueClass }) => (
-    <div className="card bg-base-100 shadow-sm border border-base-200">
+    <div className="card bg-base-100 border border-base-200">
         <div className="card-body">
             <div className="flex items-center justify-between">
                 <div>
@@ -92,7 +101,7 @@ const RiskCard: React.FC<{
     value: number;
     colorClass: string;
 }> = ({ label, value, colorClass }) => (
-    <div className="card bg-base-100 shadow-sm border border-base-200">
+    <div className="card bg-base-100 border border-base-200">
         <div className="card-body">
             <div className="flex items-center justify-between">
                 <div>
@@ -116,11 +125,7 @@ const HeaderStats: React.FC<HeaderStatsProps> = ({
     const navigate = useNavigate();
     const uniqueClients = new Set(analysis.map((q) => q.clientName)).size;
 
-    if (loading) {
-        return (
-            <HeaderStatsSkeleton />
-        );
-    }
+    if (loading) return <HeaderStatsSkeleton />;
 
     if (error) {
         return (
@@ -128,7 +133,7 @@ const HeaderStats: React.FC<HeaderStatsProps> = ({
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="alert alert-error shadow-lg"
+                    className="alert alert-error"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -140,10 +145,10 @@ const HeaderStats: React.FC<HeaderStatsProps> = ({
     }
 
     return (
-        <div className="container mx-auto space-y-4 md:space-y-6">
+        <div className="container mx-auto space-y-4 md:space-y-5">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <h1 className="text-2xl font-semibold">Panel Administrativo</h1>
+                <h1 className="text-2xl font-semibold">{role === 1 ? 'Panel Administrativo' : 'Panel de Asesoría'}</h1>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-4">
                     <button onClick={() => {
                         if (role === 3) {
@@ -167,7 +172,18 @@ const HeaderStats: React.FC<HeaderStatsProps> = ({
 
             {/* Statistics Section */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-                <StatCard label="Total Cuestionarios" value={stats.total} icon={<FileText className="h-8 w-8 text-primary" />} />
+                <StatCard
+                    label="Total Cuestionarios"
+                    value={stats.total}
+                    icon={<FileText className="h-8 w-8 text-primary" />}
+                    valueClass="text-primary"
+                />
+                <StatCard
+                    label="Asesorados"
+                    value={uniqueClients}
+                    icon={<Users className="h-8 w-8 text-info" />}
+                    valueClass="text-info"
+                />
                 <StatCard
                     label="Pendientes"
                     value={stats.pending}
@@ -180,16 +196,10 @@ const HeaderStats: React.FC<HeaderStatsProps> = ({
                     icon={<CheckCircle className="h-8 w-8 text-success" />}
                     valueClass="text-success"
                 />
-                <StatCard
-                    label="Clientes"
-                    value={uniqueClients}
-                    icon={<Users className="h-8 w-8 text-info" />}
-                    valueClass="text-info"
-                />
             </div>
 
             {/* Risk Distribution */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+            <div className="hidden lg:grid lg:grid-cols-3 gap-4">
                 <RiskCard label="Riesgo Verde" value={stats.green} colorClass="text-success" />
                 <RiskCard label="Riesgo Amarillo" value={stats.yellow} colorClass="text-warning" />
                 <RiskCard label="Riesgo Rojo" value={stats.red} colorClass="text-error" />

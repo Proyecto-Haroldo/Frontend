@@ -1,6 +1,10 @@
-export type ClientType = "persona" | "empresa";
+import { ICategoryDTO } from "./questionnaire";
 
-interface IRole {
+export type ClientType = "PERSONA" | "EMPRESA";
+
+export type UserStatus = "AUTHORIZED" | "UNAUTHORIZED";
+
+export interface IRole {
   id: number;
   name: string;
 }
@@ -9,11 +13,14 @@ export interface IUser {
   userId: number;
   cedulaOrNIT: string;
   legalName: string;
-  clientType: string; // 'persona' o 'empresa'
+  clientType: ClientType;
   email: string;
-  password: string;
+  password?: string;
   sector: string;
   role: IRole;
-  phone?: string;    // OJO!! AÑADIR ATRIBUTOS
-  address?: string;  // OJO!! AÑADIR ATRIBUTOS
+  status?: UserStatus;
+  phone?: string;
+  location?: string;
+  network?: string;
+  specialities?: ICategoryDTO[];
 }

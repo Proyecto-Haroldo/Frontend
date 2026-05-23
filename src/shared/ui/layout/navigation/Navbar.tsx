@@ -1,72 +1,78 @@
 import { useState } from 'react';
-import ITMLogo from '../../../../../public/assets/ITMLogo';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import type { Variants } from 'motion/react';
-import ThemeToggle from '../theme/ThemeToggle';
 import {
-  Home,
-  ChartColumnIncreasing,
-  Briefcase,
-  Calendar,
-  FileText,
-  User,
-  LogOut,
-  Menu,
-  X,
+  Home, Compass, Briefcase,
+  Calendar, ClipboardList, User, LogOut, Menu, X,
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { BarChart } from 'lucide-react';
+import type { Variants } from 'motion/react';
+import ThemeToggle from '../theme/ThemeToggle';
+import ITMLogo from '../../../../../public/assets/ITMLogo';
 
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const { logout, role } = useAuth();
+  const { logout, role, userStatus } = useAuth();
 
   const isActive = (path: string) => {
-    if (
-      location.pathname.startsWith('/a/questionnaires') ||
-      location.pathname.startsWith('/a/analysis') ||
-      location.pathname.startsWith('/m/users') ||
-      location.pathname.startsWith('/m/questionnaires') ||
-      location.pathname.startsWith('/m/analysis')
-    ) return location.pathname.includes(path);
-    return location.pathname === path;
+    if (location.pathname === path) return true;
+    // Root entries (/a, /m, /c) must not match child routes like /a/meetings
+    if (path === '/a' || path === '/m' || path === '/c') return false;
+    return location.pathname.startsWith(`${path}/`);
   };
 
   // Navigation items based on user role
   const getNavItems = () => {
     if (role === 1) { // Admin
       return [
-        { path: '/m', icon: BarChart, label: 'Dashboard' },
-        { path: '/m/reports', icon: ChartColumnIncreasing, label: 'Reportes' },
+        { path: '/m', icon: Compass, label: 'Dashboard' },
+        { path: '/m/reports', icon: BarChart, label: 'Reportes' },
         { path: '/m/profile', icon: User, label: 'Perfil' },
       ];
     } else if (role === 2) { // Client
       return [
         { path: '/c', icon: Home, label: 'Inicio' },
         { path: '/c/services', icon: Briefcase, label: 'Servicios' },
-        { path: '/c/schedule', icon: Calendar, label: 'Agendar' },
-        { path: '/c/analysis', icon: FileText, label: 'Análisis' },
+        { path: '/c/meetings', icon: Calendar, label: 'Citas' },
+        { path: '/c/analysis', icon: ClipboardList, label: 'Análisis' },
         { path: '/c/profile', icon: User, label: 'Perfil' },
       ];
     } else if (role === 3) { // Adviser
-      return [
-        { path: '/a', icon: Home, label: 'Inicio' },
-        { path: '/a/reports', icon: ChartColumnIncreasing, label: 'Reportes' },
+      const baseItems = [
+        { path: '/a', icon: Compass, label: 'Dashboard' },
         { path: '/a/profile', icon: User, label: 'Perfil' },
       ];
+
+      if (userStatus === "AUTHORIZED") {
+        // Solo mostrar Reportes si está AUTHORIZED
+        baseItems.splice(1, 0, {
+          path: '/a/reports',
+          icon: BarChart,
+          label: 'Reportes'
+        });
+
+        // Solo mostrar Citas si está AUTHORIZED
+        baseItems.splice(2, 0, {
+          path: '/a/meetings',
+          icon: Calendar,
+          label: 'Citas'
+        });
+      }
+
+      return baseItems;
     }
     return [];
   };
-
-  const navItems = getNavItems();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
+
+  const navItems = getNavItems();
 
   // Animation variants
   const overlayVariants: Variants = {
@@ -112,7 +118,8 @@ function Navbar() {
   return (
     <>
       {/* Mobile Header */}
-      <div className="fixed top-0 left-0 right-0 h-16 bg-base-100 rounded-b-2xl flex items-center justify-between px-4 md:hidden z-50">
+      <div
+        className="fixed top-0 left-0 right-0 h-16 bg-base-100 rounded-b-2xl flex items-center justify-between px-4 md:hidden z-22">
         <motion.div
           className="flex items-center gap-3"
           initial={{ opacity: 0, y: -10 }}
@@ -120,9 +127,9 @@ function Navbar() {
           transition={{ delay: 0.1 }}
         >
           <div className="h-12 w-12 flex items-center justify-center">
-            <ITMLogo fill='#FFFFFFD0' />
+            <ITMLogo className='h-10 w-10 text-[var(--color-navbar)]' />
           </div>
-          <span className="font-normal text-sm text-white/80 tracking-[4px]">CONSULTORÍA</span>
+          <span className="font-normal text-sm text-[var(--color-navbar)] tracking-[4px]">CONSULTORÍA</span>
         </motion.div>
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
@@ -149,7 +156,7 @@ function Navbar() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed inset-0 bg-base-300/30 backdrop-blur-[1px] z-40 md:hidden"
+            className="fixed inset-0 bg-base-300/30 backdrop-blur-[1px] z-18 md:hidden"
             onClick={() => setIsOpen(false)}
             variants={overlayVariants}
             initial="hidden"
@@ -161,7 +168,7 @@ function Navbar() {
 
       {/* Sidebar */}
       <motion.nav
-        className="fixed md:fixed w-64 h-screen bg-base-100 rounded-r-2xl p-6 z-50 md:translate-x-0"
+        className="fixed w-64 h-dvh overflow-hidden bg-base-100 rounded-r-2xl p-6 z-20 md:translate-x-0 pt-[68px]"
         variants={sidebarVariants}
         initial="hidden"
         animate={isOpen ? "visible" : "hidden"}
@@ -179,12 +186,12 @@ function Navbar() {
           transition={{ delay: 0.1 }}
         >
           <div className="h-12 w-12 flex items-center justify-center">
-            <ITMLogo fill='#FFFFFFD0' />
+            <ITMLogo className='h-15 w-15 text-[var(--color-navbar)]' />
           </div>
-          <span className="font-normal text-sm text-white/80 tracking-[4px]">CONSULTORÍA</span>
+          <span className="font-normal text-sm text-[var(--color-navbar)] tracking-[4px]">CONSULTORÍA</span>
         </motion.div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 overflow-y-auto pr-2 max-h-[calc(100dvh - 220px)]">
           {navItems.map((item, index) => (
             <motion.div
               key={item.path}
@@ -237,7 +244,7 @@ function Navbar() {
 
       {/* Desktop Sidebar */}
       <motion.nav
-        className="fixed hidden md:block w-64 h-screen bg-base-100 rounded-r-2xl p-6 z-50"
+        className="fixed hidden md:block w-64 h-dvh overflow-hidden bg-base-100 rounded-r-2xl p-6 z-20"
         initial={{ x: -280 }}
         animate={{ x: 0 }}
         transition={{
@@ -254,12 +261,12 @@ function Navbar() {
           transition={{ delay: 0.5 }}
         >
           <div className="h-12 w-12 flex items-center justify-center">
-            <ITMLogo fill='#FFFFFFD0' className='h-15 w-15 text-primary' />
+            <ITMLogo className='h-15 w-15 text-[var(--color-navbar)]' />
           </div>
-          <span className="font-normal text-sm text-white/80 tracking-[4px]">CONSULTORÍA</span>
+          <span className="font-normal text-sm tracking-[4px] text-[var(--color-navbar)]">CONSULTORÍA</span>
         </motion.div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 overflow-y-auto pr-2 max-h-[calc(100dvh - 220px)]">
           {navItems.map((item, index) => (
             <motion.div
               key={item.path}
