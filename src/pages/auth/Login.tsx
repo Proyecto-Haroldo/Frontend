@@ -96,176 +96,188 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-dvh p-6 md:p-8 md:pb-4 bg-base-100 sm:bg-base-200 bg-center flex flex-col items-center justify-center font-family relative overflow-hidden">
+    <div className="min-h-dvh p-6 md:p-8 md:pb-4 lg:pb-2 bg-base-100 sm:bg-base-200 bg-center flex flex-col items-center justify-center font-family relative overflow-hidden">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md space-y-4 p-4 sm:py-8 sm:px-10 sm:shadow-xl sm:bg-base-100 rounded-xl relative z-10"
+        className="w-full lg:flex lg:gap-8 max-w-md lg:max-w-4xl lg:justify-between space-y-4 p-4 sm:px-10 sm:py-8 lg:py-14 sm:shadow-xl sm:bg-base-100 rounded-xl relative z-10"
       >
-        <div className="text-center">
-          <motion.div
-            initial={{ scale: 0.8, rotate: -5 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ delay: 0.2, type: "spring" }}
-            className="mb-4"
-          >
-            <HFIsotype className="w-16 h-16 mx-auto" />
-          </motion.div>
-          <motion.h1
+        <div>
+          <div className="text-center lg:text-start lg:mb-2">
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring" }}
+              className="mb-4"
+            >
+              <HFIsotype className="w-16 h-16 mx-auto lg:mx-0" />
+            </motion.div>
+            <motion.h1
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring" }}
+              className="text-3xl font-bold text-base-content/80"
+            >
+              Iniciar Sesión
+            </motion.h1>
+          </div>
+
+          <motion.h2
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-3xl font-bold text-base-content/80"
-          >
-            Iniciar Sesión
-          </motion.h1>
+            transition={{ delay: 0.2, type: "spring" }}
+            className="hidden lg:block text-xl font-semibold text-center lg:text-start text-base-content/80 mb-4">
+            Utiliza tu cuenta de finanzas
+          </motion.h2>
         </div>
 
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="alert alert-error"
+        <div>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="alert alert-error"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{error}</span>
+            </motion.div>
+          )}
+
+          <motion.form
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            onSubmit={handleSubmit}
+            className="lg:w-sm mt-8 lg:mt-0 space-y-6"
+            noValidate
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>{error}</span>
-          </motion.div>
-        )}
-
-        <motion.form
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          onSubmit={handleSubmit}
-          className="mt-8 space-y-6"
-          noValidate
-        >
-          <div className="space-y-4">
-            <div className="form-control">
-              <label htmlFor='email' className="label">
-                <span className="label-text text-base-content/70 mb-1">Correo Electrónico</span>
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-base-content/50" />
-                </div>
-                <input
-                  type="email"
-                  title='email'
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setValidationErrors(prev => ({ ...prev, email: undefined }));
-                  }}
-                  className={`input input-bordered w-full pl-10 ${(touched.email && !email) || validationErrors.email ? 'input-error' : ''}`}
-                  placeholder="Ingresa tu correo electrónico"
-                  disabled={loading}
-                  required
-                />
-              </div>
-              {validationErrors.email && (
-                <label className="label">
-                  <span className="label-text-alt text-error">{validationErrors.email}</span>
+            <div className="space-y-4">
+              <div className="form-control">
+                <label htmlFor='email' className="label">
+                  <span className="label-text text-base-content/70 mb-1">Correo Electrónico</span>
                 </label>
-              )}
-            </div>
-
-            <div className="form-control">
-              <label htmlFor='password' className="label">
-                <span className="label-text text-base-content/70 mb-1">Contraseña</span>
-              </label>
-              <div className="join w-full">
-                <div className="relative flex-1">
+                <div className="relative">
                   <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
-                    <KeyRound className="h-5 w-5 text-base-content/50" />
+                    <Mail className="h-5 w-5 text-base-content/50" />
                   </div>
                   <input
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    title='password'
+                    type="email"
+                    title='email'
+                    value={email}
                     onChange={(e) => {
-                      setPassword(e.target.value);
-                      setValidationErrors(prev => ({ ...prev, password: undefined }));
+                      setEmail(e.target.value);
+                      setValidationErrors(prev => ({ ...prev, email: undefined }));
                     }}
-                    className={`input input-bordered w-full pl-10 join-item ${(touched.password && !password) || validationErrors.password ? 'input-error' : ''}`}
-                    placeholder="Ingresa tu contraseña"
+                    className={`input input-bordered w-full pl-10 ${(touched.email && !email) || validationErrors.email ? 'input-error' : ''}`}
+                    placeholder="Ingresa tu correo electrónico"
                     disabled={loading}
                     required
-                    minLength={6}
                   />
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="btn btn-square join-item bg-base-200/80"
-                  disabled={loading}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-base-content/50" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-base-content/50" />
-                  )}
-                </button>
+                {validationErrors.email && (
+                  <label className="label">
+                    <span className="label-text-alt text-error">{validationErrors.email}</span>
+                  </label>
+                )}
               </div>
-              {validationErrors.password && (
-                <label className="label">
-                  <span className="label-text-alt text-error">{validationErrors.password}</span>
+
+              <div className="form-control">
+                <label htmlFor='password' className="label">
+                  <span className="label-text text-base-content/70 mb-1">Contraseña</span>
                 </label>
+                <div className="join w-full">
+                  <div className="relative flex-1">
+                    <div className="absolute inset-y-0 z-2 left-0 pl-3 flex items-center pointer-events-none">
+                      <KeyRound className="h-5 w-5 text-base-content/50" />
+                    </div>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      title='password'
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        setValidationErrors(prev => ({ ...prev, password: undefined }));
+                      }}
+                      className={`input input-bordered w-full pl-10 join-item ${(touched.password && !password) || validationErrors.password ? 'input-error' : ''}`}
+                      placeholder="Ingresa tu contraseña"
+                      disabled={loading}
+                      required
+                      minLength={6}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="btn btn-square join-item bg-base-200/80"
+                    disabled={loading}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5 text-base-content/50" />
+                    ) : (
+                      <Eye className="h-5 w-5 text-base-content/50" />
+                    )}
+                  </button>
+                </div>
+                {validationErrors.password && (
+                  <label className="label">
+                    <span className="label-text-alt text-error">{validationErrors.password}</span>
+                  </label>
+                )}
+              </div>
+            </div>
+
+            <div className="relative">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                className={`btn btn-primary w-full ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                disabled={loading}
+              >
+                {!loading && 'Iniciar Sesión'}
+              </motion.button>
+
+              {loading && (
+                <div className="absolute inset-0 overflow-hidden rounded-btn pointer-events-none">
+                  <AnimatePresence mode="sync">
+                    {(() => {
+                      const Icon = loadingIcons[loadingIconIndex % loadingIcons.length];
+                      return (
+                        <motion.div
+                          key={loadingIconIndex}
+                          initial={{ x: -40, opacity: 0, rotate: -10, scale: 0.8 }}
+                          animate={{ x: 420, opacity: 1, rotate: 10, scale: 1.1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 1, ease: 'linear' }}
+                          className="absolute inset-y-0 z-2 left-0 flex items-center"
+                        >
+                          <Icon className="w-6 h-6 text-primary" />
+                        </motion.div>
+                      );
+                    })()}
+                  </AnimatePresence>
+                </div>
               )}
             </div>
-          </div>
+          </motion.form>
 
-          <div className="relative">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              type="submit"
-              className={`btn btn-primary w-full ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
-              disabled={loading}
-            >
-              {!loading && 'Iniciar Sesión'}
-            </motion.button>
-
-            {loading && (
-              <div className="absolute inset-0 overflow-hidden rounded-btn pointer-events-none">
-                <AnimatePresence mode="sync">
-                  {(() => {
-                    const Icon = loadingIcons[loadingIconIndex % loadingIcons.length];
-                    return (
-                      <motion.div
-                        key={loadingIconIndex}
-                        initial={{ x: -40, opacity: 0, rotate: -10, scale: 0.8 }}
-                        animate={{ x: 420, opacity: 1, rotate: 10, scale: 1.1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 1, ease: 'linear' }}
-                        className="absolute inset-y-0 z-2 left-0 flex items-center"
-                      >
-                        <Icon className="w-6 h-6 text-primary" />
-                      </motion.div>
-                    );
-                  })()}
-                </AnimatePresence>
-              </div>
-            )}
-          </div>
-        </motion.form>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="text-center pt-2"
-        >
-          <p className="text-sm text-base-content/70">
-            ¿No tienes cuenta? {' '}
-            <Link to="/signup" className="text-primary font-semibold hover:underline">
-              Regístrate
-            </Link>
-          </p>
-        </motion.div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="text-center pt-6"
+          >
+            <p className="text-sm text-base-content/70">
+              ¿No tienes cuenta? {' '}
+              <Link to="/signup" className="text-primary font-semibold hover:underline">
+                Regístrate
+              </Link>
+            </p>
+          </motion.div>
+        </div>
       </motion.div>
 
       {/* Footer */}

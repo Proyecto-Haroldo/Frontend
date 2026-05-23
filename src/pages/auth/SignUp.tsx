@@ -333,7 +333,11 @@ const SignUp: React.FC = () => {
     const totalSteps = form.role === "Asesor" ? 5 : 4;
     const steps = Array.from({ length: totalSteps }, (_, i) => i + 1);
     return (
-      <div className="flex justify-center px-2">
+      <motion.div
+        initial={{ scale: 0.8 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 0.2, type: "spring" }}
+        className="flex justify-center px-2 lg:px-0">
         <div className="flex items-center">
           {steps.map((step) => (
             <React.Fragment key={step}>
@@ -353,7 +357,7 @@ const SignUp: React.FC = () => {
             </React.Fragment>
           ))}
         </div>
-      </div>
+      </motion.div>
     );
   };
 
@@ -543,7 +547,7 @@ const SignUp: React.FC = () => {
     >
       <div className="form-control">
         <label className="label">
-          <span className="label-text text-base-content/70">
+          <span className="label-text text-base-content/70 mb-1">
             Rol
           </span>
         </label>
@@ -560,7 +564,7 @@ const SignUp: React.FC = () => {
                   className="peer sr-only"
                   disabled={loading}
                 />
-                <div className="h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-hover:scale-99">
+                <div className="h-19 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-hover:scale-99">
                   <div className="relative text-base-content/80 z-10 flex flex-col sm:flex-row items-center justify-center sm:gap-2">
                     <User className="w-5 h-5" />
                     <span className="font-medium">Cliente</span>
@@ -579,7 +583,7 @@ const SignUp: React.FC = () => {
                   className="peer sr-only"
                   disabled={loading}
                 />
-                <div className="h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-hover:scale-99">
+                <div className="h-19 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-hover:scale-99">
                   <div className="relative text-base-content/80 z-10 flex flex-col sm:flex-row items-center justify-center sm:gap-2">
                     <Briefcase className="w-5 h-5" />
                     <span className="font-medium">Asesor</span>
@@ -593,7 +597,7 @@ const SignUp: React.FC = () => {
 
       <div className="form-control">
         <label className="label">
-          <span className="label-text text-base-content/70">
+          <span className="label-text text-base-content/70 mb-1">
             Tipo de Cuenta
           </span>
         </label>
@@ -610,7 +614,7 @@ const SignUp: React.FC = () => {
                   className="peer sr-only"
                   disabled={loading}
                 />
-                <div className="h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-hover:scale-99">
+                <div className="h-19 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-hover:scale-99">
                   <div className="relative text-base-content/80 z-10 flex flex-col sm:flex-row items-center justify-center sm:gap-2">
                     <Users className="w-5 h-5" />
                     <span className="font-medium">Persona</span>
@@ -629,7 +633,7 @@ const SignUp: React.FC = () => {
                   className="peer sr-only"
                   disabled={loading}
                 />
-                <div className="h-20 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-hover:scale-99">
+                <div className="h-19 relative flex items-center justify-center p-3 rounded-md transition-all duration-300 peer-checked:bg-neutral peer-hover:scale-99">
                   <div className="relative text-base-content/80 z-10 flex flex-col sm:flex-row items-center justify-center sm:gap-2">
                     <Building2 className="w-5 h-5" />
                     <span className="font-medium">Empresa</span>
@@ -871,176 +875,184 @@ const SignUp: React.FC = () => {
   );
 
   return (
-    <div className="min-h-dvh p-6 md:p-8 md:pb-4 bg-base-100 sm:bg-base-200 bg-center flex flex-col items-center justify-center font-family relative overflow-hidden">
+    <div className="min-h-dvh p-6 md:p-8 md:pb-4 lg:pb-2 bg-base-100 sm:bg-base-200 bg-center flex flex-col items-center justify-center font-family relative overflow-hidden">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md space-y-4 p-4 sm:py-8 sm:px-10 sm:shadow-xl sm:bg-base-100 rounded-xl relative z-10"
+        className="w-full lg:flex lg:gap-8 max-w-md lg:max-w-4xl lg:justify-between space-y-4 p-4 sm:px-10 sm:py-8 lg:py-10 sm:shadow-xl sm:bg-base-100 rounded-xl relative z-10"
       >
-        <div className="text-center mb-2">
-          <motion.div
-            initial={{ scale: 0.8, rotate: -5 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ delay: 0.2, type: "spring" }}
-            className="mb-4"
-          >
-            <HFIsotype className="w-16 h-16 mx-auto" />
-          </motion.div>
-          <motion.h1
+        <div >
+          <div className="text-center lg:text-start mb-2">
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring" }}
+              className="mb-4"
+            >
+              <HFIsotype className="w-16 h-16 mx-auto lg:mx-0" />
+            </motion.div>
+            <motion.h1
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring" }}
+              className="text-3xl font-bold text-base-content/80"
+            >
+              Registro
+            </motion.h1>
+          </div>
+
+          <motion.h2
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-3xl font-bold text-base-content/80"
-          >
-            Registro
-          </motion.h1>
+            transition={{ delay: 0.2, type: "spring" }}
+            className="text-xl font-semibold text-center lg:text-start text-base-content/80 mb-4">
+            {getStepTitle(currentStep)}
+          </motion.h2>
+
+          {renderStepIndicator()}
         </div>
 
-        <h2 className="text-xl font-semibold text-center text-base-content/80 mb-4">
-          {getStepTitle(currentStep)}
-        </h2>
-
-        {renderStepIndicator()}
-
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="alert alert-error"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="stroke-current shrink-0 h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
+        <div>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="alert alert-error"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <span>{error}</span>
-          </motion.div>
-        )}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="stroke-current shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{error}</span>
+            </motion.div>
+          )}
 
-        {success && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="alert alert-success"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="stroke-current shrink-0 h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
+          {success && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="alert alert-success"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <span>{success}</span>
-          </motion.div>
-        )}
-
-        <motion.form
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          onSubmit={handleSubmit}
-          className="mt-8 space-y-6"
-          noValidate
-        >
-          {currentStep === 1 && renderStep1()}
-          {currentStep === 2 && renderStep2()}
-          {currentStep === 3 && renderStep3()}
-          {currentStep === 4 && renderStep4()}
-          {currentStep === 5 && renderStep5()}
-
-          <div className="flex justify-between space-x-4 transition-all duration-300">
-            {currentStep > 1 && (
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                type="button"
-                onClick={handlePrevious}
-                className="btn btn-outline transition-all duration-300 flex-1 border-0 bg-base-content/10"
-                disabled={loading}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="stroke-current shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
               >
-                Anterior
-              </motion.button>
-            )}
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{success}</span>
+            </motion.div>
+          )}
 
-            {currentStep < (form.role === "Asesor" ? 5 : 4) ? (
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                type="button"
-                onClick={handleNext}
-                className={`btn btn-primary transition-all duration-300 flex-1 ${currentStep > 1 ? "ml-auto" : ""}`}
-                disabled={loading}
-              >
-                Siguiente
-              </motion.button>
-            ) : (
-              <div className={`relative flex-1 ${currentStep > 1 ? "ml-auto" : ""}`}>
+          <motion.form
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            onSubmit={handleSubmit}
+            className="space-y-6 lg:w-sm mt-8 lg:mt-0"
+            noValidate
+          >
+            {currentStep === 1 && renderStep1()}
+            {currentStep === 2 && renderStep2()}
+            {currentStep === 3 && renderStep3()}
+            {currentStep === 4 && renderStep4()}
+            {currentStep === 5 && renderStep5()}
+
+            <div className="flex justify-between space-x-4 transition-all duration-300">
+              {currentStep > 1 && (
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   type="button"
-                  onClick={handleManualSubmit}
-                  className={`btn btn-primary transition-all duration-300 w-full ${loading ? "cursor-not-allowed" : ""
-                    }`}
+                  onClick={handlePrevious}
+                  className="btn btn-outline transition-all duration-300 flex-1 border-0 bg-base-content/10"
                   disabled={loading}
                 >
-                  {!loading && "Registrarse"}
+                  Anterior
                 </motion.button>
+              )}
 
-                {loading && (
-                  <div className="absolute inset-0 overflow-hidden rounded-btn pointer-events-none">
-                    <AnimatePresence mode="sync">
-                      {(() => {
-                        const Icon = loadingIcons[loadingIconIndex % loadingIcons.length];
-                        return (
-                          <motion.div
-                            key={loadingIconIndex}
-                            initial={{ x: -40, opacity: 0, rotate: -10, scale: 0.8 }}
-                            animate={{ x: 420, opacity: 1, rotate: 10, scale: 1.1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 1, ease: "linear" }}
-                            className="absolute inset-y-0 z-2 left-0 flex items-center"
-                          >
-                            <Icon className="w-6 h-6 text-primary" />
-                          </motion.div>
-                        );
-                      })()}
-                    </AnimatePresence>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </motion.form>
+              {currentStep < (form.role === "Asesor" ? 5 : 4) ? (
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="button"
+                  onClick={handleNext}
+                  className={`btn btn-primary transition-all duration-300 flex-1 ${currentStep > 1 ? "ml-auto" : ""}`}
+                  disabled={loading}
+                >
+                  Siguiente
+                </motion.button>
+              ) : (
+                <div className={`relative flex-1 ${currentStep > 1 ? "ml-auto" : ""}`}>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="button"
+                    onClick={handleManualSubmit}
+                    className={`btn btn-primary transition-all duration-300 w-full ${loading ? "cursor-not-allowed" : ""
+                      }`}
+                    disabled={loading}
+                  >
+                    {!loading && "Registrarse"}
+                  </motion.button>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="text-center pt-2"
-        >
-          <p className="text-sm text-base-content/70">
-            ¿Ya tienes cuenta? {" "}
-            <Link to="/login" className="text-primary font-semibold hover:underline">
-              Inicia sesión
-            </Link>
-          </p>
-        </motion.div>
+                  {loading && (
+                    <div className="absolute inset-0 overflow-hidden rounded-btn pointer-events-none">
+                      <AnimatePresence mode="sync">
+                        {(() => {
+                          const Icon = loadingIcons[loadingIconIndex % loadingIcons.length];
+                          return (
+                            <motion.div
+                              key={loadingIconIndex}
+                              initial={{ x: -40, opacity: 0, rotate: -10, scale: 0.8 }}
+                              animate={{ x: 420, opacity: 1, rotate: 10, scale: 1.1 }}
+                              exit={{ opacity: 0 }}
+                              transition={{ duration: 1, ease: "linear" }}
+                              className="absolute inset-y-0 z-2 left-0 flex items-center"
+                            >
+                              <Icon className="w-6 h-6 text-primary" />
+                            </motion.div>
+                          );
+                        })()}
+                      </AnimatePresence>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </motion.form>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="text-center pt-6"
+          >
+            <p className="text-sm text-base-content/70">
+              ¿Ya tienes cuenta? {" "}
+              <Link to="/login" className="text-primary font-semibold hover:underline">
+                Inicia sesión
+              </Link>
+            </p>
+          </motion.div>
+        </div>
       </motion.div>
 
       {/* Footer */}
