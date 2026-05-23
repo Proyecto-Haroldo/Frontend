@@ -1,0 +1,28 @@
+export interface Keyword {
+    title: string;
+    description: string;
+}
+
+export interface IOption {
+    id: number;
+    text: string;
+}
+
+export type QuestionType = 'OPEN' | 'SINGLE' | 'MULTIPLE';
+
+export interface IQuestion {
+    id: number;
+    categoryId?: number;
+    categoryName?: string;
+    question: string;
+    questionType: QuestionType;
+    questionnaireId?: number;
+    options: IOption[];
+    keywords: Keyword[];
+    // Set for conditional flows
+    parentQuestionId?: number;
+    parentAnswerTrigger?: string;
+    displayOrder?: number;
+    section?: string;
+    children?: IQuestion[];
+}

@@ -1,0 +1,66 @@
+import { apiClient } from './apiClient';
+import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from '../core/types/auth';
+import { ICategory, ICategoryDTO, mapCategoryFromDTO } from '../core/models/questionnaire';
+
+function getMessageFromResponse(response: { status: number; data?: unknown }): string | null {
+  if (typeof response.data === 'string' && response.data.trim()) {
+    return response.data.trim();
+  }
+  return null;
+}
+
+export async function login(data: LoginRequest): Promise<LoginResponse> {
+  try {
+    const response = await apiClient.post<LoginResponse>('/auth/login', data);
+    return response.data;
+  } catch (error: unknown) {
+    const axiosError = error && typeof error === 'object' && 'response' in error ? (error as { response?: { status: number; data?: unknown } }).response : undefined;
+    if (axiosError && typeof axiosError === 'object' && 'status' in axiosError) {
+      const serverMessage = getMessageFromResponse(axiosError);
+      if (serverMessage) {
+        throw new Error(serverMessage);
+      }
+      switch (axiosError.status) {
+        case 404:
+          throw new Error('El correo electrónico no está registrado');
+        case 401:
+          throw new Error('Las credenciales ingresadas son incorrectas');
+        default:
+          break;
+      }
+    }
+    throw new Error('Error al iniciar sesión. Por favor intenta nuevamente.');
+  }
+}
+
+export async function register(data: RegisterRequest): Promise<RegisterResponse> {
+  try {
+    const response = await apiClient.post<RegisterResponse>('/auth/register', data);
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'status' in error.response && error.response.status === 409) {
+      throw new Error('Correo ya registrado');
+    }
+    throw new Error('Error al registrar usuario. Por favor intenta nuevamente.');
+  }
+} 
+
+export async function publicCategories(): Promise<ICategory[]> {
+  try {
+      const response = await apiClient.get<ICategoryDTO[]>('/public/categories');
+      return response.data.map(mapCategoryFromDTO);
+  } catch (error) {
+      console.error('Error fetching categories:', error);
+      throw new Error('Error al obtener las categorías');
+  }
+} 
+
+export async function getUserStatus(userId: number): Promise<{ status: string }> {
+  try {
+    const response = await apiClient.get<{ status: string }>(`/users/${userId}/status`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user status:', error);
+    throw new Error('Error al obtener el estado del usuario');
+  }
+}
