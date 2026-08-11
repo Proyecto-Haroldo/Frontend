@@ -7,16 +7,16 @@
   default: true;
   prefersdark: false;
   color-scheme: "light";
-  --color-base-100: oklch(98% 0.003 306);
-  --color-base-200: oklch(94% 0.006 306);
-  --color-base-300: oklch(90% 0.055 306);
+  --color-base-100: oklch(98% 0.003 300);
+  --color-base-200: oklch(94% 0.006 305);
+  --color-base-300: oklch(90% 0.055 310);
   --color-base-content: oklch(42% 0.006 55);
-  --color-primary: oklch(64% 0.12 306);
-  --color-primary-content: oklch(98% 0.006 306);
-  --color-secondary: oklch(70% 0.02 306);
-  --color-secondary-content: oklch(100% 0.01 306);
-  --color-accent: oklch(88% 0.04 306);
-  --color-accent-content: oklch(55% 0.116 306);
+  --color-primary: oklch(64% 0.12 305);
+  --color-primary-content: oklch(98% 0.006 305);
+  --color-secondary: oklch(70% 0.02 305);
+  --color-secondary-content: oklch(100% 0.01 305);
+  --color-accent: oklch(88% 0.04 305);
+  --color-accent-content: oklch(55% 0.116 305);
   --color-neutral: oklch(100% 0 0);
   --color-neutral-content: oklch(40% 0.006 55);
   --color-info: oklch(72% 0.06 255);
@@ -43,16 +43,16 @@
   default: false;
   prefersdark: true;
   color-scheme: "dark";
-  --color-base-100: oklch(26% 0.006 245);
-  --color-base-200: oklch(22% 0.006 250);
-  --color-base-300: oklch(18% 0.006 255);
+  --color-base-100: oklch(26% 0.006 300);
+  --color-base-200: oklch(22% 0.006 305);
+  --color-base-300: oklch(18% 0.006 310);
   --color-base-content: oklch(98% 0 0);
-  --color-primary: oklch(60% 0.12 306);
-  --color-primary-content: oklch(100% 0.010 306);
-  --color-secondary: oklch(65% 0.02 306);
-  --color-secondary-content: oklch(100% 0.01 306);
-  --color-accent: oklch(94% 0.029 306);
-  --color-accent-content: oklch(38% 0.189 306);
+  --color-primary: oklch(60% 0.12 305);
+  --color-primary-content: oklch(100% 0.010 305);
+  --color-secondary: oklch(65% 0.02 305);
+  --color-secondary-content: oklch(100% 0.01 305);
+  --color-accent: oklch(94% 0.029 305);
+  --color-accent-content: oklch(38% 0.189 305);
   --color-neutral: oklch(19% 0.005 255);
   --color-neutral-content: oklch(92% 0.004 285);
   --color-info: oklch(72% 0.06 255);
@@ -77,7 +77,7 @@
 @theme {
   --font-family: "Plus Jakarta Sans", sans-serif;
   --font-optical-sizing: auto;
-  --color-warm-white: oklch(96.59% 0.009 314);
+  --color-warm-white: oklch(96.59% 0.009 305);
 }
 
 html,
