@@ -23,7 +23,7 @@ import { register } from "../../api/authApi";
 import { useAuth } from "../../shared/context/AuthContext";
 import PasswordStrength from "../../shared/ui/validator/PasswordStrength";
 import SelectCategories from "../../shared/ui/components/selects/SelectCategories";
-import HFIsotype from '../../../public/assets/HFIsotype';
+import HFLogo from '../../../public/assets/HFLogo';
 import ThemeToggle from "../../shared/ui/layout/theme/ThemeToggle";
 import useCategories from "../../shared/hooks/useCategories";
 
@@ -890,7 +890,7 @@ const SignUp: React.FC = () => {
               transition={{ delay: 0.2, type: "spring" }}
               className="mb-4"
             >
-              <HFIsotype className="w-16 h-16 mx-auto lg:mx-0" />
+              <HFLogo className="w-16 h-16 mx-auto lg:mx-0" />
             </motion.div>
             <motion.h1
               initial={{ scale: 0.8 }}
@@ -918,7 +918,7 @@ const SignUp: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="alert alert-error"
+              className="alert alert-error lg:mb-3"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -941,7 +941,7 @@ const SignUp: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="alert alert-success"
+              className="alert alert-success lg:mb-3"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

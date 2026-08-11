@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ICategory, mapCategoryToDTO } from "../../../../core/models/questionnaire";
-import { categoriesIcons } from '../../../../../public/assets/Categories';
+import { categoriesIcons } from '../../../../../public/data/DefaultCategories';
 import {
     getAllCategories,
     createCategory,

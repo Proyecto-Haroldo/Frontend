@@ -22,5 +22,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "public/assets"]
+  "include": ["src", "public/assets", "public/data/DefaultCategories.tsx"]
 }

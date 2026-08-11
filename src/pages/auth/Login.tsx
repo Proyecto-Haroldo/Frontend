@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Mail, KeyRound, Eye, EyeOff, Banknote, Wallet, PiggyBank, TrendingUp, BarChart } from 'lucide-react';
 import { login } from '../../api/authApi';
 import { useAuth } from '../../shared/context/AuthContext';
-import HFIsotype from '../../../public/assets/HFIsotype';
+import HFLogo from '../../../public/assets/HFLogo';
 import ThemeToggle from '../../shared/ui/layout/theme/ThemeToggle';
 
 const loadingIcons = [Banknote, Wallet, PiggyBank, TrendingUp, BarChart];
@@ -111,7 +111,7 @@ const Login: React.FC = () => {
               transition={{ delay: 0.2, type: "spring" }}
               className="mb-4"
             >
-              <HFIsotype className="w-16 h-16 mx-auto lg:mx-0" />
+              <HFLogo className="w-16 h-16 mx-auto lg:mx-0" />
             </motion.div>
             <motion.h1
               initial={{ scale: 0.8 }}
@@ -137,7 +137,7 @@ const Login: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="alert alert-error"
+              className="alert alert-error lg:mb-3"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />

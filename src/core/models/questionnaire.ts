@@ -1,5 +1,5 @@
 import { JSX } from 'react';
-import { categoriesIcons } from '../../../public/assets/Categories';
+import { categoriesIcons } from '../../../public/data/DefaultCategories';
 
 export interface IQuestionnaire {
     id: number;

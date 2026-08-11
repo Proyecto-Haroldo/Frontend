@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { defaultCategories } from "../../../public/assets/Categories";
+import { defaultCategories } from "../../../public/data/DefaultCategories";
 import { ICategory } from "../../core/models/questionnaire";
 import { publicCategories } from "../../api/authApi";
 
