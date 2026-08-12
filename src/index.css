@@ -7,9 +7,9 @@
   default: true;
   prefersdark: false;
   color-scheme: "light";
-  --color-base-100: oklch(98% 0.003 300);
-  --color-base-200: oklch(92% 0.006 305);
-  --color-base-300: oklch(88% 0.05 305);
+  --color-base-100: oklch(98% 0.006 300);
+  --color-base-200: oklch(94% 0.006 305);
+  --color-base-300: oklch(88% 0.055 305);
   --color-base-content: oklch(38% 0.006 55);
   --color-primary: oklch(64% 0.12 305);
   --color-primary-content: oklch(98% 0.006 305);
@@ -43,8 +43,8 @@
   default: false;
   prefersdark: true;
   color-scheme: "dark";
-  --color-base-100: oklch(28% 0.006 300);
-  --color-base-200: oklch(22% 0.006 305);
+  --color-base-100: oklch(26% 0.004 300);
+  --color-base-200: oklch(22% 0.004 305);
   --color-base-300: oklch(18% 0.004 310);
   --color-base-content: oklch(98% 0 0);
   --color-primary: oklch(60% 0.12 305);
