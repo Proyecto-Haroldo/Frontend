@@ -337,7 +337,7 @@ const SignUp: React.FC = () => {
         initial={{ scale: 0.8 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.2, type: "spring" }}
-        className="flex justify-center px-2 lg:px-0">
+        className="flex justify-center px-2 lg:px-0 transition-all duration-300">
         <div className="flex items-center">
           {steps.map((step) => (
             <React.Fragment key={step}>
